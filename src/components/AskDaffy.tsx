@@ -24,7 +24,7 @@ const AskDaffy = () => {
     setMessages((prev) => [...prev, newUserMessage]);
 
     try {
-      const res = await fetch('https://adarsh030905.app.n8n.cloud/webhook-test/samplechat', {
+      const res = await fetch('https://adarsh030905.app.n8n.cloud/webhook/samplechat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: input })

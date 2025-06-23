@@ -1,9 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import CircularNumbers from './CircularNumbers';
+import { Globe } from 'lucide-react';
 
 const BackgroundEffects = () => {
+  const [language, setLanguage] = useState<'english' | 'hindi'>('english');
+
+  const toggleLanguage = () => {
+    setLanguage(prev => prev === 'english' ? 'hindi' : 'english');
+  };
+
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      {/* Language Toggle Button - Make it interactive */}
+      <div className="absolute top-24 right-6 pointer-events-auto z-50">
+        <div className="glassmorphic rounded-full p-2 border-2 border-gold/30 shadow-xl bg-white/20 backdrop-blur-md">
+          <div className="flex">
+            <button
+              onClick={() => setLanguage('english')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 font-semibold text-sm ${
+                language === 'english' 
+                  ? 'bg-gradient-to-r from-saffron to-gold text-white shadow-lg' 
+                  : 'text-cosmic-indigo hover:bg-white/20'
+              }`}
+            >
+              <Globe className="w-4 h-4" />
+              English
+            </button>
+            <button
+              onClick={() => setLanguage('hindi')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300 font-semibold text-sm ${
+                language === 'hindi' 
+                  ? 'bg-gradient-to-r from-saffron to-gold text-white shadow-lg' 
+                  : 'text-cosmic-indigo hover:bg-white/20'
+              }`}
+            >
+              <Globe className="w-4 h-4" />
+              हिंदी
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* Animated Yantras and Sacred Geometry */}
       <div className="absolute top-20 left-10 w-32 h-32 opacity-15">
         <div className="w-full h-full border-2 border-saffron rounded-full animate-spin-slow"></div>
@@ -24,9 +61,9 @@ const BackgroundEffects = () => {
         <div className="absolute inset-6 border border-lotus-pink transform -rotate-12"></div>
       </div>
 
-      {/* Circular Number Visualization */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-30">
-        <CircularNumbers />
+      {/* Circular Number Visualization with Language Support */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-40">
+        <CircularNumbers language={language} />
       </div>
 
       {/* Constellation Dots */}

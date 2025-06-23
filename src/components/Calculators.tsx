@@ -107,7 +107,6 @@ const Calculators = () => {
           })}
         </div>
 
-        {/* Calculator Modal/Form */}
         {selectedCalculator && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <div className={`rounded-3xl p-8 max-w-md w-full max-h-96 overflow-y-auto border shadow-2xl transition-all duration-500 ${
@@ -116,7 +115,7 @@ const Calculators = () => {
                 : 'glassmorphic border-gold/30 bg-white/20 backdrop-blur-md'
             }`}>
               <div className="flex justify-between items-center mb-6">
-                <h3 className={`text-2xl font-bold ${showResults ? 'text-cosmic-indigo' : 'text-cosmic-indigo'}`}>
+                <h3 className="text-2xl font-bold text-cosmic-indigo">
                   {calculators.find(c => c.id === selectedCalculator)?.title}
                 </h3>
                 <button
@@ -140,16 +139,20 @@ const Calculators = () => {
                       required
                     />
                   </div>
-                  <div>
-                    <label className="block text-cosmic-indigo font-semibold mb-2">Date of Birth</label>
-                    <input
-                      type="date"
-                      value={formData.birthDate}
-                      onChange={(e) => handleInputChange('birthDate', e.target.value)}
-                      className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all"
-                      required
-                    />
-                  </div>
+
+                  {selectedCalculator !== 'psychic' && (
+                    <div>
+                      <label className="block text-cosmic-indigo font-semibold mb-2">Date of Birth</label>
+                      <input
+                        type="date"
+                        value={formData.birthDate}
+                        onChange={(e) => handleInputChange('birthDate', e.target.value)}
+                        className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all"
+                        required
+                      />
+                    </div>
+                  )}
+
                   <div>
                     <label className="block text-cosmic-indigo font-semibold mb-2">Gender</label>
                     <select 
@@ -164,6 +167,7 @@ const Calculators = () => {
                       <option value="other">Other</option>
                     </select>
                   </div>
+
                   <button
                     type="submit"
                     className="w-full bg-gradient-to-r from-saffron to-gold text-white py-4 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105 hover:from-gold hover:to-saffron z-10 relative"
@@ -173,10 +177,8 @@ const Calculators = () => {
                 </form>
               ) : (
                 <div className="space-y-6">
-                  {/* Results Display with White Background */}
                   <div className="bg-white/95 rounded-2xl p-6 border border-gold/30 shadow-inner">
                     <h4 className="text-xl font-bold text-cosmic-indigo mb-4">Your Sacred Numbers</h4>
-                    
                     <div className="grid grid-cols-2 gap-4 mb-6">
                       <div className="text-center p-4 bg-gradient-to-r from-saffron/10 to-gold/10 rounded-xl">
                         <div className="text-3xl font-bold text-saffron mb-2">7</div>
@@ -192,10 +194,9 @@ const Calculators = () => {
                       <div>
                         <h5 className="font-semibold text-cosmic-indigo mb-2">Your Spiritual Path</h5>
                         <p className="text-cosmic-indigo/80 text-sm leading-relaxed">
-                          As a Life Path 7, you are a natural seeker of truth and wisdom. Your soul yearns for deep understanding and spiritual connection. This number indicates a strong intuitive nature and the ability to see beyond the material world.
+                          As a Life Path 7, you are a natural seeker of truth and wisdom...
                         </p>
                       </div>
-                      
                       <div>
                         <h5 className="font-semibold text-cosmic-indigo mb-2">Sacred Recommendations</h5>
                         <ul className="text-cosmic-indigo/80 text-sm space-y-1">

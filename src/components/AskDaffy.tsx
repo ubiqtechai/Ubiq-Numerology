@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mic, MessageSquare, Download, Mail, RotateCcw, Lightbulb, Square } from 'lucide-react';
+import { Mic, MessageSquare, Download, Mail, RotateCcw, Lightbulb, Square, Send } from 'lucide-react';
 
 const AskDaffy = () => {
   const [input, setInput] = useState('');
@@ -49,6 +49,13 @@ const AskDaffy = () => {
     setInput('');
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   return (
     <section id="ask-daffy" className="py-20 relative">
       <div className="container mx-auto px-6">
@@ -67,7 +74,7 @@ const AskDaffy = () => {
             <div className="glassmorphic rounded-full p-2 flex border-2 border-gold/30 shadow-xl bg-white/15 backdrop-blur-md">
               <button
                 onClick={switchMode}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all font-semibold ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all font-semibold cursor-pointer ${
                   mode === 'voice' ? 'bg-gradient-to-r from-saffron to-gold text-white shadow-lg' : 'text-cosmic-indigo hover:bg-white/20'
                 }`}
               >
@@ -76,7 +83,7 @@ const AskDaffy = () => {
               </button>
               <button
                 onClick={switchMode}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all font-semibold ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all font-semibold cursor-pointer ${
                   mode === 'chat' ? 'bg-gradient-to-r from-saffron to-gold text-white shadow-lg' : 'text-cosmic-indigo hover:bg-white/20'
                 }`}
               >
@@ -93,12 +100,30 @@ const AskDaffy = () => {
                 <div className="space-y-4">
                   {messages.map((message, index) => (
                     <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-md ${
+                      <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-md relative ${
                         message.type === 'user'
                           ? 'bg-gradient-to-r from-saffron to-gold text-white'
                           : 'bg-white/25 text-cosmic-indigo border border-white/20'
                       }`}>
-                        <p>{message.content}</p>
+                        {/* Enhanced AI Response with Dotted Elements */}
+                        {message.type === 'assistant' && (
+                          <>
+                            {/* Dotted border decoration */}
+                            <div className="absolute -top-1 -left-1 -right-1 -bottom-1 rounded-2xl border-2 border-dotted border-saffron/30 pointer-events-none"></div>
+                            {/* Corner dots */}
+                            <div className="absolute -top-2 -left-2 w-3 h-3 bg-saffron/60 rounded-full"></div>
+                            <div className="absolute -top-2 -right-2 w-2 h-2 bg-gold/60 rounded-full"></div>
+                            <div className="absolute -bottom-2 -left-2 w-2 h-2 bg-lotus-pink/60 rounded-full"></div>
+                            <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-saffron/60 rounded-full"></div>
+                            {/* Floating dots */}
+                            <div className="absolute top-1 right-1 flex gap-1">
+                              <div className="w-1 h-1 bg-gold/40 rounded-full animate-pulse"></div>
+                              <div className="w-1 h-1 bg-saffron/40 rounded-full animate-pulse delay-200"></div>
+                              <div className="w-1 h-1 bg-lotus-pink/40 rounded-full animate-pulse delay-400"></div>
+                            </div>
+                          </>
+                        )}
+                        <p className="relative z-10">{message.content}</p>
                       </div>
                     </div>
                   ))}
@@ -110,14 +135,16 @@ const AskDaffy = () => {
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
                   placeholder="Ask Daffy about your numbers, destiny, or spiritual path..."
                   className="flex-1 px-6 py-4 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo placeholder-cosmic-indigo/60 focus:outline-none focus:border-gold focus:bg-white/30 shadow-inner transition-all"
                 />
                 <button
                   onClick={handleSend}
-                  className="bg-gradient-to-r from-saffron to-gold text-white px-8 py-4 rounded-full hover:shadow-xl transition-all font-bold transform hover:scale-105 hover:from-gold hover:to-saffron"
+                  disabled={!input.trim()}
+                  className="bg-gradient-to-r from-saffron to-gold text-white px-8 py-4 rounded-full hover:shadow-xl transition-all font-bold transform hover:scale-105 hover:from-gold hover:to-saffron disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
                 >
-                  Send
+                  <Send className="w-5 h-5" />
                 </button>
               </div>
             </div>
@@ -140,7 +167,7 @@ const AskDaffy = () => {
                 <div className="flex justify-center gap-4">
                   <button
                     onClick={toggleRecording}
-                    className={`px-8 py-4 rounded-full text-lg font-bold transition-all duration-300 transform hover:scale-105 z-20 relative ${
+                    className={`px-8 py-4 rounded-full text-lg font-bold transition-all duration-300 transform hover:scale-105 z-20 relative cursor-pointer ${
                       isRecording
                         ? 'bg-red-500 hover:bg-red-600 text-white shadow-xl'
                         : 'bg-gradient-to-r from-saffron to-gold text-white hover:shadow-xl hover:from-gold hover:to-saffron'
@@ -169,15 +196,15 @@ const AskDaffy = () => {
 
           {/* Controls */}
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold">
+            <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold cursor-pointer hover:scale-105 transform">
               <Download className="w-5 h-5 inline mr-2" />
               Download Transcript
             </button>
-            <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold">
+            <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold cursor-pointer hover:scale-105 transform">
               <Mail className="w-5 h-5 inline mr-2" />
               Email Reading
             </button>
-            <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold">
+            <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold cursor-pointer hover:scale-105 transform">
               <RotateCcw className="w-5 h-5 inline mr-2" />
               End Session & Reflect
             </button>
@@ -187,7 +214,7 @@ const AskDaffy = () => {
           <div className="text-center">
             <a 
               href="#suggested-questions"
-              className="inline-flex items-center gap-2 text-saffron hover:text-gold transition-colors font-semibold text-lg"
+              className="inline-flex items-center gap-2 text-saffron hover:text-gold transition-colors font-semibold text-lg cursor-pointer hover:scale-105 transform"
             >
               <Lightbulb className="w-5 h-5" />
               Need ideas? View Suggested Questions

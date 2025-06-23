@@ -1,7 +1,10 @@
-import React from 'react';
-import { Star, Quote } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const Testimonials = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
   const testimonials = [
     {
       id: 1,
@@ -59,6 +62,34 @@ const Testimonials = () => {
     }
   ];
 
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, testimonials.length]);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % testimonials.length);
+    setIsAutoPlaying(false);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setIsAutoPlaying(false);
+  };
+
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+    setIsAutoPlaying(false);
+  };
+
+  const currentTestimonial = testimonials[currentSlide];
+
   return (
     <section className="py-20 relative">
       <div className="container mx-auto px-6">
@@ -71,59 +102,102 @@ const Testimonials = () => {
           </p>
         </div>
 
-        {/* Testimonials Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {testimonials.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className="glassmorphic rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 relative group"
-            >
+        {/* Single Column Testimonial Slider */}
+        <div className="max-w-4xl mx-auto">
+          <div className="relative">
+            {/* Main Testimonial Card */}
+            <div className="glassmorphic rounded-3xl p-12 hover:shadow-2xl transition-all duration-500 relative group min-h-[400px] flex flex-col justify-center">
               {/* Quote Icon */}
-              <div className="absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
-                <Quote className="w-8 h-8 text-saffron" />
+              <div className="absolute top-8 right-8 opacity-20 group-hover:opacity-40 transition-opacity">
+                <Quote className="w-16 h-16 text-saffron" />
               </div>
 
+              {/* Enhanced Dotted Elements */}
+              <div className="absolute -top-2 -left-2 -right-2 -bottom-2 rounded-3xl border-4 border-dotted border-saffron/20 pointer-events-none"></div>
+              <div className="absolute top-4 left-4 w-4 h-4 bg-saffron/40 rounded-full animate-pulse"></div>
+              <div className="absolute top-4 right-4 w-3 h-3 bg-gold/40 rounded-full animate-pulse delay-200"></div>
+              <div className="absolute bottom-4 left-4 w-3 h-3 bg-lotus-pink/40 rounded-full animate-pulse delay-400"></div>
+              <div className="absolute bottom-4 right-4 w-4 h-4 bg-saffron/40 rounded-full animate-pulse delay-600"></div>
+
               {/* Rating Stars */}
-              <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-gold fill-current" />
+              <div className="flex justify-center gap-2 mb-8">
+                {[...Array(currentTestimonial.rating)].map((_, i) => (
+                  <Star key={i} className="w-8 h-8 text-gold fill-current" />
                 ))}
               </div>
 
               {/* Testimonial Text */}
-              <blockquote className="text-cosmic-indigo/80 mb-6 leading-relaxed">
-                "{testimonial.text}"
+              <blockquote className="text-xl text-cosmic-indigo/80 mb-8 leading-relaxed text-center max-w-3xl mx-auto">
+                "{currentTestimonial.text}"
               </blockquote>
 
               {/* Numbers */}
-              <div className="bg-white/10 rounded-lg p-3 mb-6">
-                <p className="text-sm text-saffron font-semibold">Sacred Numbers:</p>
-                <p className="text-sm text-cosmic-indigo/70">{testimonial.numbers}</p>
+              <div className="bg-white/15 rounded-2xl p-6 mb-8 max-w-md mx-auto">
+                <p className="text-lg text-saffron font-semibold text-center mb-2">Sacred Numbers:</p>
+                <p className="text-cosmic-indigo/70 text-center">{currentTestimonial.numbers}</p>
               </div>
 
               {/* Author */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center justify-center gap-6">
                 <div className="relative">
                   <img
-                    src={testimonial.image}
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover"
+                    src={currentTestimonial.image}
+                    alt={currentTestimonial.name}
+                    className="w-20 h-20 rounded-full object-cover"
                   />
-                  {/* Mandala Frame */}
-                  <div className="absolute inset-0 rounded-full border-2 border-gold/30"></div>
+                  {/* Enhanced Mandala Frame */}
+                  <div className="absolute inset-0 rounded-full border-4 border-gold/40"></div>
+                  <div className="absolute -inset-2 rounded-full border-2 border-dotted border-saffron/30"></div>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-cosmic-indigo">{testimonial.name}</h4>
-                  <p className="text-sm text-cosmic-indigo/60">{testimonial.location}</p>
+                <div className="text-center">
+                  <h4 className="text-2xl font-bold text-cosmic-indigo">{currentTestimonial.name}</h4>
+                  <p className="text-cosmic-indigo/60 text-lg">{currentTestimonial.location}</p>
                 </div>
-              </div>
-
-              {/* Decorative Elements */}
-              <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-30 transition-opacity">
-                <div className="w-16 h-16 border border-saffron/20 rounded-full"></div>
               </div>
             </div>
-          ))}
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-gradient-to-r from-saffron to-gold text-white rounded-full flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 cursor-pointer z-10"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 w-14 h-14 bg-gradient-to-r from-saffron to-gold text-white rounded-full flex items-center justify-center hover:shadow-xl transition-all hover:scale-110 cursor-pointer z-10"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Slide Indicators */}
+          <div className="flex justify-center gap-3 mt-8">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`w-4 h-4 rounded-full transition-all cursor-pointer ${
+                  index === currentSlide
+                    ? 'bg-gradient-to-r from-saffron to-gold shadow-lg scale-125'
+                    : 'bg-cosmic-indigo/30 hover:bg-cosmic-indigo/50'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Progress Bar */}
+          <div className="mt-6 max-w-md mx-auto">
+            <div className="h-2 bg-cosmic-indigo/20 rounded-full overflow-hidden">
+              <div 
+                className="h-full bg-gradient-to-r from-saffron to-gold transition-all duration-500 rounded-full"
+                style={{ width: `${((currentSlide + 1) / testimonials.length) * 100}%` }}
+              ></div>
+            </div>
+            <p className="text-center text-cosmic-indigo/60 text-sm mt-2">
+              {currentSlide + 1} of {testimonials.length}
+            </p>
+          </div>
         </div>
 
         {/* Call to Action */}
@@ -135,7 +209,7 @@ const Testimonials = () => {
             <p className="text-cosmic-indigo/70 mb-6">
               Join thousands who have discovered their true path through the wisdom of numbers
             </p>
-            <button className="bg-gradient-to-r from-saffron to-gold text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all">
+            <button className="bg-gradient-to-r from-saffron to-gold text-white px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transition-all cursor-pointer hover:scale-105 transform">
               Start Your Reading Now
             </button>
           </div>

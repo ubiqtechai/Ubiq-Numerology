@@ -42,7 +42,30 @@ img {
   transition: opacity 0.3s ease;
 }
 
-/* Custom Focus States */
+/* Enhanced Button Interactions */
+button {
+  cursor: pointer !important;
+  user-select: none;
+  position: relative;
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0px);
+}
+
+button:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.6;
+  transform: none !important;
+}
+
+/* Enhanced Focus States */
 button:focus,
 input:focus,
 select:focus {
@@ -136,26 +159,19 @@ select:focus {
   }
 }
 
-/* Ensure buttons are clickable and interactive */
-button {
-  cursor: pointer;
-  user-select: none;
-  position: relative;
-  z-index: 10;
+/* Enhanced Interactive Elements */
+.interactive-element {
+  cursor: pointer !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
+.interactive-element:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
 }
 
-/* Enhanced button hover states */
-button:hover {
-  transform: translateY(-2px);
-}
-
-button:active {
-  transform: translateY(0px);
+.interactive-element:active {
+  transform: scale(0.98);
 }
 
 /* Recording button specific styles */
@@ -242,4 +258,122 @@ button:active {
 /* Smooth transitions for modal background changes */
 .modal-transition {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced Chat Interface Styling */
+.chat-message-ai {
+  position: relative;
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.chat-message-ai::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, rgba(255, 153, 51, 0.3), rgba(228, 179, 67, 0.3), rgba(244, 194, 194, 0.3));
+  border-radius: inherit;
+  z-index: -1;
+  filter: blur(1px);
+}
+
+/* Dotted Animation */
+@keyframes dotted-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+.dotted-element {
+  animation: dotted-pulse 2s ease-in-out infinite;
+}
+
+/* Testimonial Slider Enhancements */
+.testimonial-slide {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.testimonial-slide.active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.testimonial-slide.inactive {
+  transform: scale(0.95);
+  opacity: 0.7;
+}
+
+/* Navigation Arrow Enhancements */
+.nav-arrow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 20px rgba(255, 153, 51, 0.3);
+}
+
+.nav-arrow:hover {
+  box-shadow: 0 8px 30px rgba(255, 153, 51, 0.5);
+  transform: scale(1.1) translateY(-2px);
+}
+
+/* Progress Bar Animation */
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--progress-width);
+  }
+}
+
+.progress-bar {
+  animation: progress-fill 0.5s ease-out;
+}
+
+/* Enhanced Link Interactions */
+a {
+  cursor: pointer !important;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  transform: translateY(-1px);
+}
+
+/* Accessibility Improvements */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .glassmorphic {
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #1A1A40;
+  }
+  
+  button {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Focus Visible for Better Accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid #FF9933;
+  outline-offset: 2px;
+  border-radius: 4px;
 }

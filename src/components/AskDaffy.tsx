@@ -3,7 +3,7 @@ import { Mic, MessageSquare, Download, Mail, RotateCcw, Lightbulb, Square, Send 
 
 const AskDaffy = () => {
   const [input, setInput] = useState('');
-  const [mode, setMode] = useState('voice'); // 'voice' or 'chat'
+  const [mode, setMode] = useState('chat'); // Changed from 'voice' to 'chat' as default
   const [isRecording, setIsRecording] = useState(false);
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }

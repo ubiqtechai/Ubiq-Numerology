@@ -20,31 +20,36 @@ const Calculators = () => {
   ];
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Submitting form with data:", formData);
+  e.preventDefault();
 
-    try {
-      const response = await fetch('https://adarsh030905.app.n8n.cloud/webhook/numerology-calc', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
+  const payload = {
+    fullName: formData.name,
+    dob: formData.birthDate,
+    gender: formData.gender,
+    calculatorType: selectedCalculator,
+  };
 
-      if (response.ok) {
-        console.log("Webhook call successful!");
-        setShowResults(true);
-      } else {
-        console.error("Webhook call failed.");
-      }
-    } catch (error) {
-      console.error("Error while calling webhook:", error);
+  console.log("Sending Payload:", payload);
+
+  try {
+    const response = await fetch('https://adarsh030905.app.n8n.cloud/webhook/numerology-calc', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      console.log("✅ Data sent successfully!");
+      setShowResults(true);
+    } else {
+      console.error("❌ Failed to send data to webhook.");
     }
-  };
-
-  const handleInputChange = (field, value) => {
-    console.log(`Input changed: ${field} =`, value);
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  } catch (error) {
+    console.error("❌ Error occurred while sending data:", error);
+  }
+};
 
   const closeModal = () => {
     console.log("Closing modal and resetting state.");

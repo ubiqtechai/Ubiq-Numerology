@@ -55,10 +55,29 @@
       }
     ];
 
-    const handleFormSubmit = (e) => {
-      e.preventDefault();
-      setShowResults(true);
-    };
+    const handleFormSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const response = await fetch('https://adarsh030905.app.n8n.cloud/webhook/numerology-calc', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (response.ok) {
+      console.log("Data sent successfully!");
+      setShowResults(true); // Show results only after successful post
+    } else {
+      console.error("Failed to send data to webhook.");
+    }
+  } catch (error) {
+    console.error("Error occurred while sending data:", error);
+  }
+};
+
 
     const handleInputChange = (field, value) => {
       setFormData(prev => ({

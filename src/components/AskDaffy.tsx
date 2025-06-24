@@ -105,22 +105,52 @@ const AskDaffy = () => {
                           ? 'bg-gradient-to-r from-saffron to-gold text-white'
                           : 'bg-white/25 text-cosmic-indigo border border-white/20'
                       }`}>
-                        {/* Enhanced AI Response with Dotted Elements */}
+                        {/* Enhanced AI Response with Comprehensive Dotted Elements */}
                         {message.type === 'assistant' && (
                           <>
-                            {/* Dotted border decoration */}
-                            <div className="absolute -top-1 -left-1 -right-1 -bottom-1 rounded-2xl border-2 border-dotted border-saffron/30 pointer-events-none"></div>
-                            {/* Corner dots */}
-                            <div className="absolute -top-2 -left-2 w-3 h-3 bg-saffron/60 rounded-full"></div>
-                            <div className="absolute -top-2 -right-2 w-2 h-2 bg-gold/60 rounded-full"></div>
-                            <div className="absolute -bottom-2 -left-2 w-2 h-2 bg-lotus-pink/60 rounded-full"></div>
-                            <div className="absolute -bottom-2 -right-2 w-3 h-3 bg-saffron/60 rounded-full"></div>
-                            {/* Floating dots */}
-                            <div className="absolute top-1 right-1 flex gap-1">
-                              <div className="w-1 h-1 bg-gold/40 rounded-full animate-pulse"></div>
-                              <div className="w-1 h-1 bg-saffron/40 rounded-full animate-pulse delay-200"></div>
-                              <div className="w-1 h-1 bg-lotus-pink/40 rounded-full animate-pulse delay-400"></div>
+                            {/* Primary dotted border decoration */}
+                            <div className="absolute -top-2 -left-2 -right-2 -bottom-2 rounded-2xl border-3 border-dotted border-saffron/40 pointer-events-none animate-pulse"></div>
+                            
+                            {/* Secondary outer dotted ring */}
+                            <div className="absolute -top-3 -left-3 -right-3 -bottom-3 rounded-2xl border-2 border-dotted border-gold/25 pointer-events-none"></div>
+                            
+                            {/* Corner accent dots */}
+                            <div className="absolute -top-3 -left-3 w-4 h-4 bg-saffron/70 rounded-full animate-pulse"></div>
+                            <div className="absolute -top-3 -right-3 w-3 h-3 bg-gold/70 rounded-full animate-pulse delay-300"></div>
+                            <div className="absolute -bottom-3 -left-3 w-3 h-3 bg-lotus-pink/70 rounded-full animate-pulse delay-600"></div>
+                            <div className="absolute -bottom-3 -right-3 w-4 h-4 bg-saffron/70 rounded-full animate-pulse delay-900"></div>
+                            
+                            {/* Side accent dots */}
+                            <div className="absolute top-1/2 -left-4 w-2 h-2 bg-gold/60 rounded-full animate-pulse delay-150 transform -translate-y-1/2"></div>
+                            <div className="absolute top-1/2 -right-4 w-2 h-2 bg-lotus-pink/60 rounded-full animate-pulse delay-450 transform -translate-y-1/2"></div>
+                            
+                            {/* Top and bottom accent dots */}
+                            <div className="absolute -top-4 left-1/2 w-2 h-2 bg-saffron/50 rounded-full animate-pulse delay-750 transform -translate-x-1/2"></div>
+                            <div className="absolute -bottom-4 left-1/2 w-2 h-2 bg-gold/50 rounded-full animate-pulse delay-1050 transform -translate-x-1/2"></div>
+                            
+                            {/* Inner floating dots pattern */}
+                            <div className="absolute top-2 right-2 flex gap-1">
+                              <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-pulse"></div>
+                              <div className="w-1.5 h-1.5 bg-saffron/50 rounded-full animate-pulse delay-200"></div>
+                              <div className="w-1.5 h-1.5 bg-lotus-pink/50 rounded-full animate-pulse delay-400"></div>
                             </div>
+                            
+                            {/* Bottom inner dots */}
+                            <div className="absolute bottom-2 left-2 flex gap-1">
+                              <div className="w-1 h-1 bg-saffron/40 rounded-full animate-pulse delay-100"></div>
+                              <div className="w-1 h-1 bg-gold/40 rounded-full animate-pulse delay-300"></div>
+                              <div className="w-1 h-1 bg-lotus-pink/40 rounded-full animate-pulse delay-500"></div>
+                            </div>
+                            
+                            {/* Mystical energy lines */}
+                            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-saffron/30 to-transparent opacity-50"></div>
+                            <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-gold/30 to-transparent opacity-50"></div>
+                            
+                            {/* Sacred geometry overlay */}
+                            <div className="absolute inset-1 rounded-xl border border-dotted border-lotus-pink/20 pointer-events-none"></div>
+                            
+                            {/* Spiritual aura effect */}
+                            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-saffron/10 via-gold/10 to-lotus-pink/10 blur-sm pointer-events-none animate-pulse"></div>
                           </>
                         )}
                         <p className="relative z-10">{message.content}</p>

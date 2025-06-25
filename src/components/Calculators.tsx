@@ -38,30 +38,22 @@ const Calculators = () => {
         })
       });
 
-      const data = await response.json();
+      const raw = await response.json();
+      console.log("✅ Webhook call successful!");
+      console.log("🔄 Full webhook response:", raw);
 
-      if (response.ok) {
-        console.log("✅ Webhook call successful!");
-        console.log("🔄 Full webhook response:", data);
+      if (raw.output) {
+        const parsed = JSON.parse(raw.output);
+        console.log("📌 Parsed Output:", parsed);
+        console.log("🔢 Number:", parsed.number);
+        console.log("📜 Message:", parsed.message);
 
-        if (data.soulUrgeNumber) console.log("💖 Soul Urge Number:", data.soulUrgeNumber);
-        if (data.expressionNumber) console.log("🎁 Expression Number:", data.expressionNumber);
-        if (data.birthdayNumber) console.log("🎂 Birthday Number:", data.birthdayNumber);
-        if (data.psychicNumber) console.log("🔮 Psychic Number:", data.psychicNumber);
-        if (data.nameNumber) console.log("🌟 Name Number:", data.nameNumber);
-        if (data.number) console.log("🔢 Number:", data.number);
-        if (data.message) console.log("📜 Message:", data.message);
-
-        Object.entries(data).forEach(([key, value]) => {
-          console.log(`📌 ${key}:`, value);
-        });
-
-        setResult(data);
+        setResult(parsed);
         setShowResults(true);
       } else {
-        console.error("❌ Webhook call failed with status:", response.status);
-        console.error("Error response:", data);
+        console.warn("⚠️ No 'output' field in webhook response");
       }
+
     } catch (error) {
       console.error("🚨 Error while calling webhook:", error);
     }
@@ -106,9 +98,7 @@ const Calculators = () => {
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <div className={`rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto border shadow-2xl transition-all duration-500 ${showResults ? 'bg-white border-gold/50 text-cosmic-indigo' : 'glassmorphic border-gold/30 bg-white/20 backdrop-blur-md'}`}>
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold text-cosmic-indigo">
-                  {calculators.find(c => c.id === selectedCalculator)?.title}
-                </h3>
+                <h3 className="text-2xl font-bold text-cosmic-indigo">{calculators.find(c => c.id === selectedCalculator)?.title}</h3>
                 <button onClick={closeModal} className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center font-bold transition-colors z-20">×</button>
               </div>
 
@@ -144,15 +134,12 @@ const Calculators = () => {
                     <h4 className="text-xl font-bold text-cosmic-indigo">
                       {calculators.find(c => c.id === selectedCalculator)?.title} Result
                     </h4>
-
                     {result.number && (
                       <p className="text-gold text-3xl">{result.number}</p>
                     )}
-
                     {result.message && (
                       <p className="text-cosmic-indigo/80">{result.message}</p>
                     )}
-
                     <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">
                       Close
                     </button>

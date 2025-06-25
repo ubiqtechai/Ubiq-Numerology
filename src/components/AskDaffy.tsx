@@ -56,6 +56,23 @@ const AskDaffy = () => {
     }
   };
 
+  // Function to highlight numerology keywords
+  const highlightNumerologyTerms = (text) => {
+    const numerologyKeywords = [
+      'life path', 'soul urge', 'expression', 'destiny', 'karmic', 'master number',
+      'numerology', 'vibration', 'chakra', 'spiritual', 'sacred', 'divine',
+      'energy', 'universe', 'manifestation', 'awakening', 'consciousness'
+    ];
+    
+    let highlightedText = text;
+    numerologyKeywords.forEach(keyword => {
+      const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+      highlightedText = highlightedText.replace(regex, `<span class="numerology-highlight">${keyword}</span>`);
+    });
+    
+    return highlightedText;
+  };
+
   return (
     <section id="ask-daffy" className="py-20 relative">
       <div className="container mx-auto px-6">
@@ -96,64 +113,92 @@ const AskDaffy = () => {
           {/* Chat Interface */}
           {mode === 'chat' && (
             <div className="glassmorphic rounded-3xl p-8 mb-8 border-2 border-gold/30 shadow-2xl bg-white/15 backdrop-blur-md">
-              <div className="bg-white/15 rounded-2xl p-6 h-96 overflow-y-auto mb-6 border-2 border-white/20 shadow-inner backdrop-blur-sm">
-                <div className="space-y-4">
+              <div className="bg-white/20 rounded-2xl p-6 h-96 overflow-y-auto mb-6 border-2 border-white/20 shadow-inner backdrop-blur-sm chat-container">
+                <div className="space-y-6">
                   {messages.map((message, index) => (
                     <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-md relative ${
+                      <div className={`max-w-xs lg:max-w-md relative ${
                         message.type === 'user'
-                          ? 'bg-gradient-to-r from-saffron to-gold text-white'
-                          : 'bg-white/25 text-cosmic-indigo border border-white/20'
+                          ? 'user-message'
+                          : 'ai-message'
                       }`}>
                         {/* Enhanced AI Response with Comprehensive Dotted Elements */}
                         {message.type === 'assistant' && (
                           <>
                             {/* Primary dotted border decoration */}
-                            <div className="absolute -top-2 -left-2 -right-2 -bottom-2 rounded-2xl border-3 border-dotted border-saffron/40 pointer-events-none animate-pulse"></div>
+                            <div className="absolute -top-3 -left-3 -right-3 -bottom-3 rounded-2xl border-3 border-dotted border-orange-accent/40 pointer-events-none animate-pulse"></div>
                             
                             {/* Secondary outer dotted ring */}
-                            <div className="absolute -top-3 -left-3 -right-3 -bottom-3 rounded-2xl border-2 border-dotted border-gold/25 pointer-events-none"></div>
+                            <div className="absolute -top-4 -left-4 -right-4 -bottom-4 rounded-2xl border-2 border-dotted border-orange-primary/25 pointer-events-none"></div>
                             
                             {/* Corner accent dots */}
-                            <div className="absolute -top-3 -left-3 w-4 h-4 bg-saffron/70 rounded-full animate-pulse"></div>
-                            <div className="absolute -top-3 -right-3 w-3 h-3 bg-gold/70 rounded-full animate-pulse delay-300"></div>
-                            <div className="absolute -bottom-3 -left-3 w-3 h-3 bg-lotus-pink/70 rounded-full animate-pulse delay-600"></div>
-                            <div className="absolute -bottom-3 -right-3 w-4 h-4 bg-saffron/70 rounded-full animate-pulse delay-900"></div>
+                            <div className="absolute -top-3 -left-3 w-4 h-4 bg-orange-accent/70 rounded-full animate-pulse"></div>
+                            <div className="absolute -top-3 -right-3 w-3 h-3 bg-orange-primary/70 rounded-full animate-pulse delay-300"></div>
+                            <div className="absolute -bottom-3 -left-3 w-3 h-3 bg-orange-accent/60 rounded-full animate-pulse delay-600"></div>
+                            <div className="absolute -bottom-3 -right-3 w-4 h-4 bg-orange-primary/70 rounded-full animate-pulse delay-900"></div>
                             
                             {/* Side accent dots */}
-                            <div className="absolute top-1/2 -left-4 w-2 h-2 bg-gold/60 rounded-full animate-pulse delay-150 transform -translate-y-1/2"></div>
-                            <div className="absolute top-1/2 -right-4 w-2 h-2 bg-lotus-pink/60 rounded-full animate-pulse delay-450 transform -translate-y-1/2"></div>
+                            <div className="absolute top-1/2 -left-4 w-2 h-2 bg-orange-primary/60 rounded-full animate-pulse delay-150 transform -translate-y-1/2"></div>
+                            <div className="absolute top-1/2 -right-4 w-2 h-2 bg-orange-accent/60 rounded-full animate-pulse delay-450 transform -translate-y-1/2"></div>
                             
                             {/* Top and bottom accent dots */}
-                            <div className="absolute -top-4 left-1/2 w-2 h-2 bg-saffron/50 rounded-full animate-pulse delay-750 transform -translate-x-1/2"></div>
-                            <div className="absolute -bottom-4 left-1/2 w-2 h-2 bg-gold/50 rounded-full animate-pulse delay-1050 transform -translate-x-1/2"></div>
+                            <div className="absolute -top-4 left-1/2 w-2 h-2 bg-orange-accent/50 rounded-full animate-pulse delay-750 transform -translate-x-1/2"></div>
+                            <div className="absolute -bottom-4 left-1/2 w-2 h-2 bg-orange-primary/50 rounded-full animate-pulse delay-1050 transform -translate-x-1/2"></div>
                             
                             {/* Inner floating dots pattern */}
                             <div className="absolute top-2 right-2 flex gap-1">
-                              <div className="w-1.5 h-1.5 bg-gold/50 rounded-full animate-pulse"></div>
-                              <div className="w-1.5 h-1.5 bg-saffron/50 rounded-full animate-pulse delay-200"></div>
-                              <div className="w-1.5 h-1.5 bg-lotus-pink/50 rounded-full animate-pulse delay-400"></div>
+                              <div className="w-1.5 h-1.5 bg-orange-primary/50 rounded-full animate-pulse"></div>
+                              <div className="w-1.5 h-1.5 bg-orange-accent/50 rounded-full animate-pulse delay-200"></div>
+                              <div className="w-1.5 h-1.5 bg-orange-primary/40 rounded-full animate-pulse delay-400"></div>
                             </div>
                             
                             {/* Bottom inner dots */}
                             <div className="absolute bottom-2 left-2 flex gap-1">
-                              <div className="w-1 h-1 bg-saffron/40 rounded-full animate-pulse delay-100"></div>
-                              <div className="w-1 h-1 bg-gold/40 rounded-full animate-pulse delay-300"></div>
-                              <div className="w-1 h-1 bg-lotus-pink/40 rounded-full animate-pulse delay-500"></div>
+                              <div className="w-1 h-1 bg-orange-accent/40 rounded-full animate-pulse delay-100"></div>
+                              <div className="w-1 h-1 bg-orange-primary/40 rounded-full animate-pulse delay-300"></div>
+                              <div className="w-1 h-1 bg-orange-accent/30 rounded-full animate-pulse delay-500"></div>
                             </div>
                             
                             {/* Mystical energy lines */}
-                            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-saffron/30 to-transparent opacity-50"></div>
-                            <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-gold/30 to-transparent opacity-50"></div>
+                            <div className="absolute top-0 left-1/4 w-px h-full bg-gradient-to-b from-transparent via-orange-accent/30 to-transparent opacity-50"></div>
+                            <div className="absolute top-0 right-1/4 w-px h-full bg-gradient-to-b from-transparent via-orange-primary/30 to-transparent opacity-50"></div>
                             
                             {/* Sacred geometry overlay */}
-                            <div className="absolute inset-1 rounded-xl border border-dotted border-lotus-pink/20 pointer-events-none"></div>
+                            <div className="absolute inset-1 rounded-xl border border-dotted border-orange-accent/20 pointer-events-none"></div>
                             
                             {/* Spiritual aura effect */}
-                            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-saffron/10 via-gold/10 to-lotus-pink/10 blur-sm pointer-events-none animate-pulse"></div>
+                            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-orange-accent/10 via-orange-primary/10 to-orange-accent/10 blur-sm pointer-events-none animate-pulse"></div>
                           </>
                         )}
-                        <p className="relative z-10">{message.content}</p>
+                        
+                        <div className="message-content relative z-10">
+                          {message.type === 'assistant' && (
+                            <div className="flex items-center gap-2 mb-2">
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-orange-primary to-orange-accent flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">D</span>
+                              </div>
+                              <span className="topic-title">✨ Daffy's Insight</span>
+                            </div>
+                          )}
+                          
+                          {message.type === 'user' && (
+                            <div className="flex items-center gap-2 mb-2 justify-end">
+                              <span className="topic-title text-user-primary">🙏 Your Question</span>
+                              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-user-primary to-user-secondary flex items-center justify-center">
+                                <span className="text-white text-xs font-bold">Y</span>
+                              </div>
+                            </div>
+                          )}
+                          
+                          <div 
+                            className="message-text"
+                            dangerouslySetInnerHTML={{ 
+                              __html: message.type === 'assistant' 
+                                ? highlightNumerologyTerms(message.content)
+                                : message.content 
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -167,12 +212,12 @@ const AskDaffy = () => {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ask Daffy about your numbers, destiny, or spiritual path..."
-                  className="flex-1 px-6 py-4 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo placeholder-cosmic-indigo/60 focus:outline-none focus:border-gold focus:bg-white/30 shadow-inner transition-all"
+                  className="flex-1 px-6 py-4 rounded-full bg-white/25 border-2 border-orange-primary/40 text-primary-text placeholder-muted-text focus:outline-none focus:border-orange-primary focus:bg-white/35 shadow-inner transition-all modern-input"
                 />
                 <button
                   onClick={handleSend}
                   disabled={!input.trim()}
-                  className="bg-gradient-to-r from-saffron to-gold text-white px-8 py-4 rounded-full hover:shadow-xl transition-all font-bold transform hover:scale-105 hover:from-gold hover:to-saffron disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer"
+                  className="bg-gradient-to-r from-orange-primary to-orange-accent text-white px-8 py-4 rounded-full hover:shadow-xl transition-all font-bold transform hover:scale-105 hover:from-orange-accent hover:to-orange-primary disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer modern-button"
                 >
                   <Send className="w-5 h-5" />
                 </button>

@@ -38,22 +38,17 @@ const Calculators = () => {
         })
       });
 
-      const raw = await response.json();
-      console.log("✅ Webhook call successful!");
-      console.log("🔄 Full webhook response:", raw);
+      const data = await response.json();
+      console.log("✅ Webhook call successful!", data);
 
-      if (raw.output) {
-        const parsed = JSON.parse(raw.output);
+      if (data.output) {
+        const parsed = JSON.parse(data.output);
         console.log("📌 Parsed Output:", parsed);
-        console.log("🔢 Number:", parsed.number);
-        console.log("📜 Message:", parsed.message);
-
         setResult(parsed);
         setShowResults(true);
       } else {
-        console.warn("⚠️ No 'output' field in webhook response");
+        console.warn("⚠️ No 'output' field found in response.");
       }
-
     } catch (error) {
       console.error("🚨 Error while calling webhook:", error);
     }
@@ -68,6 +63,47 @@ const Calculators = () => {
     setShowResults(false);
     setResult(null);
     setFormData({ name: '', birthDate: '', gender: '' });
+  };
+
+  const renderResult = () => {
+    if (!result) return null;
+
+    if (selectedCalculator === 'full-report') {
+      return (
+        <div className="text-left space-y-4">
+          {result.nameNumber && (
+            <div><strong>Name Number:</strong> {result.nameNumber}</div>
+          )}
+          {result.expressionNumber && (
+            <div><strong>Expression Number:</strong> {result.expressionNumber}</div>
+          )}
+          {result.soulUrgeNumber && (
+            <div><strong>Soul Urge Number:</strong> {result.soulUrgeNumber}</div>
+          )}
+          {result.psychicNumber && (
+            <div><strong>Psychic Number:</strong> {result.psychicNumber}</div>
+          )}
+          {result.birthdayNumber && (
+            <div><strong>Birthday Number:</strong> {result.birthdayNumber}</div>
+          )}
+          {result.message && (
+            <div className="mt-4 text-cosmic-indigo/80">{result.message}</div>
+          )}
+        </div>
+      );
+    }
+
+    // For individual calculators
+    return (
+      <div className="text-center space-y-4">
+        {result.number && (
+          <p className="text-gold text-3xl font-bold">{result.number}</p>
+        )}
+        {result.message && (
+          <p className="text-cosmic-indigo/80">{result.message}</p>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -129,22 +165,12 @@ const Calculators = () => {
                   <button type="submit" className="w-full bg-gradient-to-r from-saffron to-gold text-white py-4 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105 hover:from-gold hover:to-saffron z-10 relative">Calculate & Get Results</button>
                 </form>
               ) : (
-                result && (
-                  <div className="text-center space-y-4">
-                    <h4 className="text-xl font-bold text-cosmic-indigo">
-                      {calculators.find(c => c.id === selectedCalculator)?.title} Result
-                    </h4>
-                    {result.number && (
-                      <p className="text-gold text-3xl">{result.number}</p>
-                    )}
-                    {result.message && (
-                      <p className="text-cosmic-indigo/80">{result.message}</p>
-                    )}
-                    <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">
-                      Close
-                    </button>
-                  </div>
-                )
+                <div className="mt-4">
+                  {renderResult()}
+                  <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">
+                    Close
+                  </button>
+                </div>
               )}
             </div>
           </div>

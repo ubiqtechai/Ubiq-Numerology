@@ -20,26 +20,31 @@ const Calculators = () => {
   ];
 
   const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Submitting form with data:", formData);
+  e.preventDefault();
+  console.log("Submitting form with data:", formData);
 
-    try {
-      const response = await fetch('https://adarsh030905.app.n8n.cloud/webhook/numerology-calc', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
+  try {
+    const response = await fetch('https://adarsh030905.app.n8n.cloud/webhook/numerology-calc', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(formData)
+    });
 
-      if (response.ok) {
-        console.log("Webhook call successful!");
-        setShowResults(true);
-      } else {
-        console.error("Webhook call failed.");
-      }
-    } catch (error) {
-      console.error("Error while calling webhook:", error);
+    const data = await response.json(); // 👈 Read response body as JSON
+
+    if (response.ok) {
+      console.log("Webhook call successful!");
+      console.log("Webhook response:", data); // 👈 Console the actual result
+      setShowResults(true);
+      // You can also store this in state if needed: setResults(data);
+    } else {
+      console.error("Webhook call failed with status:", response.status);
+      console.error("Error response:", data); // 👈 Show error body if any
     }
-  };
+  } catch (error) {
+    console.error("Error while calling webhook:", error);
+  }
+};
 
   const handleInputChange = (field, value) => {
     console.log(`Input changed: ${field} =`, value);

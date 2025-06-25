@@ -43,7 +43,7 @@ const Calculators = () => {
       if (response.ok) {
         console.log("Webhook call successful!");
         console.log("Webhook response:", data);
-        setResult(data);
+        setResult(data); // Store the full result object
         setShowResults(true);
       } else {
         console.error("Webhook call failed with status:", response.status);
@@ -93,7 +93,7 @@ const Calculators = () => {
 
         {selectedCalculator && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className={`rounded-3xl p-8 max-w-md w-full max-h-96 overflow-y-auto border shadow-2xl transition-all duration-500 ${showResults ? 'bg-white border-gold/50 text-cosmic-indigo' : 'glassmorphic border-gold/30 bg-white/20 backdrop-blur-md'}`}>
+            <div className={`rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto border shadow-2xl transition-all duration-500 ${showResults ? 'bg-white border-gold/50 text-cosmic-indigo' : 'glassmorphic border-gold/30 bg-white/20 backdrop-blur-md'}`}>
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-2xl font-bold text-cosmic-indigo">{calculators.find(c => c.id === selectedCalculator)?.title}</h3>
                 <button onClick={closeModal} className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center font-bold transition-colors z-20">×</button>
@@ -128,10 +128,40 @@ const Calculators = () => {
               ) : (
                 result && (
                   <div className="text-center space-y-4">
-                    <p className="text-xl font-bold text-cosmic-indigo mb-2">
-                      Your Number: <span className="text-gold text-3xl">{result.number}</span>
-                    </p>
-                    <p className="text-cosmic-indigo/80">{result.message}</p>
+                    {result.soulUrgeNumber && (
+                      <div>
+                        <h4 className="text-xl font-bold text-cosmic-indigo">Soul Urge Number</h4>
+                        <p className="text-gold text-3xl">{result.soulUrgeNumber}</p>
+                      </div>
+                    )}
+                    {result.expressionNumber && (
+                      <div>
+                        <h4 className="text-xl font-bold text-cosmic-indigo">Expression Number</h4>
+                        <p className="text-gold text-3xl">{result.expressionNumber}</p>
+                      </div>
+                    )}
+                    {result.birthdayNumber && (
+                      <div>
+                        <h4 className="text-xl font-bold text-cosmic-indigo">Birthday Number</h4>
+                        <p className="text-gold text-3xl">{result.birthdayNumber}</p>
+                      </div>
+                    )}
+                    {result.psychicNumber && (
+                      <div>
+                        <h4 className="text-xl font-bold text-cosmic-indigo">Psychic Number</h4>
+                        <p className="text-gold text-3xl">{result.psychicNumber}</p>
+                      </div>
+                    )}
+                    {result.nameNumber && (
+                      <div>
+                        <h4 className="text-xl font-bold text-cosmic-indigo">Name Number</h4>
+                        <p className="text-gold text-3xl">{result.nameNumber}</p>
+                      </div>
+                    )}
+                    {result.message && (
+                      <p className="text-cosmic-indigo/80">{result.message}</p>
+                    )}
+
                     <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">
                       Close
                     </button>

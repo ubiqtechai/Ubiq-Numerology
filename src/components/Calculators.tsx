@@ -48,7 +48,6 @@ const Calculators = () => {
 };
 
 
-i have to replace with this?
   const handleInputChange = (field, value) => {
     console.log(`Input changed: ${field} =`, value);
     setFormData(prev => ({ ...prev, [field]: value }));

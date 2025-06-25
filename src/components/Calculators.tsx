@@ -24,7 +24,7 @@ const Calculators = () => {
   console.log("Submitting form with data:", formData);
 
   try {
-    const response = await fetch('https://adarsh030905.app.n8n.cloud/webhook/numerology-calc', {
+    const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)

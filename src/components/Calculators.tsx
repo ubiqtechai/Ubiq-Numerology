@@ -97,34 +97,25 @@ const handleFormSubmit = async (e) => {
               </div>
 
               {!showResults ? (
-                <form onSubmit={handleFormSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-cosmic-indigo font-semibold mb-2">Full Name</label>
-                    <input type="text" placeholder="Enter your full name" value={formData.name} onChange={(e) => handleInputChange('name', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo placeholder-cosmic-indigo/60 focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required />
-                  </div>
+  <form onSubmit={handleFormSubmit} className="space-y-4">
+    {/* your form fields here */}
+  </form>
+) : (
+  // ✅ Show this result block instead of plain message
+  <div className="text-center">
+    <p className="text-xl font-bold text-cosmic-indigo mb-2">
+      Your Number: <span className="text-gold text-3xl">{result.number}</span>
+    </p>
+    <p className="text-cosmic-indigo/80">{result.message}</p>
+    <button
+      onClick={closeModal}
+      className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105"
+    >
+      Close
+    </button>
+  </div>
+)}
 
-                  {selectedCalculator !== 'psychic' && (
-                    <div>
-                      <label className="block text-cosmic-indigo font-semibold mb-2">Date of Birth</label>
-                      <input type="date" value={formData.birthDate} onChange={(e) => handleInputChange('birthDate', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required />
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-cosmic-indigo font-semibold mb-2">Gender</label>
-                    <select value={formData.gender} onChange={(e) => handleInputChange('gender', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required>
-                      <option value="">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <button type="submit" className="w-full bg-gradient-to-r from-saffron to-gold text-white py-4 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105 hover:from-gold hover:to-saffron z-10 relative">Calculate & Get Results</button>
-                </form>
-              ) : (
-                <div className="text-center">✅ Results received! You can now close this window.</div>
-              )}
             </div>
           </div>
         )}

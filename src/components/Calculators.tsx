@@ -22,7 +22,7 @@ const Calculators = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting form with data:", formData);
+    console.log("📨 Submitting form with data:", formData);
 
     try {
       const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
@@ -41,26 +41,40 @@ const Calculators = () => {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Webhook call successful!");
-        console.log("Webhook response:", data);
-        setResult(data); // Store the full result object
+        console.log("✅ Webhook call successful!");
+        console.log("🔄 Full webhook response:", data);
+
+        // Log individual known result fields
+        if (data.soulUrgeNumber) console.log("💖 Soul Urge Number:", data.soulUrgeNumber);
+        if (data.expressionNumber) console.log("🎁 Expression Number:", data.expressionNumber);
+        if (data.birthdayNumber) console.log("🎂 Birthday Number:", data.birthdayNumber);
+        if (data.psychicNumber) console.log("🔮 Psychic Number:", data.psychicNumber);
+        if (data.nameNumber) console.log("🌟 Name Number:", data.nameNumber);
+        if (data.message) console.log("📜 Message:", data.message);
+
+        // Log all key-value pairs for fallback debugging
+        Object.entries(data).forEach(([key, value]) => {
+          console.log(`📌 ${key}:`, value);
+        });
+
+        setResult(data);
         setShowResults(true);
       } else {
-        console.error("Webhook call failed with status:", response.status);
+        console.error("❌ Webhook call failed with status:", response.status);
         console.error("Error response:", data);
       }
     } catch (error) {
-      console.error("Error while calling webhook:", error);
+      console.error("🚨 Error while calling webhook:", error);
     }
   };
 
   const handleInputChange = (field, value) => {
-    console.log(`Input changed: ${field} =`, value);
+    console.log(`✏️ Input changed: ${field} =`, value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const closeModal = () => {
-    console.log("Closing modal and resetting state.");
+    console.log("🛑 Closing modal and resetting state.");
     setSelectedCalculator(null);
     setShowResults(false);
     setResult(null);

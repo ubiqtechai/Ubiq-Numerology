@@ -20,7 +20,7 @@ const Calculators = () => {
     { id: 'full-report', title: 'Full Numerology Report', description: 'Complete analysis with Vedic remedies', icon: FileText, color: 'from-gold to-cosmic-indigo' }
   ];
 
-const handleFormSubmit = async (e) => {
+  const handleFormSubmit = async (e) => {
   e.preventDefault();
   console.log("Submitting form with data:", formData);
 
@@ -28,30 +28,27 @@ const handleFormSubmit = async (e) => {
     const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fullName: formData.name,
-        dob: formData.birthDate,
-        gender: formData.gender,
-        calculatorType: selectedCalculator // 👈 include selected calculator type
-      })
+      body: JSON.stringify(formData)
     });
 
-    const data = await response.json();
+    const data = await response.json(); // 👈 Read response body as JSON
 
     if (response.ok) {
       console.log("Webhook call successful!");
-      console.log("Webhook response:", data);
-      setResult(data);         // 👈 Save the result to state
-      setShowResults(true);    // 👈 Trigger result UI
+      console.log("Webhook response:", data); // 👈 Console the actual result
+      setShowResults(true);
+      // You can also store this in state if needed: setResults(data);
     } else {
       console.error("Webhook call failed with status:", response.status);
-      console.error("Error response:", data);
+      console.error("Error response:", data); // 👈 Show error body if any
     }
   } catch (error) {
     console.error("Error while calling webhook:", error);
   }
 };
 
+
+i have to replace with this?
   const handleInputChange = (field, value) => {
     console.log(`Input changed: ${field} =`, value);
     setFormData(prev => ({ ...prev, [field]: value }));

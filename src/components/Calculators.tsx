@@ -44,15 +44,14 @@ const Calculators = () => {
         console.log("✅ Webhook call successful!");
         console.log("🔄 Full webhook response:", data);
 
-        // Log individual known result fields
         if (data.soulUrgeNumber) console.log("💖 Soul Urge Number:", data.soulUrgeNumber);
         if (data.expressionNumber) console.log("🎁 Expression Number:", data.expressionNumber);
         if (data.birthdayNumber) console.log("🎂 Birthday Number:", data.birthdayNumber);
         if (data.psychicNumber) console.log("🔮 Psychic Number:", data.psychicNumber);
         if (data.nameNumber) console.log("🌟 Name Number:", data.nameNumber);
+        if (data.number) console.log("🔢 Number:", data.number);
         if (data.message) console.log("📜 Message:", data.message);
 
-        // Log all key-value pairs for fallback debugging
         Object.entries(data).forEach(([key, value]) => {
           console.log(`📌 ${key}:`, value);
         });
@@ -69,12 +68,10 @@ const Calculators = () => {
   };
 
   const handleInputChange = (field, value) => {
-    console.log(`✏️ Input changed: ${field} =`, value);
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const closeModal = () => {
-    console.log("🛑 Closing modal and resetting state.");
     setSelectedCalculator(null);
     setShowResults(false);
     setResult(null);
@@ -109,7 +106,9 @@ const Calculators = () => {
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
             <div className={`rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto border shadow-2xl transition-all duration-500 ${showResults ? 'bg-white border-gold/50 text-cosmic-indigo' : 'glassmorphic border-gold/30 bg-white/20 backdrop-blur-md'}`}>
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-2xl font-bold text-cosmic-indigo">{calculators.find(c => c.id === selectedCalculator)?.title}</h3>
+                <h3 className="text-2xl font-bold text-cosmic-indigo">
+                  {calculators.find(c => c.id === selectedCalculator)?.title}
+                </h3>
                 <button onClick={closeModal} className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center font-bold transition-colors z-20">×</button>
               </div>
 
@@ -142,36 +141,14 @@ const Calculators = () => {
               ) : (
                 result && (
                   <div className="text-center space-y-4">
-                    {result.soulUrgeNumber && (
-                      <div>
-                        <h4 className="text-xl font-bold text-cosmic-indigo">Soul Urge Number</h4>
-                        <p className="text-gold text-3xl">{result.soulUrgeNumber}</p>
-                      </div>
+                    <h4 className="text-xl font-bold text-cosmic-indigo">
+                      {calculators.find(c => c.id === selectedCalculator)?.title} Result
+                    </h4>
+
+                    {result.number && (
+                      <p className="text-gold text-3xl">{result.number}</p>
                     )}
-                    {result.expressionNumber && (
-                      <div>
-                        <h4 className="text-xl font-bold text-cosmic-indigo">Expression Number</h4>
-                        <p className="text-gold text-3xl">{result.expressionNumber}</p>
-                      </div>
-                    )}
-                    {result.birthdayNumber && (
-                      <div>
-                        <h4 className="text-xl font-bold text-cosmic-indigo">Birthday Number</h4>
-                        <p className="text-gold text-3xl">{result.birthdayNumber}</p>
-                      </div>
-                    )}
-                    {result.psychicNumber && (
-                      <div>
-                        <h4 className="text-xl font-bold text-cosmic-indigo">Psychic Number</h4>
-                        <p className="text-gold text-3xl">{result.psychicNumber}</p>
-                      </div>
-                    )}
-                    {result.nameNumber && (
-                      <div>
-                        <h4 className="text-xl font-bold text-cosmic-indigo">Name Number</h4>
-                        <p className="text-gold text-3xl">{result.nameNumber}</p>
-                      </div>
-                    )}
+
                     {result.message && (
                       <p className="text-cosmic-indigo/80">{result.message}</p>
                     )}

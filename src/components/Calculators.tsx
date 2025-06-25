@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Star, Heart, Calendar, Gift, FileText } from 'lucide-react';
-const [result, setResult] = useState(null);
 
 const Calculators = () => {
   const [selectedCalculator, setSelectedCalculator] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [result, setResult] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     birthDate: '',
@@ -21,32 +21,38 @@ const Calculators = () => {
   ];
 
   const handleFormSubmit = async (e) => {
-  e.preventDefault();
-  console.log("Submitting form with data:", formData);
+    e.preventDefault();
+    console.log("Submitting form with data:", formData);
 
-  try {
-    const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    });
+    try {
+      const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.name,
+          dob: formData.birthDate,
+          gender: formData.gender,
+          calculatorType: selectedCalculator,
+          language: 'hinglish',
+          message: 'After doing calculations based on rules, give the result in its relevant variable name like soulUrgeNumber, expressionNumber, etc., along with a meaningful message. Return both as a response to the webhook.'
+        })
+      });
 
-    const data = await response.json(); // 👈 Read response body as JSON
+      const data = await response.json();
 
-    if (response.ok) {
-      console.log("Webhook call successful!");
-      console.log("Webhook response:", data); // 👈 Console the actual result
-      setShowResults(true);
-      // You can also store this in state if needed: setResults(data);
-    } else {
-      console.error("Webhook call failed with status:", response.status);
-      console.error("Error response:", data); // 👈 Show error body if any
+      if (response.ok) {
+        console.log("Webhook call successful!");
+        console.log("Webhook response:", data);
+        setResult(data);
+        setShowResults(true);
+      } else {
+        console.error("Webhook call failed with status:", response.status);
+        console.error("Error response:", data);
+      }
+    } catch (error) {
+      console.error("Error while calling webhook:", error);
     }
-  } catch (error) {
-    console.error("Error while calling webhook:", error);
-  }
-};
-
+  };
 
   const handleInputChange = (field, value) => {
     console.log(`Input changed: ${field} =`, value);
@@ -57,6 +63,7 @@ const Calculators = () => {
     console.log("Closing modal and resetting state.");
     setSelectedCalculator(null);
     setShowResults(false);
+    setResult(null);
     setFormData({ name: '', birthDate: '', gender: '' });
   };
 
@@ -119,7 +126,17 @@ const Calculators = () => {
                   <button type="submit" className="w-full bg-gradient-to-r from-saffron to-gold text-white py-4 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105 hover:from-gold hover:to-saffron z-10 relative">Calculate & Get Results</button>
                 </form>
               ) : (
-                <div className="text-center">✅ Results received! You can now close this window.</div>
+                result && (
+                  <div className="text-center space-y-4">
+                    <p className="text-xl font-bold text-cosmic-indigo mb-2">
+                      Your Number: <span className="text-gold text-3xl">{result.number}</span>
+                    </p>
+                    <p className="text-cosmic-indigo/80">{result.message}</p>
+                    <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">
+                      Close
+                    </button>
+                  </div>
+                )
               )}
             </div>
           </div>

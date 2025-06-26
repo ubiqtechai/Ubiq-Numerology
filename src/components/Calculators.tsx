@@ -15,7 +15,7 @@ const Calculators = () => {
     { id: 'name', title: 'Name Numerology', description: 'Discover the vibrational energy of your name', icon: Star, color: 'from-saffron to-gold' },
     { id: 'expression', title: 'Expression Number', description: 'Reveal your natural talents and abilities', icon: Gift, color: 'from-lotus-pink to-saffron' },
     { id: 'soul-urge', title: 'Soul Urge Number', description: 'Understand your deepest desires and motivations', icon: Heart, color: 'from-gold to-lotus-pink' },
-    { id: 'psychic', title: 'Psychic Number', description: 'Your spiritual connection and intuitive gifts', icon: Star, color: 'from-cosmic-indigo to-saffron' },
+    { id: 'psychic', title: 'Psychic Number', description: 'Your personality and how others perceive you', icon: Star, color: 'from-cosmic-indigo to-saffron' },
     { id: 'birthday', title: 'Birthday Number', description: 'The influence of your birth date on your destiny', icon: Calendar, color: 'from-saffron to-lotus-pink' },
     { id: 'full-report', title: 'Full Numerology Report', description: 'Complete analysis with Vedic remedies', icon: FileText, color: 'from-gold to-cosmic-indigo' }
   ];
@@ -42,16 +42,12 @@ const Calculators = () => {
       console.log("✅ Webhook call successful!");
       console.log("🔄 Full webhook response:", raw);
 
-      if (raw.output) {
-        const parsed = JSON.parse(raw.output);
-        console.log("📌 Parsed Output:", parsed);
-        console.log("🔢 Number:", parsed.number);
-        console.log("📜 Message:", parsed.message);
-
-        setResult(parsed);
+      if (raw[selectedCalculator + 'Number'] || raw.expressionNumber || raw.fullNumerologyReport) {
+        const singleResult = raw[selectedCalculator + 'Number'] || raw.expressionNumber;
+        setResult(singleResult || raw.fullNumerologyReport);
         setShowResults(true);
       } else {
-        console.warn("⚠️ No 'output' field in webhook response");
+        console.warn("⚠️ No expected result field found in webhook response");
       }
 
     } catch (error) {
@@ -109,7 +105,7 @@ const Calculators = () => {
                     <input type="text" placeholder="Enter your full name" value={formData.name} onChange={(e) => handleInputChange('name', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo placeholder-cosmic-indigo/60 focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required />
                   </div>
 
-                  {selectedCalculator !== 'psychic' && (
+                  {selectedCalculator !== 'name' && (
                     <div>
                       <label className="block text-cosmic-indigo font-semibold mb-2">Date of Birth</label>
                       <input type="date" value={formData.birthDate} onChange={(e) => handleInputChange('birthDate', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required />
@@ -140,6 +136,11 @@ const Calculators = () => {
                     {result.message && (
                       <p className="text-cosmic-indigo/80">{result.message}</p>
                     )}
+                    {selectedCalculator === 'full-report' && (
+                      <pre className="text-left text-sm text-cosmic-indigo/70 whitespace-pre-wrap">
+                        {JSON.stringify(result, null, 2)}
+                      </pre>
+                    )}
                     <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">
                       Close
                     </button>
@@ -155,5 +156,3 @@ const Calculators = () => {
 };
 
 export default Calculators;
-
-

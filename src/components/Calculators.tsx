@@ -53,20 +53,15 @@ const Calculators = () => {
       console.log("📊 Full report selected. Setting full data.");
       setResult(parsedData);
     } else {
-      const singleResult = 
-        parsedData[selectedCalculator + 'Number'] ||
-        parsedData.expressionNumber ||
-        parsedData.nameNumerology ||
-        parsedData.soulUrgeNumber ||
-        parsedData.psychicNumber ||
-        parsedData.birthdayNumber;
-
+      const singleResult = parsedData;
       console.log("🔢 Extracted single result:", singleResult);
 
-      if (!singleResult) {
-        console.warn("⚠️ Could not find specific number field. Check webhook response keys.");
+      if (!singleResult?.number || !singleResult?.message) {
+    console.warn("⚠️ Could not find expected fields: number or essage.");
       }
 
+  setResult(singleResult);
+}
       setResult(singleResult);
     }
 

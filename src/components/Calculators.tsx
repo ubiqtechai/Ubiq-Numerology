@@ -31,15 +31,13 @@ const Calculators = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fullName: formData.name,
-          dob: formData.birthDate,
-          gender: formData.gender,
-          calculatorType: selectedCalculator,
-          language: 'hinglish',
-          message: 'After doing calculations based on rules, give the result in its relevant variable name like soulUrgeNumber, expressionNumber, etc., along with a meaningful message. Return both as a response to the webhook.'
-        })
-      });
-
+  fullName: formData.name,
+  ...(selectedCalculator !== 'name' && { dob: formData.birthDate }),
+  gender: formData.gender,
+  calculatorType: selectedCalculator,
+  language: 'hinglish',
+  message: 'After doing calculations based on rules, give the result in its relevant variable name like soulUrgeNumber, expressionNumber, etc., along with a meaningful message. Return both as a response to the webhook.'
+})
       const raw = await response.json();
       console.log("✅ Webhook call successful!");
       console.log("🔄 Full webhook response:", raw);

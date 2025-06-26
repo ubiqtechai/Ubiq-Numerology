@@ -22,6 +22,8 @@ const Calculators = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    console.log("📨 Submitting form with data:", formData);
+
     try {
       const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
         method: 'POST',
@@ -37,11 +39,21 @@ const Calculators = () => {
       });
 
       const raw = await response.json();
+      console.log("✅ Webhook call successful!");
+      console.log("🔄 Full webhook response:", raw);
+
       if (raw.output) {
         const parsed = JSON.parse(raw.output);
+        console.log("📌 Parsed Output:", parsed);
+        console.log("🔢 Number:", parsed.number);
+        console.log("📜 Message:", parsed.message);
+
         setResult(parsed);
         setShowResults(true);
+      } else {
+        console.warn("⚠️ No 'output' field in webhook response");
       }
+
     } catch (error) {
       console.error("🚨 Error while calling webhook:", error);
     }
@@ -96,12 +108,14 @@ const Calculators = () => {
                     <label className="block text-cosmic-indigo font-semibold mb-2">Full Name</label>
                     <input type="text" placeholder="Enter your full name" value={formData.name} onChange={(e) => handleInputChange('name', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo placeholder-cosmic-indigo/60 focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required />
                   </div>
+
                   {selectedCalculator !== 'psychic' && (
                     <div>
                       <label className="block text-cosmic-indigo font-semibold mb-2">Date of Birth</label>
                       <input type="date" value={formData.birthDate} onChange={(e) => handleInputChange('birthDate', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required />
                     </div>
                   )}
+
                   <div>
                     <label className="block text-cosmic-indigo font-semibold mb-2">Gender</label>
                     <select value={formData.gender} onChange={(e) => handleInputChange('gender', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required>
@@ -111,53 +125,24 @@ const Calculators = () => {
                       <option value="other">Other</option>
                     </select>
                   </div>
+
                   <button type="submit" className="w-full bg-gradient-to-r from-saffron to-gold text-white py-4 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105 hover:from-gold hover:to-saffron z-10 relative">Calculate & Get Results</button>
                 </form>
               ) : (
                 result && (
                   <div className="text-center space-y-4">
-                    <h4 className="text-xl font-bold text-cosmic-indigo">{calculators.find(c => c.id === selectedCalculator)?.title} Result</h4>
-                    {selectedCalculator === 'soul-urge' && result.soulUrgeNumber && (
-                      <>
-                        <p className="text-gold text-3xl">{result.soulUrgeNumber}</p>
-                        <p className="text-cosmic-indigo/80">{result.message}</p>
-                      </>
+                    <h4 className="text-xl font-bold text-cosmic-indigo">
+                      {calculators.find(c => c.id === selectedCalculator)?.title} Result
+                    </h4>
+                    {result.number && (
+                      <p className="text-gold text-3xl">{result.number}</p>
                     )}
-                    {selectedCalculator === 'expression' && result.expressionNumber && (
-                      <>
-                        <p className="text-gold text-3xl">{result.expressionNumber}</p>
-                        <p className="text-cosmic-indigo/80">{result.message}</p>
-                      </>
+                    {result.message && (
+                      <p className="text-cosmic-indigo/80">{result.message}</p>
                     )}
-                    {selectedCalculator === 'birthday' && result.birthdayNumber && (
-                      <>
-                        <p className="text-gold text-3xl">{result.birthdayNumber}</p>
-                        <p className="text-cosmic-indigo/80">{result.message}</p>
-                      </>
-                    )}
-                    {selectedCalculator === 'psychic' && result.psychicNumber && (
-                      <>
-                        <p className="text-gold text-3xl">{result.psychicNumber}</p>
-                        <p className="text-cosmic-indigo/80">{result.message}</p>
-                      </>
-                    )}
-                    {selectedCalculator === 'name' && result.nameNumber && (
-                      <>
-                        <p className="text-gold text-3xl">{result.nameNumber}</p>
-                        <p className="text-cosmic-indigo/80">{result.message}</p>
-                      </>
-                    )}
-                    {selectedCalculator === 'full-report' && (
-                      <div className="text-left space-y-3">
-                        {result.psychicNumber && <p><strong>Psychic Number:</strong> <span className="text-gold">{result.psychicNumber}</span></p>}
-                        {result.birthdayNumber && <p><strong>Birthday Number:</strong> <span className="text-gold">{result.birthdayNumber}</span></p>}
-                        {result.expressionNumber && <p><strong>Expression Number:</strong> <span className="text-gold">{result.expressionNumber}</span></p>}
-                        {result.soulUrgeNumber && <p><strong>Soul Urge Number:</strong> <span className="text-gold">{result.soulUrgeNumber}</span></p>}
-                        {result.nameNumber && <p><strong>Name Number:</strong> <span className="text-gold">{result.nameNumber}</span></p>}
-                        {result.message && <p className="text-cosmic-indigo/80">{result.message}</p>}
-                      </div>
-                    )}
-                    <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">Close</button>
+                    <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">
+                      Close
+                    </button>
                   </div>
                 )
               )}
@@ -170,3 +155,5 @@ const Calculators = () => {
 };
 
 export default Calculators;
+
+

@@ -32,7 +32,7 @@ const Calculators = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           fullName: formData.name,
-          ...(selectedCalculator !== 'name' && { dob: formData.birthDate }),
+          dob: formData.birthDate,
           gender: formData.gender,
           calculatorType: selectedCalculator,
           language: 'hinglish',
@@ -126,18 +126,17 @@ const Calculators = () => {
                     />
                   </div>
 
-                  {selectedCalculator !== 'name' && (
-                    <div>
-                      <label className="block text-cosmic-indigo font-semibold mb-3 text-lg">Date of Birth</label>
-                      <input 
-                        type="date" 
-                        value={formData.birthDate} 
-                        onChange={(e) => handleInputChange('birthDate', e.target.value)} 
-                        className="w-full px-6 py-4 rounded-full bg-gray-100 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-saffron focus:bg-white focus:shadow-lg transition-all text-lg" 
-                        required 
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <label className="block text-cosmic-indigo font-semibold mb-3 text-lg">Date of Birth</label>
+                    <input 
+                      type="date" 
+                      value={formData.birthDate} 
+                      onChange={(e) => handleInputChange('birthDate', e.target.value)} 
+                      className="w-full px-6 py-4 rounded-full bg-gray-100 border-2 border-gold/40 text-cosmic-indigo      focus:outline-none focus:border-saffron focus:bg-white focus:shadow-lg transition-all text-lg" 
+                      required 
+                    />
+                  </div>
+
 
                   <div>
                     <label className="block text-cosmic-indigo font-semibold mb-3 text-lg">Gender</label>

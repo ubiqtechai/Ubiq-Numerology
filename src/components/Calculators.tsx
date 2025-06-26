@@ -21,61 +21,54 @@ const Calculators = () => {
     { id: 'full-report', title: 'Full Numerology Report', description: 'Complete analysis with Vedic remedies', icon: FileText, color: 'from-gold to-cosmic-indigo' }
   ];
 
- const handleFormSubmit = async (e) => {
-  e.preventDefault();
-  console.log("🟡 Form submitted with data:", formData);
-  setIsLoading(true);
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    console.log("🟡 Form submitted with data:", formData);
+    setIsLoading(true);
 
-  try {
-    console.log("📡 Sending POST request to webhook...");
-    const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fullName: formData.name,
-        dob: formData.birthDate,
-        gender: formData.gender,
-        calculatorType: selectedCalculator,
-        language: 'hinglish',
-        message: 'After doing calculations based on rules, give the result in its relevant variable name like soulUrgeNumber, expressionNumber, etc., along with a meaningful message. Return both as a response to the webhook.'
-      })
-    });
+    try {
+      console.log("📡 Sending POST request to webhook...");
+      const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fullName: formData.name,
+          dob: formData.birthDate,
+          gender: formData.gender,
+          calculatorType: selectedCalculator,
+          language: 'hinglish',
+          message: 'After doing calculations based on rules, give the result in its relevant variable name like soulUrgeNumber, expressionNumber, etc., along with a meaningful message. Return both as a response to the webhook.'
+        })
+      });
 
-    console.log("✅ Response received from webhook");
-    const raw = await response.json();
-    console.log("📥 Raw response from webhook:", raw);
+      console.log("✅ Response received from webhook");
+      const raw = await response.json();
+      console.log("📥 Raw response from webhook:", raw);
 
-    // Parse the stringified output JSON if present
-    const parsedData = raw.output ? JSON.parse(raw.output) : raw;
-    console.log("📦 Parsed data used for result:", parsedData);
+      const parsedData = typeof raw.output === 'string' ? JSON.parse(raw.output) : raw.output;
+      console.log("📦 Parsed data used for result:", parsedData);
 
-    if (selectedCalculator === 'full-report') {
-      console.log("📊 Full report selected. Setting full data.");
-      setResult(parsedData);
-    } else {
-      const singleResult = parsedData;
-      console.log("🔢 Extracted single result:", singleResult);
+      if (selectedCalculator === 'full-report') {
+        console.log("📊 Full report selected. Setting full data.");
+        setResult(parsedData);
+      } else {
+        const singleResult = parsedData;
+        console.log("🔢 Extracted single result:", singleResult);
 
-      if (!singleResult?.number || !singleResult?.message) {
-    console.warn("⚠️ Could not find expected fields: number or essage.");
+        if (!singleResult?.number || !singleResult?.message) {
+          console.warn("⚠️ Could not find expected fields: number or message.");
+        }
+
+        setResult(singleResult);
       }
 
-  setResult(singleResult);
-}
-      setResult(singleResult);
+      setShowResults(true);
+    } catch (error) {
+      console.error("🚨 Error while calling webhook:", error);
+    } finally {
+      setIsLoading(false);
     }
-
-    setShowResults(true);
-    console.log("🎉 Result set and modal open!");
-
-  } catch (error) {
-    console.error("🚨 Error during webhook call or processing:", error);
-  } finally {
-    setIsLoading(false);
-    console.log("🧊 Loading state set to false");
-  }
-};
-
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));

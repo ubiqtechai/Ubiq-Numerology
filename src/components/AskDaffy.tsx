@@ -28,12 +28,30 @@ const AskDaffy = () => {
 
     try {
       const res = await fetch('https://adarsh0309.app.n8n.cloud/webhook/samplechat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
-      });
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ message: input })
+});
 
-      const data = await res.json();
+const text = await res.text(); // Always safe
+let data = {};
+
+try {
+  data = JSON.parse(text); // Try to parse JSON
+} catch (err) {
+  console.error('❌ Failed to parse JSON:', text);
+}
+
+setTimeout(() => {
+  const botMessage = {
+    type: 'assistant',
+    content: data.output || '⚠️ Sorry, I could not understand that.'
+  };
+
+  setMessages((prev) => [...prev, botMessage]);
+  setIsTyping(false);
+}, 1500);
+
 
       // Simulate typing delay
       setTimeout(() => {

@@ -21,40 +21,62 @@ const Calculators = () => {
     { id: 'full-report', title: 'Full Numerology Report', description: 'Complete analysis with Vedic remedies', icon: FileText, color: 'from-gold to-cosmic-indigo' }
   ];
 
-  const handleFormSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+ const handleFormSubmit = async (e) => {
+  e.preventDefault();
+  console.log("🟡 Form submitted with data:", formData);
+  setIsLoading(true);
 
-    try {
-      const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: formData.name,
-          dob: formData.birthDate,
-          gender: formData.gender,
-          calculatorType: selectedCalculator,
-          language: 'hinglish',
-          message: 'After doing calculations based on rules, give the result in its relevant variable name like soulUrgeNumber, expressionNumber, etc., along with a meaningful message. Return both as a response to the webhook.'
-        })
-      });
+  try {
+    console.log("📡 Sending POST request to webhook...");
+    const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: formData.name,
+        dob: formData.birthDate,
+        gender: formData.gender,
+        calculatorType: selectedCalculator,
+        language: 'hinglish',
+        message: 'After doing calculations based on rules, give the result in its relevant variable name like soulUrgeNumber, expressionNumber, etc., along with a meaningful message. Return both as a response to the webhook.'
+      })
+    });
 
-      const raw = await response.json();
+    console.log("✅ Response received from webhook");
+    const raw = await response.json();
+    console.log("📥 Raw response from webhook:", raw);
 
-      if (selectedCalculator === 'full-report') {
-        setResult(raw);
-      } else {
-        const singleResult = raw[selectedCalculator + 'Number'] || raw.expressionNumber || raw.nameNumerology;
-        setResult(singleResult);
+    // fallback to parsed `raw.result` if needed
+    const data = raw.result || raw;
+    console.log("📦 Parsed data used for result:", data);
+
+    if (selectedCalculator === 'full-report') {
+      console.log("📊 Full report selected. Setting full data.");
+      setResult(data);
+    } else {
+      const singleResult = 
+        data[selectedCalculator + 'Number'] ||
+        data.expressionNumber ||
+        data.nameNumerology;
+
+      console.log("🔢 Extracted single result:", singleResult);
+
+      if (!singleResult) {
+        console.warn("⚠️ Could not find specific number field. Check webhook response keys.");
       }
-      setShowResults(true);
 
-    } catch (error) {
-      console.error("🚨 Error while calling webhook:", error);
-    } finally {
-      setIsLoading(false);
+      setResult(singleResult);
     }
-  };
+
+    setShowResults(true);
+    console.log("🎉 Result set and modal open!");
+
+  } catch (error) {
+    console.error("🚨 Error during webhook call or processing:", error);
+  } finally {
+    setIsLoading(false);
+    console.log("🧊 Loading state set to false");
+  }
+};
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));

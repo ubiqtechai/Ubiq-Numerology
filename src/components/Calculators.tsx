@@ -37,7 +37,7 @@ const Calculators = () => {
   calculatorType: selectedCalculator,
   language: 'hinglish',
   message: 'After doing calculations based on rules, give the result in its relevant variable name like soulUrgeNumber, expressionNumber, etc., along with a meaningful message. Return both as a response to the webhook.'
-})
+}),
       const raw = await response.json();
       console.log("✅ Webhook call successful!");
       console.log("🔄 Full webhook response:", raw);

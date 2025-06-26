@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Star, Heart, Calendar, Gift, FileText } from 'lucide-react';
+import { Star, Heart, Calendar, Gift, FileText, X } from 'lucide-react';
 
 const Calculators = () => {
   const [selectedCalculator, setSelectedCalculator] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [result, setResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     birthDate: '',
@@ -23,6 +24,7 @@ const Calculators = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     console.log("📨 Submitting form with data:", formData);
+    setIsLoading(true);
 
     try {
       const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/numerology-calc', {
@@ -52,6 +54,8 @@ const Calculators = () => {
 
     } catch (error) {
       console.error("🚨 Error while calling webhook:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,6 +67,7 @@ const Calculators = () => {
     setSelectedCalculator(null);
     setShowResults(false);
     setResult(null);
+    setIsLoading(false);
     setFormData({ name: '', birthDate: '', gender: '' });
   };
 
@@ -92,29 +97,56 @@ const Calculators = () => {
 
         {selectedCalculator && (
           <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-            <div className={`rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto border shadow-2xl transition-all duration-500 ${showResults ? 'bg-white border-gold/50 text-cosmic-indigo' : 'glassmorphic border-gold/30 bg-white/20 backdrop-blur-md'}`}>
+            <div className={`rounded-3xl p-8 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl transition-all duration-500 ${
+              showResults 
+                ? 'bg-white border-gold/50 text-cosmic-indigo' 
+                : 'bg-white border-2 border-gold/30'
+            }`}>
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-2xl font-bold text-cosmic-indigo">{calculators.find(c => c.id === selectedCalculator)?.title}</h3>
-                <button onClick={closeModal} className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center font-bold transition-colors z-20">×</button>
+                <button 
+                  onClick={closeModal} 
+                  className="w-10 h-10 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center font-bold transition-colors z-20"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
 
               {!showResults ? (
-                <form onSubmit={handleFormSubmit} className="space-y-4">
+                <form onSubmit={handleFormSubmit} className="space-y-6">
                   <div>
-                    <label className="block text-cosmic-indigo font-semibold mb-2">Full Name</label>
-                    <input type="text" placeholder="Enter your full name" value={formData.name} onChange={(e) => handleInputChange('name', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo placeholder-cosmic-indigo/60 focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required />
+                    <label className="block text-cosmic-indigo font-semibold mb-3 text-lg">Full Name</label>
+                    <input 
+                      type="text" 
+                      placeholder="Enter your full name" 
+                      value={formData.name} 
+                      onChange={(e) => handleInputChange('name', e.target.value)} 
+                      className="w-full px-6 py-4 rounded-full bg-gray-100 border-2 border-gold/40 text-cosmic-indigo placeholder-gray-500 focus:outline-none focus:border-saffron focus:bg-white focus:shadow-lg transition-all text-lg" 
+                      required 
+                    />
                   </div>
 
                   {selectedCalculator !== 'name' && (
                     <div>
-                      <label className="block text-cosmic-indigo font-semibold mb-2">Date of Birth</label>
-                      <input type="date" value={formData.birthDate} onChange={(e) => handleInputChange('birthDate', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required />
+                      <label className="block text-cosmic-indigo font-semibold mb-3 text-lg">Date of Birth</label>
+                      <input 
+                        type="date" 
+                        value={formData.birthDate} 
+                        onChange={(e) => handleInputChange('birthDate', e.target.value)} 
+                        className="w-full px-6 py-4 rounded-full bg-gray-100 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-saffron focus:bg-white focus:shadow-lg transition-all text-lg" 
+                        required 
+                      />
                     </div>
                   )}
 
                   <div>
-                    <label className="block text-cosmic-indigo font-semibold mb-2">Gender</label>
-                    <select value={formData.gender} onChange={(e) => handleInputChange('gender', e.target.value)} className="w-full px-4 py-3 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-gold focus:bg-white/30 transition-all" required>
+                    <label className="block text-cosmic-indigo font-semibold mb-3 text-lg">Gender</label>
+                    <select 
+                      value={formData.gender} 
+                      onChange={(e) => handleInputChange('gender', e.target.value)} 
+                      className="w-full px-6 py-4 rounded-full bg-gray-100 border-2 border-gold/40 text-cosmic-indigo focus:outline-none focus:border-saffron focus:bg-white focus:shadow-lg transition-all text-lg appearance-none cursor-pointer" 
+                      required
+                    >
                       <option value="">Select Gender</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
@@ -122,26 +154,42 @@ const Calculators = () => {
                     </select>
                   </div>
 
-                  <button type="submit" className="w-full bg-gradient-to-r from-saffron to-gold text-white py-4 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105 hover:from-gold hover:to-saffron z-10 relative">Calculate & Get Results</button>
+                  <button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="w-full bg-gradient-to-r from-saffron to-gold text-white py-4 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105 hover:from-gold hover:to-saffron z-10 relative text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        Calculating...
+                      </div>
+                    ) : (
+                      'Calculate & Get Results'
+                    )}
+                  </button>
                 </form>
               ) : (
                 result && (
-                  <div className="text-center space-y-4">
-                    <h4 className="text-xl font-bold text-cosmic-indigo">
+                  <div className="text-center space-y-6">
+                    <h4 className="text-2xl font-bold text-cosmic-indigo">
                       {calculators.find(c => c.id === selectedCalculator)?.title} Result
                     </h4>
                     {result.number && (
-                      <p className="text-gold text-3xl">{result.number}</p>
+                      <div className="text-6xl font-bold text-saffron mb-4">{result.number}</div>
                     )}
                     {result.message && (
-                      <p className="text-cosmic-indigo/80">{result.message}</p>
+                      <p className="text-cosmic-indigo/80 text-lg leading-relaxed">{result.message}</p>
                     )}
                     {selectedCalculator === 'full-report' && (
-                      <pre className="text-left text-sm text-cosmic-indigo/70 whitespace-pre-wrap">
+                      <pre className="text-left text-sm text-cosmic-indigo/70 whitespace-pre-wrap bg-gray-50 p-4 rounded-xl">
                         {JSON.stringify(result, null, 2)}
                       </pre>
                     )}
-                    <button onClick={closeModal} className="mt-6 bg-gradient-to-r from-saffron to-gold text-white py-3 px-6 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105">
+                    <button 
+                      onClick={closeModal} 
+                      className="mt-8 bg-gradient-to-r from-saffron to-gold text-white py-3 px-8 rounded-full font-bold hover:shadow-xl transition-all transform hover:scale-105 text-lg"
+                    >
                       Close
                     </button>
                   </div>

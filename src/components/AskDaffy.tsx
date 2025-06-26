@@ -5,6 +5,7 @@ const AskDaffy = () => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState('chat'); // Changed from 'voice' to 'chat' as default
   const [isRecording, setIsRecording] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
@@ -22,6 +23,8 @@ const AskDaffy = () => {
 
     const newUserMessage = { type: 'user', content: input };
     setMessages((prev) => [...prev, newUserMessage]);
+    setInput('');
+    setIsTyping(true);
 
     try {
       const res = await fetch('https://adarsh0309.app.n8n.cloud/webhook/samplechat', {
@@ -32,21 +35,27 @@ const AskDaffy = () => {
 
       const data = await res.json();
 
-      const botMessage = {
-        type: 'assistant',
-        content: data.output || 'Sorry, I could not understand that.'
-      };
+      // Simulate typing delay
+      setTimeout(() => {
+        const botMessage = {
+          type: 'assistant',
+          content: data.output || 'Sorry, I could not understand that.'
+        };
 
-      setMessages((prev) => [...prev, botMessage]);
+        setMessages((prev) => [...prev, botMessage]);
+        setIsTyping(false);
+      }, 1500);
+
     } catch (error) {
       console.error('Webhook error:', error);
-      setMessages((prev) => [...prev, {
-        type: 'assistant',
-        content: 'Something went wrong. Please try again later.'
-      }]);
+      setTimeout(() => {
+        setMessages((prev) => [...prev, {
+          type: 'assistant',
+          content: 'Something went wrong. Please try again later.'
+        }]);
+        setIsTyping(false);
+      }, 1000);
     }
-
-    setInput('');
   };
 
   const handleKeyPress = (e) => {
@@ -202,6 +211,37 @@ const AskDaffy = () => {
                       </div>
                     </div>
                   ))}
+
+                  {/* Typing Animation */}
+                  {isTyping && (
+                    <div className="flex justify-start">
+                      <div className="max-w-[70%] relative ai-message">
+                        {/* Dotted elements for typing indicator */}
+                        <div className="absolute -top-3 -left-3 -right-3 -bottom-3 rounded-2xl border-3 border-dotted border-saffron/40 pointer-events-none animate-pulse"></div>
+                        <div className="absolute -top-3 -left-3 w-4 h-4 bg-saffron/70 rounded-full animate-pulse"></div>
+                        <div className="absolute -top-3 -right-3 w-3 h-3 bg-gold/70 rounded-full animate-pulse delay-300"></div>
+                        
+                        <div className="message-content relative z-10">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center shadow-lg">
+                              <span className="text-white text-sm font-bold">D</span>
+                            </div>
+                            <span className="topic-title">✨ Daffy is typing...</span>
+                          </div>
+                          
+                          {/* Three-dot typing animation */}
+                          <div className="flex items-center gap-2 py-4">
+                            <div className="typing-dots flex gap-1">
+                              <div className="typing-dot w-3 h-3 bg-gradient-to-r from-saffron to-gold rounded-full animate-bounce"></div>
+                              <div className="typing-dot w-3 h-3 bg-gradient-to-r from-gold to-saffron rounded-full animate-bounce delay-150"></div>
+                              <div className="typing-dot w-3 h-3 bg-gradient-to-r from-saffron to-gold rounded-full animate-bounce delay-300"></div>
+                            </div>
+                            <span className="text-cosmic-indigo/60 text-sm ml-2">Channeling wisdom...</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -213,10 +253,11 @@ const AskDaffy = () => {
                   onKeyPress={handleKeyPress}
                   placeholder="Ask Daffy about your numbers, destiny, or spiritual path..."
                   className="flex-1 px-6 py-4 rounded-full bg-white/90 border-2 border-gold/40 text-cosmic-indigo placeholder-gray-500 focus:outline-none focus:border-saffron focus:bg-white focus:shadow-lg transition-all modern-input"
+                  disabled={isTyping}
                 />
                 <button
                   onClick={handleSend}
-                  disabled={!input.trim()}
+                  disabled={!input.trim() || isTyping}
                   className="bg-gradient-to-r from-saffron to-gold text-white px-8 py-4 rounded-full hover:shadow-xl transition-all font-bold transform hover:scale-105 hover:from-gold hover:to-saffron disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer modern-button"
                 >
                   <Send className="w-5 h-5" />

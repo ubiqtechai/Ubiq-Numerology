@@ -45,18 +45,21 @@ const Calculators = () => {
     const raw = await response.json();
     console.log("📥 Raw response from webhook:", raw);
 
-    // fallback to parsed `raw.result` if needed
-    const data = raw.result || raw;
-    console.log("📦 Parsed data used for result:", data);
+    // Parse the stringified output JSON if present
+    const parsedData = raw.output ? JSON.parse(raw.output) : raw;
+    console.log("📦 Parsed data used for result:", parsedData);
 
     if (selectedCalculator === 'full-report') {
       console.log("📊 Full report selected. Setting full data.");
-      setResult(data);
+      setResult(parsedData);
     } else {
       const singleResult = 
-        data[selectedCalculator + 'Number'] ||
-        data.expressionNumber ||
-        data.nameNumerology;
+        parsedData[selectedCalculator + 'Number'] ||
+        parsedData.expressionNumber ||
+        parsedData.nameNumerology ||
+        parsedData.soulUrgeNumber ||
+        parsedData.psychicNumber ||
+        parsedData.birthdayNumber;
 
       console.log("🔢 Extracted single result:", singleResult);
 
@@ -77,6 +80,7 @@ const Calculators = () => {
     console.log("🧊 Loading state set to false");
   }
 };
+
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));

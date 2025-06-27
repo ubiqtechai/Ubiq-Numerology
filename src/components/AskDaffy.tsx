@@ -170,35 +170,82 @@ const AskDaffy = () => {
 
         {/* Voice Interface */}
         {mode === 'voice' && (
-          <div className="max-w-sm mx-auto">
-            <div className="bg-white rounded-xl shadow-lg border p-8 text-center">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gray-50 flex items-center justify-center">
-                <Mic className={`w-8 h-8 ${isRecording ? 'text-red-500' : 'text-gray-400'}`} />
-              </div>
-              
-              <button
-                onClick={toggleRecording}
-                className={`px-6 py-3 rounded-lg font-medium ${
-                  isRecording 
-                    ? 'bg-red-500 hover:bg-red-600 text-white' 
-                    : 'bg-saffron hover:bg-saffron/90 text-white'
-                }`}
-              >
-                {isRecording ? (
-                  <>
-                    <Square className="w-4 h-4 inline mr-2" />
-                    Stop Recording
-                  </>
-                ) : (
-                  'Start Speaking'
-                )}
-              </button>
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg border">
+              {/* Voice Recording Area */}
+              <div className="h-80 p-8 flex flex-col items-center justify-center">
+                {/* Mic Visualization */}
+                <div className="relative mb-8">
+                  {/* Outer Ring - Animated when recording */}
+                  <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 ${
+                    isRecording 
+                      ? 'border-red-500 animate-pulse' 
+                      : 'border-gray-200'
+                  }`}></div>
+                  
+                  {/* Inner Circle with Mic */}
+                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 ${
+                    isRecording 
+                      ? 'bg-red-500 shadow-lg' 
+                      : 'bg-saffron hover:bg-saffron/90'
+                  }`}>
+                    <Mic className="w-12 h-12 text-white" />
+                  </div>
 
-              {isRecording && (
-                <div className="mt-4 text-sm text-red-500">
-                  🔴 Recording in progress...
+                  {/* Recording Pulse Effect */}
+                  {isRecording && (
+                    <>
+                      <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
+                      <div className="absolute inset-2 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{animationDelay: '0.5s'}}></div>
+                    </>
+                  )}
                 </div>
-              )}
+
+                {/* Status Text */}
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    {isRecording ? 'Listening...' : 'Ready to Listen'}
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    {isRecording 
+                      ? 'Speak clearly about your numerology questions' 
+                      : 'Click the microphone to start speaking'
+                    }
+                  </p>
+                </div>
+
+                {/* Recording Indicator */}
+                {isRecording && (
+                  <div className="flex items-center space-x-2 text-red-500 mb-4">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium">Recording in progress...</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Voice Controls */}
+              <div className="border-t p-4 text-center">
+                <button
+                  onClick={toggleRecording}
+                  className={`px-8 py-3 rounded-lg font-medium transition-all ${
+                    isRecording 
+                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
+                      : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
+                  }`}
+                >
+                  {isRecording ? (
+                    <>
+                      <Square className="w-4 h-4 inline mr-2" />
+                      Stop Recording
+                    </>
+                  ) : (
+                    <>
+                      <Mic className="w-4 h-4 inline mr-2" />
+                      Start Speaking
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}

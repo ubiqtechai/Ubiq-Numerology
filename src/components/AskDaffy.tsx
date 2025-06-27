@@ -73,48 +73,52 @@ const AskDaffy = () => {
   return (
     <section id="ask-daffy" className="py-20 relative">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-cosmic-indigo mb-6">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-cosmic-indigo mb-4">
             Ask Daffy
           </h2>
-          <p className="text-xl text-cosmic-indigo/70 max-w-3xl mx-auto">
+          <p className="text-lg text-cosmic-indigo/70">
             Your spiritual numerology guide is here to help
           </p>
         </div>
 
-        {/* Simple Mode Toggle */}
+        {/* Mode Toggle */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-full p-1 shadow-lg border border-gray-200">
+          <div className="bg-white rounded-full p-1 shadow-md">
             <button
-              onClick={switchMode}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all font-medium ${mode === 'voice' ? 'bg-gradient-to-r from-saffron to-gold text-white' : 'text-gray-600 hover:text-gray-800'}`}
+              onClick={() => setMode('chat')}
+              className={`px-6 py-2 rounded-full transition-all ${mode === 'chat' ? 'bg-saffron text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
             >
-              <Mic className="w-4 h-4" />
-              Voice
+              <MessageSquare className="w-4 h-4 inline mr-2" />
+              Chat
             </button>
             <button
-              onClick={switchMode}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all font-medium ${mode === 'chat' ? 'bg-gradient-to-r from-saffron to-gold text-white' : 'text-gray-600 hover:text-gray-800'}`}
+              onClick={() => setMode('voice')}
+              className={`px-6 py-2 rounded-full transition-all ${mode === 'voice' ? 'bg-saffron text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
             >
-              <MessageSquare className="w-4 h-4" />
-              Chat
+              <Mic className="w-4 h-4 inline mr-2" />
+              Voice
             </button>
           </div>
         </div>
 
         {/* Chat Interface */}
         {mode === 'chat' && (
-          <div className="max-w-4xl mx-auto">
-            {/* Messages Container */}
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-6">
-              <div className="h-96 overflow-y-auto p-6 space-y-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg border">
+              {/* Messages */}
+              <div className="h-80 overflow-y-auto p-4 space-y-3">
                 {messages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] ${message.type === 'user' ? 'bg-gradient-to-r from-saffron to-gold text-white' : 'bg-gray-50 text-gray-800'} rounded-2xl px-4 py-3`}>
-                      <div className="text-sm font-medium mb-1">
-                        {message.type === 'assistant' ? '✨ Daffy' : 'You'}
+                    <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                      message.type === 'user' 
+                        ? 'bg-saffron text-white' 
+                        : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      <div className="text-xs opacity-75 mb-1">
+                        {message.type === 'assistant' ? 'Daffy' : 'You'}
                       </div>
-                      <div className="text-sm leading-relaxed">
+                      <div className="text-sm">
                         {message.content}
                       </div>
                     </div>
@@ -124,13 +128,13 @@ const AskDaffy = () => {
                 {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="bg-gray-50 rounded-2xl px-4 py-3">
-                      <div className="text-sm font-medium mb-1">✨ Daffy</div>
-                      <div className="flex items-center gap-1">
-                        <div className="flex gap-1">
+                    <div className="bg-gray-100 px-4 py-2 rounded-lg">
+                      <div className="text-xs opacity-75 mb-1">Daffy</div>
+                      <div className="flex items-center space-x-1">
+                        <div className="flex space-x-1">
                           <div className="w-2 h-2 bg-saffron rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-100"></div>
-                          <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-200"></div>
+                          <div className="w-2 h-2 bg-saffron rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                          <div className="w-2 h-2 bg-saffron rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                         </div>
                         <span className="text-xs text-gray-500 ml-2">typing...</span>
                       </div>
@@ -139,22 +143,22 @@ const AskDaffy = () => {
                 )}
               </div>
 
-              {/* Input Area */}
-              <div className="border-t border-gray-100 p-4">
-                <div className="flex gap-3">
+              {/* Input */}
+              <div className="border-t p-4">
+                <div className="flex space-x-2">
                   <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask about your numbers, destiny, or spiritual path..."
-                    className="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:outline-none focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all"
+                    placeholder="Ask about your numbers..."
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron"
                     disabled={isTyping}
                   />
                   <button
                     onClick={handleSend}
                     disabled={!input.trim() || isTyping}
-                    className="bg-gradient-to-r from-saffron to-gold text-white px-6 py-3 rounded-full hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-saffron text-white px-4 py-2 rounded-lg hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -166,32 +170,33 @@ const AskDaffy = () => {
 
         {/* Voice Interface */}
         {mode === 'voice' && (
-          <div className="max-w-md mx-auto">
-            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
-              {/* Recording Animation */}
-              <div className="w-32 h-32 mx-auto mb-6 relative">
-                <div className={`absolute inset-0 rounded-full ${isRecording ? 'bg-red-100 animate-pulse' : 'bg-gray-50'} flex items-center justify-center`}>
-                  <Mic className={`w-12 h-12 ${isRecording ? 'text-red-500' : 'text-gray-400'}`} />
-                </div>
+          <div className="max-w-sm mx-auto">
+            <div className="bg-white rounded-xl shadow-lg border p-8 text-center">
+              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gray-50 flex items-center justify-center">
+                <Mic className={`w-8 h-8 ${isRecording ? 'text-red-500' : 'text-gray-400'}`} />
               </div>
-
+              
               <button
                 onClick={toggleRecording}
-                className={`px-8 py-3 rounded-full font-medium transition-all ${isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gradient-to-r from-saffron to-gold text-white hover:shadow-lg'}`}
+                className={`px-6 py-3 rounded-lg font-medium ${
+                  isRecording 
+                    ? 'bg-red-500 hover:bg-red-600 text-white' 
+                    : 'bg-saffron hover:bg-saffron/90 text-white'
+                }`}
               >
                 {isRecording ? (
-                  <span className="flex items-center gap-2">
-                    <Square className="w-4 h-4" />
+                  <>
+                    <Square className="w-4 h-4 inline mr-2" />
                     Stop Recording
-                  </span>
+                  </>
                 ) : (
                   'Start Speaking'
                 )}
               </button>
 
               {isRecording && (
-                <div className="mt-4 text-sm text-red-500 font-medium">
-                  🔴 Recording...
+                <div className="mt-4 text-sm text-red-500">
+                  🔴 Recording in progress...
                 </div>
               )}
             </div>

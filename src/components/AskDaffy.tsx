@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mic, MessageSquare, Download, Mail, RotateCcw, Lightbulb, Square, Send } from 'lucide-react';
+import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
 const AskDaffy = () => {
   const [input, setInput] = useState('');
@@ -70,195 +70,133 @@ const AskDaffy = () => {
     }
   };
 
-  const highlightNumerologyTerms = (text) => {
-    const numerologyKeywords = [
-      'life path', 'soul urge', 'expression', 'destiny', 'karmic', 'master number',
-      'numerology', 'vibration', 'chakra', 'spiritual', 'sacred', 'divine',
-      'energy', 'universe', 'manifestation', 'awakening', 'consciousness'
-    ];
-
-    let highlightedText = text;
-    numerologyKeywords.forEach(keyword => {
-      const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
-      highlightedText = highlightedText.replace(regex, `<span class="numerology-highlight">${keyword}</span>`);
-    });
-
-    return highlightedText;
-  };
-
   return (
     <section id="ask-daffy" className="py-20 relative">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-cosmic-indigo mb-6">
-            Speak to Daffy – Your Numerology Guide Awaits
+            Ask Daffy
           </h2>
           <p className="text-xl text-cosmic-indigo/70 max-w-3xl mx-auto">
-            Connect with ancient wisdom through modern technology. Ask your questions in any language.
+            Your spiritual numerology guide is here to help
           </p>
         </div>
 
-        {/* MODE TOGGLE */}
+        {/* Simple Mode Toggle */}
         <div className="flex justify-center mb-8">
-          <div className="glassmorphic rounded-full p-2 flex border-2 border-gold/30 shadow-xl bg-white/15 backdrop-blur-md">
+          <div className="bg-white rounded-full p-1 shadow-lg border border-gray-200">
             <button
               onClick={switchMode}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all font-semibold cursor-pointer ${mode === 'voice' ? 'bg-gradient-to-r from-saffron to-gold text-white shadow-lg' : 'text-cosmic-indigo hover:bg-white/20'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all font-medium ${mode === 'voice' ? 'bg-gradient-to-r from-saffron to-gold text-white' : 'text-gray-600 hover:text-gray-800'}`}
             >
-              <Mic className="w-5 h-5" />
-              Voice Mode
+              <Mic className="w-4 h-4" />
+              Voice
             </button>
             <button
               onClick={switchMode}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full transition-all font-semibold cursor-pointer ${mode === 'chat' ? 'bg-gradient-to-r from-saffron to-gold text-white shadow-lg' : 'text-cosmic-indigo hover:bg-white/20'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all font-medium ${mode === 'chat' ? 'bg-gradient-to-r from-saffron to-gold text-white' : 'text-gray-600 hover:text-gray-800'}`}
             >
-              <MessageSquare className="w-5 h-5" />
-              Chat Mode
+              <MessageSquare className="w-4 h-4" />
+              Chat
             </button>
           </div>
         </div>
 
-        {/* CHAT INTERFACE (Still Present) */}
+        {/* Chat Interface */}
         {mode === 'chat' && (
-          <div className="glassmorphic rounded-3xl p-8 mb-8 border-2 border-gold/30 shadow-2xl bg-white/15 backdrop-blur-md">
-            {/* Message list */}
-            <div className="bg-white/20 rounded-2xl p-6 h-96 overflow-y-auto mb-6 border-2 border-white/20 shadow-inner backdrop-blur-sm chat-container">
-              <div className="space-y-6">
+          <div className="max-w-4xl mx-auto">
+            {/* Messages Container */}
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 mb-6">
+              <div className="h-96 overflow-y-auto p-6 space-y-4">
                 {messages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[70%] relative ${message.type === 'user' ? 'user-message' : 'ai-message'}`}>
-                      {/* (Your beautiful AI decorations stay intact here) */}
-                      <div className="message-content relative z-10">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center shadow-lg">
-                            <span className="text-white text-sm font-bold">{message.type === 'assistant' ? 'D' : 'Y'}</span>
-                          </div>
-                          <span className="topic-title">
-                            {message.type === 'assistant' ? '✨ Daffy\'s Insight' : '🙏 Your Question'}
-                          </span>
-                        </div>
-                        <div
-                          className="message-text"
-                          dangerouslySetInnerHTML={{
-                            __html: message.type === 'assistant'
-                              ? highlightNumerologyTerms(message.content)
-                              : message.content
-                          }}
-                        />
+                    <div className={`max-w-[80%] ${message.type === 'user' ? 'bg-gradient-to-r from-saffron to-gold text-white' : 'bg-gray-50 text-gray-800'} rounded-2xl px-4 py-3`}>
+                      <div className="text-sm font-medium mb-1">
+                        {message.type === 'assistant' ? '✨ Daffy' : 'You'}
+                      </div>
+                      <div className="text-sm leading-relaxed">
+                        {message.content}
                       </div>
                     </div>
                   </div>
                 ))}
 
+                {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="max-w-[70%] relative ai-message">
-                      <div className="message-content relative z-10">
-                        <div className="flex items-center gap-3 mb-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center shadow-lg">
-                            <span className="text-white text-sm font-bold">D</span>
-                          </div>
-                          <span className="topic-title">✨ Daffy is typing...</span>
+                    <div className="bg-gray-50 rounded-2xl px-4 py-3">
+                      <div className="text-sm font-medium mb-1">✨ Daffy</div>
+                      <div className="flex items-center gap-1">
+                        <div className="flex gap-1">
+                          <div className="w-2 h-2 bg-saffron rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-100"></div>
+                          <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-200"></div>
                         </div>
-                        <div className="flex items-center gap-2 py-4">
-                          <div className="typing-dots flex gap-1">
-                            <div className="typing-dot w-3 h-3 bg-gradient-to-r from-saffron to-gold rounded-full animate-bounce"></div>
-                            <div className="typing-dot w-3 h-3 bg-gradient-to-r from-gold to-saffron rounded-full animate-bounce delay-150"></div>
-                            <div className="typing-dot w-3 h-3 bg-gradient-to-r from-saffron to-gold rounded-full animate-bounce delay-300"></div>
-                          </div>
-                          <span className="text-cosmic-indigo/60 text-sm ml-2">Channeling wisdom...</span>
-                        </div>
+                        <span className="text-xs text-gray-500 ml-2">typing...</span>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Input + Send */}
-            <div className="flex gap-4">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask Daffy about your numbers, destiny, or spiritual path..."
-                className="flex-1 px-6 py-4 rounded-full bg-white/90 border-2 border-gold/40 text-cosmic-indigo placeholder-gray-500 focus:outline-none focus:border-saffron focus:bg-white focus:shadow-lg transition-all modern-input"
-                disabled={isTyping}
-              />
-              <button
-                onClick={handleSend}
-                disabled={!input.trim() || isTyping}
-                className="bg-gradient-to-r from-saffron to-gold text-white px-8 py-4 rounded-full hover:shadow-xl transition-all font-bold transform hover:scale-105 hover:from-gold hover:to-saffron disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cursor-pointer modern-button"
-              >
-                <Send className="w-5 h-5" />
-              </button>
+              {/* Input Area */}
+              <div className="border-t border-gray-100 p-4">
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                    placeholder="Ask about your numbers, destiny, or spiritual path..."
+                    className="flex-1 px-4 py-3 rounded-full border border-gray-200 focus:outline-none focus:border-saffron focus:ring-2 focus:ring-saffron/20 transition-all"
+                    disabled={isTyping}
+                  />
+                  <button
+                    onClick={handleSend}
+                    disabled={!input.trim() || isTyping}
+                    className="bg-gradient-to-r from-saffron to-gold text-white px-6 py-3 rounded-full hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Send className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* VOICE INTERFACE (remains unchanged) */}
+        {/* Voice Interface */}
         {mode === 'voice' && (
-          <div className="glassmorphic rounded-3xl p-8 mb-8 border-2 border-gold/30 shadow-2xl bg-white/15 backdrop-blur-md">
-            <div className="text-center mb-8">
-              {/* Recording animation */}
-              <div className="relative w-64 h-64 mx-auto mb-6">
-                <div className={`absolute inset-0 rounded-full border-4 border-saffron/30 ${isRecording ? 'animate-ping' : ''}`}></div>
-                <div className={`absolute inset-4 rounded-full border-3 border-gold/40 ${isRecording ? 'animate-pulse' : ''}`}></div>
-                <div className={`absolute inset-8 rounded-full border-2 border-lotus-pink/50 ${isRecording ? 'animate-spin-slow' : ''}`}></div>
-                <div className="absolute inset-16 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center shadow-2xl">
-                  <Mic className={`w-16 h-16 text-white ${isRecording ? 'animate-pulse' : ''}`} />
+          <div className="max-w-md mx-auto">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center">
+              {/* Recording Animation */}
+              <div className="w-32 h-32 mx-auto mb-6 relative">
+                <div className={`absolute inset-0 rounded-full ${isRecording ? 'bg-red-100 animate-pulse' : 'bg-gray-50'} flex items-center justify-center`}>
+                  <Mic className={`w-12 h-12 ${isRecording ? 'text-red-500' : 'text-gray-400'}`} />
                 </div>
               </div>
 
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={toggleRecording}
-                  className={`px-8 py-4 rounded-full text-lg font-bold transition-all duration-300 transform hover:scale-105 z-20 relative cursor-pointer ${isRecording ? 'bg-red-500 hover:bg-red-600 text-white shadow-xl' : 'bg-gradient-to-r from-saffron to-gold text-white hover:shadow-xl hover:from-gold hover:to-saffron'}`}
-                >
-                  {isRecording ? (
-                    <span className="flex items-center gap-2">
-                      <Square className="w-5 h-5" />
-                      Stop Recording
-                    </span>
-                  ) : (
-                    'Start Speaking'
-                  )}
-                </button>
-              </div>
+              <button
+                onClick={toggleRecording}
+                className={`px-8 py-3 rounded-full font-medium transition-all ${isRecording ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-gradient-to-r from-saffron to-gold text-white hover:shadow-lg'}`}
+              >
+                {isRecording ? (
+                  <span className="flex items-center gap-2">
+                    <Square className="w-4 h-4" />
+                    Stop Recording
+                  </span>
+                ) : (
+                  'Start Speaking'
+                )}
+              </button>
 
               {isRecording && (
-                <div className="mt-4 flex items-center justify-center gap-2 text-red-500 font-semibold">
-                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                  Recording in progress...
+                <div className="mt-4 text-sm text-red-500 font-medium">
+                  🔴 Recording...
                 </div>
               )}
             </div>
           </div>
         )}
-
-        {/* CONTROLS + LINK */}
-        <div className="flex flex-wrap justify-center gap-4 mb-8">
-          <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold cursor-pointer hover:scale-105 transform">
-            <Download className="w-5 h-5 inline mr-2" />
-            Download Transcript
-          </button>
-          <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold cursor-pointer hover:scale-105 transform">
-            <Mail className="w-5 h-5 inline mr-2" />
-            Email Reading
-          </button>
-          <button className="glassmorphic px-6 py-3 rounded-full text-cosmic-indigo hover:bg-white/30 transition-all border-2 border-white/20 font-semibold cursor-pointer hover:scale-105 transform">
-            <RotateCcw className="w-5 h-5 inline mr-2" />
-            End Session & Reflect
-          </button>
-        </div>
-
-        <div className="text-center">
-          <a href="#suggested-questions" className="inline-flex items-center gap-2 text-saffron hover:text-gold transition-colors font-semibold text-lg cursor-pointer hover:scale-105 transform">
-            <Lightbulb className="w-5 h-5" />
-            Need ideas? View Suggested Questions
-          </a>
-        </div>
       </div>
     </section>
   );

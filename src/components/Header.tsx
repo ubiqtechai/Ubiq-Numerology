@@ -17,7 +17,7 @@ const Header = () => {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      element.scrollIntoView({ behavior: 'auto' });
     }
     setIsMenuOpen(false); // Close mobile menu after clicking
   };

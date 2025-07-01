@@ -16,9 +16,9 @@
   }
 }
 
-/* Smooth Scrolling */
+/* Remove smooth scrolling */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 /* Button Interactions */

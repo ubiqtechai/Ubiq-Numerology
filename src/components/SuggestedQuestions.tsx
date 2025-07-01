@@ -51,7 +51,7 @@ const SuggestedQuestions = () => {
     // Scroll to Ask Daffy section and pre-fill the question
     const askDaffySection = document.getElementById('ask-daffy');
     if (askDaffySection) {
-      askDaffySection.scrollIntoView({ behavior: 'smooth' });
+      askDaffySection.scrollIntoView({ behavior: 'auto' });
       // Here you would typically set the question in the chat input
       console.log('Setting question:', question);
     }

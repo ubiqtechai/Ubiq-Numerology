@@ -19,31 +19,36 @@ const AskDaffy = () => {
     setMode(mode === 'voice' ? 'chat' : 'voice');
   };
 
-  // Auto-scroll to bottom when messages change (without smooth animation)
+  // Auto-scroll to bottom when messages change
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
 
-  // Format content with asterisk text converted to bold
-  const formatMessageContent = (content) => {
-    // Split content by asterisks and create bold formatting
-    const parts = content.split(/(\*[^*]+\*)/g);
-    
-    return parts.map((part, index) => {
-      if (part.startsWith('*') && part.endsWith('*')) {
-        // Remove asterisks and make bold
-        const boldText = part.slice(1, -1);
+  // Format numerological content with bold styling and line breaks
+  const formatNumerologicalContent = (content) => {
+    // Split content into lines and format numbers
+    const lines = content.split('\n');
+    return lines.map((line, index) => {
+      // Check if line contains numbers or numerological terms
+      const numerologicalPattern = /(\d+|Life Path|Soul Urge|Expression|Birthday|Master Number|Karmic|Destiny)/gi;
+      
+      if (numerologicalPattern.test(line)) {
+        // Make the entire line bold if it contains numerological content
         return (
-          <strong key={index} className="font-bold">
-            {boldText}
-          </strong>
+          <div key={index} className="font-bold text-cosmic-indigo mb-1">
+            {line}
+          </div>
         );
       } else {
-        return part;
+        return (
+          <div key={index} className="mb-1">
+            {line}
+          </div>
+        );
       }
     });
   };
@@ -145,8 +150,11 @@ const AskDaffy = () => {
                         ? 'bg-saffron text-white' 
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      <div className="text-sm">
-                        {formatMessageContent(message.content)}
+                      <div className="text-sm font-bold">
+                        {message.type === 'user' 
+                          ? formatNumerologicalContent(message.content)
+                          : formatNumerologicalContent(message.content)
+                        }
                       </div>
                     </div>
                   </div>
@@ -181,7 +189,7 @@ const AskDaffy = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about your numbers..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron font-bold"
                     disabled={isTyping}
                   />
                   <button

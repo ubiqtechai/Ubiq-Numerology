@@ -21,12 +21,17 @@ const AskDaffy = () => {
 
   // Auto-scroll to bottom when messages change (without smooth animation)
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'instant', block: 'end' });
+    }
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
+    // Only scroll when new messages are added, not during typing
+    if (!isTyping) {
+      scrollToBottom();
+    }
+  }, [messages]);
 
   // Format content with asterisk text converted to bold
   const formatMessageContent = (content) => {
@@ -213,11 +218,11 @@ const AskDaffy = () => {
                   }`}></div>
                   
                   {/* Inner Circle with Mic */}
-                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 ${
+                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
                     isRecording 
                       ? 'bg-red-500 shadow-lg' 
                       : 'bg-saffron hover:bg-saffron/90'
-                  }`}>
+                  }`} onClick={toggleRecording}>
                     <Mic className="w-12 h-12 text-white" />
                   </div>
 

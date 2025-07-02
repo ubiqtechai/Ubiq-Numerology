@@ -16,9 +16,14 @@
   }
 }
 
-/* Remove smooth scrolling */
+/* Ensure page always starts at top */
 html {
   scroll-behavior: auto;
+}
+
+/* Force scroll to top on page load */
+html, body {
+  scroll-behavior: auto !important;
 }
 
 /* Button Interactions */

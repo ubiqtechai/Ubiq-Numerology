@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import AskDaffy from './components/AskDaffy';
@@ -12,6 +12,11 @@ import Footer from './components/Footer';
 import BackgroundEffects from './components/BackgroundEffects';
 
 function App() {
+  // Ensure page starts at top on load/refresh
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div className="min-h-screen bg-ashram-white text-cosmic-indigo relative overflow-x-hidden">
       <BackgroundEffects />

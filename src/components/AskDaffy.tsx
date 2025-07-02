@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
-
 const AskDaffy = () => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState('chat');
@@ -15,6 +14,7 @@ const AskDaffy = () => {
     setIsRecording(!isRecording);
   };
 
+  
   const switchMode = () => {
     setMode(mode === 'voice' ? 'chat' : 'voice');
   };

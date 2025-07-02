@@ -10,7 +10,6 @@ const AskDaffy = () => {
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
   const messagesEndRef = useRef(null);
-  const chatContainerRef = useRef(null);
 
   const toggleRecording = () => {
     setIsRecording(!isRecording);
@@ -20,28 +19,19 @@ const AskDaffy = () => {
     setMode(mode === 'voice' ? 'chat' : 'voice');
   };
 
-  // Only scroll when a new message is actually added (not during typing indicator)
+  // Auto-scroll to bottom when messages change (without smooth animation)
   const scrollToBottom = () => {
-    if (messagesEndRef.current && chatContainerRef.current) {
-      const container = chatContainerRef.current;
-      const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 100;
-      
-      // Only auto-scroll if user is near the bottom or it's a new message
-      if (isNearBottom) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'instant', block: 'end' });
     }
   };
 
-  // Only trigger scroll when messages array actually changes (new message added)
   useEffect(() => {
-    // Small delay to ensure DOM is updated
-    const timer = setTimeout(() => {
+    // Only scroll when new messages are added, not during typing
+    if (!isTyping) {
       scrollToBottom();
-    }, 100);
-    
-    return () => clearTimeout(timer);
-  }, [messages.length]); // Only depend on messages length, not the typing state
+    }
+  }, [messages]);
 
   // Format content with asterisk text converted to bold
   const formatMessageContent = (content) => {
@@ -152,11 +142,7 @@ const AskDaffy = () => {
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
               {/* Messages */}
-              <div 
-                ref={chatContainerRef}
-                className="h-80 overflow-y-auto p-4 space-y-3"
-                style={{ scrollBehavior: 'smooth' }}
-              >
+              <div className="h-80 overflow-y-auto p-4 space-y-3">
                 {messages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${

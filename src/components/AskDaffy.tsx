@@ -23,6 +23,21 @@ const AskDaffy = () => {
     setIsRecording(!isRecording);
   };
 
+  // Function to format text with bold for asterisks
+  const formatMessage = (text) => {
+    const parts = text.split(/(\*[^*]+\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return (
+          <strong key={index} className="font-bold">
+            {part.slice(1, -1)}
+          </strong>
+        );
+      }
+      return part;
+    });
+  };
+
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -123,8 +138,8 @@ const AskDaffy = () => {
                         ? 'bg-saffron text-white' 
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      <div className="text-sm">
-                        {message.content}
+                      <div className="text-sm font-medium leading-relaxed" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                        {formatMessage(message.content)}
                       </div>
                     </div>
                   </div>
@@ -140,7 +155,7 @@ const AskDaffy = () => {
                           <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-100"></div>
                           <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-200"></div>
                         </div>
-                        <span className="text-xs text-gray-500 ml-2">typing...</span>
+                        <span className="text-xs text-gray-500 ml-2" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>typing...</span>
                       </div>
                     </div>
                   </div>
@@ -156,7 +171,8 @@ const AskDaffy = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about your numbers..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron"
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron font-medium"
+                    style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                     disabled={isTyping}
                   />
                   <button
@@ -207,10 +223,10 @@ const AskDaffy = () => {
 
                 {/* Status Text */}
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                     {isRecording ? 'Listening...' : 'Ready to Listen'}
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                     {isRecording 
                       ? 'Speak clearly about your numerology questions' 
                       : 'Click the microphone to start speaking'
@@ -222,7 +238,7 @@ const AskDaffy = () => {
                 {isRecording && (
                   <div className="flex items-center space-x-2 text-red-500 mb-4">
                     <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-medium">Recording in progress...</span>
+                    <span className="text-sm font-medium" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>Recording in progress...</span>
                   </div>
                 )}
               </div>
@@ -236,6 +252,7 @@ const AskDaffy = () => {
                       ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
                       : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
                   }`}
+                  style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                 >
                   {isRecording ? (
                     <>

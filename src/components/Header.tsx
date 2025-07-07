@@ -1,22 +1,8 @@
 import React, { useState } from 'react';
 import { Menu, X, Globe } from 'lucide-react';
 
-const languages = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'hi', name: 'हिंदी', flag: '🇮🇳' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-  { code: 'pt', name: 'Português', flag: '🇵🇹' },
-  { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'ja', name: '日本語', flag: '🇯🇵' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' }
-];
-
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [language, setLanguage] = useState('en');
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -72,23 +58,6 @@ const Header = () => {
           >
             About
           </button>
-        </div>
-
-        {/* Language Selector */}
-        <div className="hidden md:flex items-center space-x-4">
-          <div className="relative">
-            <select 
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="bg-transparent border border-gold/30 rounded-full px-3 py-1 text-sm focus:outline-none focus:border-gold cursor-pointer"
-            >
-              {languages.map(lang => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.flag} {lang.name}
-                </option>
-              ))}
-            </select>
-          </div>
         </div>
 
         {/* Mobile Menu Button */}

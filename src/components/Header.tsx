@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Globe } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [language, setLanguage] = useState('en');
+
+ 
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -58,6 +61,23 @@ const Header = () => {
           >
             About
           </button>
+        </div>
+
+        {/* Language Selector */}
+        <div className="hidden md:flex items-center space-x-4">
+          <div className="relative">
+            <select 
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              className="bg-transparent border border-gold/30 rounded-full px-3 py-1 text-sm focus:outline-none focus:border-gold cursor-pointer"
+            >
+              {languages.map(lang => (
+                <option key={lang.code} value={lang.code}>
+                  {lang.flag} {lang.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Mobile Menu Button */}

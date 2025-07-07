@@ -54,12 +54,19 @@ const AskDaffy = () => {
       });
 
       const text = await res.text();
-      let data = {};
+      let data = { output: '⚠️ Sorry, I could not understand that.' };
 
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.error('❌ Failed to parse JSON:', text);
+      // Check if response is empty or contains only whitespace
+      if (text && text.trim()) {
+        try {
+          data = JSON.parse(text);
+        } catch (err) {
+          console.error('❌ Failed to parse JSON:', text);
+          data.output = '⚠️ Sorry, I received an invalid response. Please try again.';
+        }
+      } else {
+        console.error('❌ Empty response received from webhook');
+        data.output = '⚠️ Sorry, I received an empty response. Please try again.';
       }
 
       setTimeout(() => {

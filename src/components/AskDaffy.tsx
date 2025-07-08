@@ -19,24 +19,51 @@ const AskDaffy = () => {
     }
   }, [messages, isTyping]);
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
+  
+const toggleRecording = async () => {
+  if (isRecording) {
+    setIsRecording(false);
+    mediaRecorderRef.current?.stop();
+    return;
+  }
+
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const mediaRecorder = new MediaRecorder(stream);
+  const audioChunks: Blob[] = [];
+  mediaRecorderRef.current = mediaRecorder;
+
+  mediaRecorder.ondataavailable = (event) => {
+    audioChunks.push(event.data);
   };
 
-  // Function to format text with bold for asterisks
-  const formatMessage = (text) => {
-    const parts = text.split(/(\*[^*]+\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('*') && part.endsWith('*')) {
-        return (
-          <strong key={index} className="font-semibold text-saffron">
-            {part.slice(1, -1)}
-          </strong>
-        );
-      }
-      return part;
-    });
+  mediaRecorder.onstop = async () => {
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    const formData = new FormData();
+    formData.append('audio', audioBlob, 'voice.webm');
+
+    setIsTyping(true);
+
+    try {
+      const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/voicechat', {
+        method: 'POST',
+        body: formData
+      });
+
+      const arrayBuffer = await response.arrayBuffer();
+      const audioUrl = URL.createObjectURL(new Blob([arrayBuffer], { type: 'audio/mpeg' }));
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (err) {
+      console.error('🎤 Voice chat error:', err);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      setIsTyping(false);
+    }
   };
+
+  mediaRecorder.start();
+  setIsRecording(true);
+};
 
   const handleSend = async () => {
     if (!input.trim()) return;

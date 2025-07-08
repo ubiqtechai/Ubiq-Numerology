@@ -69,14 +69,20 @@ const speakWithElevenLabs = async (text: string) => {
 //     throw error;
 //   }
 // };
+// 
+
 const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
   console.log("🎧 Starting transcription process...");
 
   const formData = new FormData();
   const audioFile = new File([audioBlob], 'voice.wav', { type: 'audio/wav' });
   formData.append('audio', audioFile);
+  
+  // Add required model_id field
+  const MODEL_ID = "whisper-1"; // Replace with the correct model ID if different
+  formData.append('model_id', MODEL_ID);
 
-  console.log("📁 Audio file created and appended to FormData:", audioFile);
+  console.log("📁 Audio and model_id appended to FormData:", audioFile, MODEL_ID);
 
   try {
     console.log("🌐 Sending request to ElevenLabs API...");
@@ -109,6 +115,7 @@ const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
     throw error;
   }
 };
+
 
 const getAIResponse = async (userText: string) => {
   // Replace this with your actual AI/LLM API call

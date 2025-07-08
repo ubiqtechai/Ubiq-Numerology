@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
 // ElevenLabs API Configuration
-const ELEVENLABS_API_KEY = "YOUR_ELEVENLABS_API_KEY";
+const ELEVENLABS_API_KEY = "sk_bf2c2397c115abf59b9bcea405372483ab47cf35c6c8640b";
 const ELEVENLABS_VOICE_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
 
 // Helper Functions

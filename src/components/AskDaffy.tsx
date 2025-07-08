@@ -465,3 +465,5 @@ const speakWithElevenLabs = async (text: string) => {
     throw error;
   }
 };
+
+export default AskDaffy;

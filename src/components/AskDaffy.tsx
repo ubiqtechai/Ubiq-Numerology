@@ -43,7 +43,7 @@ const ELEVENLABS_AGENT_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
 const speakWithElevenLabs = async (text: string) => {
   try {
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/agents/${ELEVENLABS_VOICE_ID}/speech`,
+      `https://api.elevenlabs.io/v1/agents/${ELEVENLABS_AGENT_ID}/speech`,
       {
         method: "POST",
         headers: {

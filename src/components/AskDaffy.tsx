@@ -9,12 +9,12 @@ const ELEVENLABS_VOICE_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
 const speakWithElevenLabs = async (text: string) => {
   try {
     const response = await fetch(
-      `https://aapi.elevenlabs.io/v1/text-to-speech/agent_01jz4yvvsge4z9p8zn156k996n`,
+      `https://aapi.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "xi-api-key": "sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c",
+          "xi-api-key": ELEVENLABS_API_KEY,
         },
         body: JSON.stringify({
           text,
@@ -51,8 +51,7 @@ const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
       {
         method: "POST",
         headers: {
-          "xi-api-key": "
-            sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c",
+          "xi-api-key": ELEVENLABS_API_KEY,
         },
         body: formData,
       }
@@ -84,7 +83,7 @@ const getAIResponse = async (userText: string) => {
 // Main Component
 const AskDaffy = () => {
   const [input, setInput] = useState('');
-  const [mode, setMode] = useState('chat');
+  const [mode, setMode] = useState<'chat' | 'voice'>('chat');
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([
@@ -96,14 +95,12 @@ const AskDaffy = () => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
-  // Auto-scroll to bottom of chat
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  // Voice Recording Handler
   const toggleRecording = async () => {
     if (isRecording) {
       setIsRecording(false);
@@ -126,25 +123,18 @@ const AskDaffy = () => {
         setIsTyping(true);
 
         try {
-          // Step 1: Speech to Text
           const userText = await transcribeAudioWithElevenLabs(audioBlob);
-          
-          // Add user message to chat
           setMessages(prev => [...prev, { type: 'user', content: userText }]);
-          
-          // Step 2: Get AI Response
+
           const aiResponse = await getAIResponse(userText);
-          
-          // Step 3: Text to Speech
           await speakWithElevenLabs(aiResponse);
-          
-          // Add AI message to chat
+
           setMessages(prev => [...prev, { type: 'assistant', content: aiResponse }]);
         } catch (error) {
           console.error("Voice processing error:", error);
-          setMessages(prev => [...prev, { 
-            type: 'assistant', 
-            content: "Sorry, I encountered an error. Please try again." 
+          setMessages(prev => [...prev, {
+            type: 'assistant',
+            content: "Sorry, I encountered an error. Please try again."
           }]);
         } finally {
           setIsTyping(false);
@@ -159,7 +149,6 @@ const AskDaffy = () => {
     }
   };
 
-  // Text Chat Handler
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -169,19 +158,14 @@ const AskDaffy = () => {
     setIsTyping(true);
 
     try {
-      // Get AI Response
       const aiResponse = await getAIResponse(input);
-      
-      // Speak response
       await speakWithElevenLabs(aiResponse);
-      
-      // Add AI message to chat
       setMessages(prev => [...prev, { type: 'assistant', content: aiResponse }]);
     } catch (error) {
       console.error("Chat error:", error);
-      setMessages(prev => [...prev, { 
-        type: 'assistant', 
-        content: "Something went wrong. Please try again." 
+      setMessages(prev => [...prev, {
+        type: 'assistant',
+        content: "Something went wrong. Please try again."
       }]);
     } finally {
       setIsTyping(false);

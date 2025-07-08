@@ -1,30 +1,34 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
-const speakWithElevenLabs = async (text: string) => {
-  const apiKey = "sk_bf2c2397c115abf59b9bcea405372483ab47cf35c6c8640b";
-  const voiceId = "agent_01jz4yvvsge4z9p8zn156k996n";
+// ElevenLabs API Configuration
+const ELEVENLABS_API_KEY = "YOUR_ELEVENLABS_API_KEY";
+const ELEVENLABS_VOICE_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
 
+// Helper Functions
+const speakWithElevenLabs = async (text: string) => {
   try {
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "xi-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        text,
-        model_id: "eleven_multilingual_v2",
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75,
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "xi-api-key": ELEVENLABS_API_KEY,
         },
-      }),
-    });
+        body: JSON.stringify({
+          text,
+          model_id: "eleven_multilingual_v2",
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
-      console.error("❌ ElevenLabs TTS failed:", await response.text());
-      return;
+      throw new Error(`ElevenLabs TTS failed: ${response.status}`);
     }
 
     const audioBlob = await response.blob();
@@ -33,9 +37,50 @@ const speakWithElevenLabs = async (text: string) => {
     audio.play();
   } catch (error) {
     console.error("🔊 TTS Error:", error);
+    throw error;
   }
 };
 
+const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
+  const formData = new FormData();
+  formData.append('audio', audioBlob, 'voice.webm');
+
+  try {
+    const response = await fetch(
+      "https://api.elevenlabs.io/v1/speech-to-text",
+      {
+        method: "POST",
+        headers: {
+          "xi-api-key": ELEVENLABS_API_KEY,
+        },
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`STT failed: ${response.status}`);
+    }
+
+    const { text } = await response.json();
+    return text;
+  } catch (error) {
+    console.error("🎤 STT Error:", error);
+    throw error;
+  }
+};
+
+const getAIResponse = async (userText: string) => {
+  // Replace this with your actual AI/LLM API call
+  if (userText.toLowerCase().includes("numerology")) {
+    return "In numerology, your life path number reveals your destiny. Calculate it by adding your birth date digits.";
+  } else if (userText.toLowerCase().includes("hello")) {
+    return "Namaste! I am Daffy, your spiritual guide. How may I help you today?";
+  } else {
+    return "I'm sorry, I didn't understand. Could you please rephrase your question?";
+  }
+};
+
+// Main Component
 const AskDaffy = () => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState('chat');
@@ -44,20 +89,20 @@ const AskDaffy = () => {
   const [messages, setMessages] = useState([
     {
       type: 'assistant',
-      content:
-        'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?',
+      content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?',
     },
   ]);
-
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
+  // Auto-scroll to bottom of chat
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
+  // Voice Recording Handler
   const toggleRecording = async () => {
     if (isRecording) {
       setIsRecording(false);
@@ -65,107 +110,80 @@ const AskDaffy = () => {
       return;
     }
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
-    const audioChunks: Blob[] = [];
-    mediaRecorderRef.current = mediaRecorder;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const audioChunks: Blob[] = [];
 
-    mediaRecorder.ondataavailable = (event) => {
-      audioChunks.push(event.data);
-    };
+      mediaRecorderRef.current = mediaRecorder;
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
 
-    mediaRecorder.onstop = async () => {
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'voice.webm');
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        setIsTyping(true);
 
-      setIsTyping(true);
+        try {
+          // Step 1: Speech to Text
+          const userText = await transcribeAudioWithElevenLabs(audioBlob);
+          
+          // Add user message to chat
+          setMessages(prev => [...prev, { type: 'user', content: userText }]);
+          
+          // Step 2: Get AI Response
+          const aiResponse = await getAIResponse(userText);
+          
+          // Step 3: Text to Speech
+          await speakWithElevenLabs(aiResponse);
+          
+          // Add AI message to chat
+          setMessages(prev => [...prev, { type: 'assistant', content: aiResponse }]);
+        } catch (error) {
+          console.error("Voice processing error:", error);
+          setMessages(prev => [...prev, { 
+            type: 'assistant', 
+            content: "Sorry, I encountered an error. Please try again." 
+          }]);
+        } finally {
+          setIsTyping(false);
+        }
+      };
 
-      try {
-        const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/voicechat', {
-          method: 'POST',
-          body: formData,
-        });
-
-        const result = await response.json();
-
-        // Decode base64 audio and play
-        const audioBytes = Uint8Array.from(atob(result.audio), c => c.charCodeAt(0));
-        const audioBlob = new Blob([audioBytes], { type: 'audio/mpeg' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        audio.play();
-
-        // Show text response
-        const botMessage = {
-          type: 'assistant',
-          content: result.text || '⚠️ Sorry, I could not understand that.',
-        };
-
-        setMessages((prev) => [...prev, botMessage]);
-      } catch (err) {
-        console.error('🎤 Voice chat error:', err);
-        alert('Something went wrong. Please try again.');
-      } finally {
-        setIsTyping(false);
-      }
-    };
-
-    mediaRecorder.start();
-    setIsRecording(true);
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (error) {
+      console.error("Microphone access error:", error);
+      alert("Please allow microphone access to use voice features.");
+    }
   };
 
+  // Text Chat Handler
   const handleSend = async () => {
     if (!input.trim()) return;
 
     const newUserMessage = { type: 'user', content: input };
-    setMessages((prev) => [...prev, newUserMessage]);
+    setMessages(prev => [...prev, newUserMessage]);
     setInput('');
     setIsTyping(true);
 
     try {
-      const res = await fetch('https://adarsh0309.app.n8n.cloud/webhook/samplechat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input }),
-      });
-
-      const text = await res.text();
-      let data = { output: '⚠️ Sorry, I could not understand that.' };
-
-      if (text && text.trim()) {
-        try {
-          data = JSON.parse(text);
-        } catch (err) {
-          console.error('❌ Failed to parse JSON:', text);
-          data.output = '⚠️ Sorry, I received an invalid response. Please try again.';
-        }
-      } else {
-        console.error('❌ Empty response received from webhook');
-        data.output = '⚠️ Sorry, I received an empty response. Please try again.';
-      }
-
-      setTimeout(() => {
-        const botMessage = {
-          type: 'assistant',
-          content: data.output || '⚠️ Sorry, I could not understand that.',
-        };
-
-        setMessages((prev) => [...prev, botMessage]);
-        speakWithElevenLabs(botMessage.content);
-        setIsTyping(false);
-      }, 1500);
+      // Get AI Response
+      const aiResponse = await getAIResponse(input);
+      
+      // Speak response
+      await speakWithElevenLabs(aiResponse);
+      
+      // Add AI message to chat
+      setMessages(prev => [...prev, { type: 'assistant', content: aiResponse }]);
     } catch (error) {
-      console.error('Webhook error:', error);
-      setTimeout(() => {
-        const botMessage = {
-          type: 'assistant',
-          content: 'Something went wrong. Please try again later.',
-        };
-        setMessages((prev) => [...prev, botMessage]);
-        speakWithElevenLabs(botMessage.content);
-        setIsTyping(false);
-      }, 1000);
+      console.error("Chat error:", error);
+      setMessages(prev => [...prev, { 
+        type: 'assistant', 
+        content: "Something went wrong. Please try again." 
+      }]);
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -231,7 +249,6 @@ const AskDaffy = () => {
                     </div>
                   </div>
                 ))}
-
                 {isTyping && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 px-4 py-3 rounded-lg">
@@ -284,7 +301,6 @@ const AskDaffy = () => {
                       ? 'border-red-500 animate-pulse'
                       : 'border-gray-200'
                   }`}></div>
-
                   <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
                     isRecording
                       ? 'bg-red-500 shadow-lg'
@@ -292,7 +308,6 @@ const AskDaffy = () => {
                   }`} onClick={toggleRecording}>
                     <Mic className="w-12 h-12 text-white" />
                   </div>
-
                   {isRecording && (
                     <>
                       <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
@@ -300,7 +315,6 @@ const AskDaffy = () => {
                     </>
                   )}
                 </div>
-
                 <div className="text-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">
                     {isRecording ? 'Listening...' : 'Ready to Listen'}
@@ -311,7 +325,6 @@ const AskDaffy = () => {
                       : 'Click the microphone to start speaking'}
                   </p>
                 </div>
-
                 {isRecording && (
                   <div className="flex items-center space-x-2 text-red-500 mb-4">
                     <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
@@ -319,7 +332,6 @@ const AskDaffy = () => {
                   </div>
                 )}
               </div>
-
               <div className="border-t p-4 text-center">
                 <button
                   onClick={toggleRecording}

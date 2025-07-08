@@ -9,12 +9,12 @@ const ELEVENLABS_VOICE_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
 const speakWithElevenLabs = async (text: string) => {
   try {
     const response = await fetch(
-      `https://aapi.elevenlabs.io/v1/text-to-speech/${ELEVENLABS_VOICE_ID}`,
+      `https://aapi.elevenlabs.io/v1/text-to-speech/agent_01jz4yvvsge4z9p8zn156k996n`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "xi-api-key": ELEVENLABS_API_KEY,
+          "xi-api-key": sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c,
         },
         body: JSON.stringify({
           text,
@@ -51,7 +51,7 @@ const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
       {
         method: "POST",
         headers: {
-          "xi-api-key": ELEVENLABS_API_KEY,
+          "xi-api-key": sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c,
         },
         body: formData,
       }

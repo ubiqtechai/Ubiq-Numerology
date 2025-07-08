@@ -76,7 +76,7 @@ const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
 
   const formData = new FormData();
   const audioFile = new File([audioBlob], 'voice.wav', { type: 'audio/wav' });
-  formData.append('audio', audioFile);
+  formData.append('file', audioFile);
   
   // Add required model_id field
   const MODEL_ID = "whisper-1"; // Replace with the correct model ID if different

@@ -44,6 +44,7 @@ const speakWithElevenLabs = async (text: string) => {
   try {
     const response = await fetch(
       `https://api.elevenlabs.io/v1/agents/${ELEVENLABS_AGENT_ID}/speech`,
+      
       {
         method: "POST",
         headers: {

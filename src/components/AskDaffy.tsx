@@ -14,7 +14,7 @@ const speakWithElevenLabs = async (text: string) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "xi-api-key": sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c,
+          "xi-api-key": "sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c",
         },
         body: JSON.stringify({
           text,
@@ -51,7 +51,8 @@ const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
       {
         method: "POST",
         headers: {
-          "xi-api-key": sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c,
+          "xi-api-key": "
+            sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c",
         },
         body: formData,
       }

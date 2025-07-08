@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
-const ELEVENLABS_API_KEY = "sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c";
+const ELEVENLABS_API_KEY = "sk_159b13112039dee218fa2b58e6c520486d6269fda17577f5";
 const VOICE_ID = "SrBurvmnTnB3CW6txUgO";
 
 // TTS Function

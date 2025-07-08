@@ -3,7 +3,7 @@ import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
 // ElevenLabs API Configuration
 const ELEVENLABS_API_KEY = "sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c";
-const ELEVENLABS_VOICE_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
+const ELEVENLABS_AGENT_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
 
 // Helper Functions
 // const speakWithElevenLabs = async (text: string) => {

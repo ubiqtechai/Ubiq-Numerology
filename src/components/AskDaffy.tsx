@@ -6,24 +6,51 @@ const ELEVENLABS_API_KEY = "sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c"
 const ELEVENLABS_VOICE_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
 
 // Helper Functions
+// const speakWithElevenLabs = async (text: string) => {
+//   try {
+//     const response = await fetch(
+//       `POST https://api.elevenlabs.io/v1/agents/{agent_id}/speech`,
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           "xi-api-key": ELEVENLABS_API_KEY,
+//         },
+//         body: JSON.stringify({
+//           text,
+//           model_id: "eleven_multilingual_v2",
+//           voice_settings: {
+//             stability: 0.5,
+//             similarity_boost: 0.75,
+//           },
+//         }),
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`ElevenLabs TTS failed: ${response.status}`);
+//     }
+
+//     const audioBlob = await response.blob();
+//     const audioUrl = URL.createObjectURL(audioBlob);
+//     const audio = new Audio(audioUrl);
+//     audio.play();
+//   } catch (error) {
+//     console.error("🔊 TTS Error:", error);
+//     throw error;
+//   }
+// };
 const speakWithElevenLabs = async (text: string) => {
   try {
     const response = await fetch(
-      `POST https://api.elevenlabs.io/v1/agents/{agent_id}/speech`,
+      `https://api.elevenlabs.io/v1/agents/${ELEVENLABS_VOICE_ID}/speech`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "xi-api-key": ELEVENLABS_API_KEY,
         },
-        body: JSON.stringify({
-          text,
-          model_id: "eleven_multilingual_v2",
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-          },
-        }),
+        body: JSON.stringify({ text }),
       }
     );
 
@@ -40,6 +67,7 @@ const speakWithElevenLabs = async (text: string) => {
     throw error;
   }
 };
+
 
 // const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
 //   const formData = new FormData();

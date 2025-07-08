@@ -43,7 +43,8 @@ const speakWithElevenLabs = async (text: string) => {
 
 const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
   const formData = new FormData();
-  formData.append('audio', audioBlob, 'voice.webm');
+  formData.append('audio', new File([audioBlob], 'voice.wav', { type: 'audio/wav' }));
+
 
   try {
     const response = await fetch(

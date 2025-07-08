@@ -1,30 +1,62 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
+const speakWithElevenLabs = async (text: string) => {
+  const apiKey = "YOUR_ELEVENLABS_API_KEY"; // Replace this in production with secure storage
+  const voiceId = "YOUR_AGENT_ID"; // Replace with your ElevenLabs agent ID
+
+  try {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "xi-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        text,
+        model_id: "eleven_multilingual_v2",
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.75,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("❌ ElevenLabs TTS failed:", await response.text());
+      return;
+    }
+
+    const audioBlob = await response.blob();
+    const audioUrl = URL.createObjectURL(audioBlob);
+    const audio = new Audio(audioUrl);
+    audio.play();
+  } catch (error) {
+    console.error("🔊 TTS Error:", error);
+  }
+};
+
 const AskDaffy = () => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState('chat');
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([
-    { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
+    {
+      type: 'assistant',
+      content:
+        'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?',
+    },
   ]);
 
-  const messagesEndRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
-
-  const formatMessage = (text) => {
-    return text.split('\n').map((line, index) => (
-      <p key={index} className="mb-1">{line}</p>
-    ));
-  };
 
   const toggleRecording = async () => {
     if (isRecording) {
@@ -35,7 +67,7 @@ const AskDaffy = () => {
 
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream);
-    const audioChunks = [];
+    const audioChunks: Blob[] = [];
     mediaRecorderRef.current = mediaRecorder;
 
     mediaRecorder.ondataavailable = (event) => {
@@ -47,15 +79,12 @@ const AskDaffy = () => {
       const formData = new FormData();
       formData.append('audio', audioBlob, 'voice.webm');
 
-      // Clean up the stream
-      stream.getTracks().forEach((track) => track.stop());
-
       setIsTyping(true);
 
       try {
         const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/voicechat', {
           method: 'POST',
-          body: formData
+          body: formData,
         });
 
         const arrayBuffer = await response.arrayBuffer();
@@ -86,7 +115,7 @@ const AskDaffy = () => {
       const res = await fetch('https://adarsh0309.app.n8n.cloud/webhook/samplechat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
+        body: JSON.stringify({ message: input }),
       });
 
       const text = await res.text();
@@ -107,30 +136,35 @@ const AskDaffy = () => {
       setTimeout(() => {
         const botMessage = {
           type: 'assistant',
-          content: data.output || '⚠️ Sorry, I could not understand that.'
+          content: data.output || '⚠️ Sorry, I could not understand that.',
         };
 
         setMessages((prev) => [...prev, botMessage]);
+        speakWithElevenLabs(botMessage.content); // 🗣️ Speak the reply
         setIsTyping(false);
       }, 1500);
     } catch (error) {
       console.error('Webhook error:', error);
       setTimeout(() => {
-        setMessages((prev) => [...prev, {
+        const botMessage = {
           type: 'assistant',
-          content: 'Something went wrong. Please try again later.'
-        }]);
+          content: 'Something went wrong. Please try again later.',
+        };
+        setMessages((prev) => [...prev, botMessage]);
+        speakWithElevenLabs(botMessage.content);
         setIsTyping(false);
       }, 1000);
     }
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
+
+  const formatMessage = (msg: string) => msg;
 
   return (
     <section id="ask-daffy" className="py-20 relative">
@@ -168,7 +202,6 @@ const AskDaffy = () => {
         {mode === 'chat' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              {/* Messages */}
               <div
                 ref={messagesEndRef}
                 className="h-80 overflow-y-auto p-4 space-y-3 scroll-smooth"
@@ -176,11 +209,11 @@ const AskDaffy = () => {
                 {messages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                      message.type === 'user' 
-                        ? 'bg-saffron text-white' 
+                      message.type === 'user'
+                        ? 'bg-saffron text-white'
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      <div className="text-sm leading-relaxed font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                      <div className="text-sm leading-relaxed font-normal">
                         {formatMessage(message.content)}
                       </div>
                     </div>
@@ -213,14 +246,12 @@ const AskDaffy = () => {
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about your numbers..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron font-normal"
-                    style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                     disabled={isTyping}
                   />
                   <button
                     onClick={handleSend}
                     disabled={!input.trim() || isTyping}
                     className="bg-saffron text-white px-4 py-2 rounded-lg hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label="Send message"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -237,20 +268,16 @@ const AskDaffy = () => {
               <div className="h-80 p-8 flex flex-col items-center justify-center">
                 <div className="relative mb-8">
                   <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 ${
-                    isRecording 
-                      ? 'border-red-500 animate-pulse' 
+                    isRecording
+                      ? 'border-red-500 animate-pulse'
                       : 'border-gray-200'
                   }`}></div>
 
-                  <div
-                    className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
-                      isRecording 
-                        ? 'bg-red-500 shadow-lg' 
-                        : 'bg-saffron hover:bg-saffron/90'
-                    }`}
-                    onClick={toggleRecording}
-                    aria-label={isRecording ? 'Stop recording' : 'Start recording'}
-                  >
+                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                    isRecording
+                      ? 'bg-red-500 shadow-lg'
+                      : 'bg-saffron hover:bg-saffron/90'
+                  }`} onClick={toggleRecording}>
                     <Mic className="w-12 h-12 text-white" />
                   </div>
 
@@ -267,10 +294,9 @@ const AskDaffy = () => {
                     {isRecording ? 'Listening...' : 'Ready to Listen'}
                   </h3>
                   <p className="text-sm text-gray-600 font-normal">
-                    {isRecording 
-                      ? 'Speak clearly about your numerology questions' 
-                      : 'Click the microphone to start speaking'
-                    }
+                    {isRecording
+                      ? 'Speak clearly about your numerology questions'
+                      : 'Click the microphone to start speaking'}
                   </p>
                 </div>
 
@@ -286,8 +312,8 @@ const AskDaffy = () => {
                 <button
                   onClick={toggleRecording}
                   className={`px-8 py-3 rounded-lg font-medium transition-all ${
-                    isRecording 
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
+                    isRecording
+                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
                       : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
                   }`}
                 >

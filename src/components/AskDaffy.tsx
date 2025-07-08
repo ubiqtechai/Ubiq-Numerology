@@ -5,6 +5,7 @@ import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 const ELEVENLABS_API_KEY = "sk_0aff5e9b6828f01e4efae5d28b2624603b925bfba0197c9c";
 const ELEVENLABS_AGENT_ID = "agent_01jz4yvvsge4z9p8zn156k996n";
 
+
 // Helper Functions
 // const speakWithElevenLabs = async (text: string) => {
 //   try {
@@ -44,7 +45,6 @@ const speakWithElevenLabs = async (text: string) => {
   try {
     const response = await fetch(
       `https://api.elevenlabs.io/v1/agents/${ELEVENLABS_AGENT_ID}/speech`,
-      
       {
         method: "POST",
         headers: {

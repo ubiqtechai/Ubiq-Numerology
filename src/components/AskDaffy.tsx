@@ -2,8 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
 const speakWithElevenLabs = async (text: string) => {
-  const apiKey = "YOUR_ELEVENLABS_API_KEY"; // Replace this in production with secure storage
-  const voiceId = "YOUR_AGENT_ID"; // Replace with your ElevenLabs agent ID
+  const apiKey = "YOUR_ELEVENLABS_API_KEY";
+  const voiceId = "YOUR_AGENT_ID";
 
   try {
     const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
@@ -87,10 +87,22 @@ const AskDaffy = () => {
           body: formData,
         });
 
-        const arrayBuffer = await response.arrayBuffer();
-        const audioUrl = URL.createObjectURL(new Blob([arrayBuffer], { type: 'audio/mpeg' }));
+        const result = await response.json();
+
+        // Decode base64 audio and play
+        const audioBytes = Uint8Array.from(atob(result.audio), c => c.charCodeAt(0));
+        const audioBlob = new Blob([audioBytes], { type: 'audio/mpeg' });
+        const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
         audio.play();
+
+        // Show text response
+        const botMessage = {
+          type: 'assistant',
+          content: result.text || '⚠️ Sorry, I could not understand that.',
+        };
+
+        setMessages((prev) => [...prev, botMessage]);
       } catch (err) {
         console.error('🎤 Voice chat error:', err);
         alert('Something went wrong. Please try again.');
@@ -140,7 +152,7 @@ const AskDaffy = () => {
         };
 
         setMessages((prev) => [...prev, botMessage]);
-        speakWithElevenLabs(botMessage.content); // 🗣️ Speak the reply
+        speakWithElevenLabs(botMessage.content);
         setIsTyping(false);
       }, 1500);
     } catch (error) {

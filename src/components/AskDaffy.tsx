@@ -11,6 +11,7 @@ const AskDaffy = () => {
   ]);
 
   const messagesEndRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -19,23 +20,58 @@ const AskDaffy = () => {
     }
   }, [messages, isTyping]);
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
+  const formatMessage = (text) => {
+    return text.split('\n').map((line, index) => (
+      <p key={index} className="mb-1">{line}</p>
+    ));
   };
 
-  // Function to format text with bold for asterisks
-  const formatMessage = (text) => {
-    const parts = text.split(/(\*[^*]+\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('*') && part.endsWith('*')) {
-        return (
-          <strong key={index} className="font-semibold text-saffron">
-            {part.slice(1, -1)}
-          </strong>
-        );
+  const toggleRecording = async () => {
+    if (isRecording) {
+      setIsRecording(false);
+      mediaRecorderRef.current?.stop();
+      return;
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const audioChunks = [];
+    mediaRecorderRef.current = mediaRecorder;
+
+    mediaRecorder.ondataavailable = (event) => {
+      audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const formData = new FormData();
+      formData.append('audio', audioBlob, 'voice.webm');
+
+      // Clean up the stream
+      stream.getTracks().forEach((track) => track.stop());
+
+      setIsTyping(true);
+
+      try {
+        const response = await fetch('https://adarsh0309.app.n8n.cloud/webhook/voicechat', {
+          method: 'POST',
+          body: formData
+        });
+
+        const arrayBuffer = await response.arrayBuffer();
+        const audioUrl = URL.createObjectURL(new Blob([arrayBuffer], { type: 'audio/mpeg' }));
+        const audio = new Audio(audioUrl);
+        audio.play();
+      } catch (err) {
+        console.error('🎤 Voice chat error:', err);
+        alert('Something went wrong. Please try again.');
+      } finally {
+        setIsTyping(false);
       }
-      return part;
-    });
+    };
+
+    mediaRecorder.start();
+    setIsRecording(true);
   };
 
   const handleSend = async () => {
@@ -56,7 +92,6 @@ const AskDaffy = () => {
       const text = await res.text();
       let data = { output: '⚠️ Sorry, I could not understand that.' };
 
-      // Check if response is empty or contains only whitespace
       if (text && text.trim()) {
         try {
           data = JSON.parse(text);
@@ -152,7 +187,6 @@ const AskDaffy = () => {
                   </div>
                 ))}
 
-                {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 px-4 py-3 rounded-lg">
@@ -162,7 +196,7 @@ const AskDaffy = () => {
                           <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-100"></div>
                           <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-200"></div>
                         </div>
-                        <span className="text-xs text-gray-500 ml-2 font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>typing...</span>
+                        <span className="text-xs text-gray-500 ml-2 font-normal">typing...</span>
                       </div>
                     </div>
                   </div>
@@ -186,6 +220,7 @@ const AskDaffy = () => {
                     onClick={handleSend}
                     disabled={!input.trim() || isTyping}
                     className="bg-saffron text-white px-4 py-2 rounded-lg hover:bg-saffron/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Send message"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -199,41 +234,39 @@ const AskDaffy = () => {
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              {/* Voice Recording Area */}
               <div className="h-80 p-8 flex flex-col items-center justify-center">
-                {/* Mic Visualization */}
                 <div className="relative mb-8">
-                  {/* Outer Ring - Animated when recording */}
                   <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 ${
                     isRecording 
                       ? 'border-red-500 animate-pulse' 
                       : 'border-gray-200'
                   }`}></div>
-                  
-                  {/* Inner Circle with Mic */}
-                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
-                    isRecording 
-                      ? 'bg-red-500 shadow-lg' 
-                      : 'bg-saffron hover:bg-saffron/90'
-                  }`} onClick={toggleRecording}>
+
+                  <div
+                    className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                      isRecording 
+                        ? 'bg-red-500 shadow-lg' 
+                        : 'bg-saffron hover:bg-saffron/90'
+                    }`}
+                    onClick={toggleRecording}
+                    aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+                  >
                     <Mic className="w-12 h-12 text-white" />
                   </div>
 
-                  {/* Recording Pulse Effect */}
                   {isRecording && (
                     <>
                       <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
-                      <div className="absolute inset-2 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{animationDelay: '0.5s'}}></div>
+                      <div className="absolute inset-2 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{ animationDelay: '0.5s' }}></div>
                     </>
                   )}
                 </div>
 
-                {/* Status Text */}
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
                     {isRecording ? 'Listening...' : 'Ready to Listen'}
                   </h3>
-                  <p className="text-sm text-gray-600 font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                  <p className="text-sm text-gray-600 font-normal">
                     {isRecording 
                       ? 'Speak clearly about your numerology questions' 
                       : 'Click the microphone to start speaking'
@@ -241,16 +274,14 @@ const AskDaffy = () => {
                   </p>
                 </div>
 
-                {/* Recording Indicator */}
                 {isRecording && (
                   <div className="flex items-center space-x-2 text-red-500 mb-4">
                     <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>Recording in progress...</span>
+                    <span className="text-sm font-normal">Recording in progress...</span>
                   </div>
                 )}
               </div>
 
-              {/* Voice Controls */}
               <div className="border-t p-4 text-center">
                 <button
                   onClick={toggleRecording}
@@ -259,7 +290,6 @@ const AskDaffy = () => {
                       ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
                       : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
                   }`}
-                  style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                 >
                   {isRecording ? (
                     <>

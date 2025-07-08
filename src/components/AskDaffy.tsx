@@ -41,12 +41,45 @@ const speakWithElevenLabs = async (text: string) => {
   }
 };
 
-const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
-  const formData = new FormData();
-  formData.append('audio', new File([audioBlob], 'voice.wav', { type: 'audio/wav' }));
+// const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
+//   const formData = new FormData();
+//   formData.append('audio', new File([audioBlob], 'voice.wav', { type: 'audio/wav' }));
 
+
+//   try {
+//     const response = await fetch(
+//       "https://api.elevenlabs.io/v1/speech-to-text",
+//       {
+//         method: "POST",
+//         headers: {
+//           "xi-api-key": ELEVENLABS_API_KEY,
+//         },
+//         body: formData,
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error(`STT failed: ${response.status}`);
+//     }
+
+//     const { text } = await response.json();
+//     return text;
+//   } catch (error) {
+//     console.error("🎤 STT Error:", error);
+//     throw error;
+//   }
+// };
+const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
+  console.log("🎧 Starting transcription process...");
+
+  const formData = new FormData();
+  const audioFile = new File([audioBlob], 'voice.wav', { type: 'audio/wav' });
+  formData.append('audio', audioFile);
+
+  console.log("📁 Audio file created and appended to FormData:", audioFile);
 
   try {
+    console.log("🌐 Sending request to ElevenLabs API...");
     const response = await fetch(
       "https://api.elevenlabs.io/v1/speech-to-text",
       {
@@ -58,14 +91,21 @@ const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
       }
     );
 
+    console.log("📬 Response received. Status:", response.status);
+
     if (!response.ok) {
       throw new Error(`STT failed: ${response.status}`);
     }
 
-    const { text } = await response.json();
+    const jsonResponse = await response.json();
+    console.log("📝 JSON parsed from response:", jsonResponse);
+
+    const { text } = jsonResponse;
+    console.log("✅ Transcribed text:", text);
+
     return text;
   } catch (error) {
-    console.error("🎤 STT Error:", error);
+    console.error("❌ STT Error:", error);
     throw error;
   }
 };

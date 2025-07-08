@@ -79,7 +79,7 @@ const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
   formData.append('file', audioFile);
   
   // Add required model_id field
-  const MODEL_ID = "whisper-1"; // Replace with the correct model ID if different
+  const MODEL_ID = "scribe_v1"; // Replace with the correct model ID if different
   formData.append('model_id', MODEL_ID);
 
   console.log("📁 Audio and model_id appended to FormData:", audioFile, MODEL_ID);

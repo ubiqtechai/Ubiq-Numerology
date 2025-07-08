@@ -3,10 +3,10 @@ import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
 const speakWithElevenLabs = async (text: string) => {
   const apiKey = "YOUR_ELEVENLABS_API_KEY";
-  const voiceId = "YOUR_AGENT_ID";
+  const voiceId = "agent_01jz4yvvsge4z9p8zn156k996n";
 
   try {
-    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+    const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/$agent_01jz4yvvsge4z9p8zn156k996n`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -23,6 +23,33 @@ const AskDaffy = () => {
   //   setIsRecording(!isRecording);
   // };  
 
+  const toggleRecording = () => {
+  if (isRecording) {
+    setIsRecording(false);
+    mediaRecorderRef.current?.stop();
+  } else {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const mediaRecorder = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+
+        // ❗ Un-comment below only if STT is working
+        // const userText = await transcribeAudioWithElevenLabs(audioBlob);
+        // await processUserInput(userText);
+
+        console.log("STT disabled or skipped – audio recorded.");
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    });
+  }
+};
+
 
 
   useEffect(() => {

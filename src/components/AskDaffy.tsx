@@ -6,12 +6,12 @@ const AskDaffy = () => {
   const [mode, setMode] = useState('chat');
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [widgetLoaded, setWidgetLoaded] = useState(false);
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
 
   const messagesEndRef = useRef(null);
-
   const mediaRecorderRef = useRef(null);
 
   // Scroll to bottom when messages change
@@ -48,37 +48,44 @@ const AskDaffy = () => {
     if (mode === 'voice') {
       const container = document.getElementById("daffy-elevenlabs-agent");
       
-      if (container && !container.querySelector("elevenlabs-convai")) {
-        // Check if the script is already loaded
-        if (typeof window !== 'undefined' && (window as any).ElevenLabsConvAI) {
+      if (container && !widgetLoaded) {
+        const loadWidget = () => {
+          // Clear any existing content
+          container.innerHTML = '';
+          
+          // Create the widget element
           const widget = document.createElement("elevenlabs-convai");
           widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
           widget.style.width = "100%";
           widget.style.maxWidth = "420px";
           widget.style.margin = "0 auto";
           widget.style.position = "static";
-          container.appendChild(widget);
-        } else {
-          // Wait for script to load
-          const checkScript = setInterval(() => {
-            if ((window as any).ElevenLabsConvAI) {
-              clearInterval(checkScript);
-              const widget = document.createElement("elevenlabs-convai");
-              widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
-              widget.style.width = "100%";
-              widget.style.maxWidth = "420px";
-              widget.style.margin = "0 auto";
-              widget.style.position = "static";
-              container.appendChild(widget);
-            }
-          }, 100);
+          widget.style.borderRadius = "12px";
+          widget.style.overflow = "hidden";
           
-          // Clear interval after 10 seconds to prevent infinite checking
-          setTimeout(() => clearInterval(checkScript), 10000);
-        }
+          container.appendChild(widget);
+          setWidgetLoaded(true);
+        };
+
+        // Check if script is loaded, if not wait for it
+        const checkForScript = () => {
+          const scripts = document.querySelectorAll('script[src*="elevenlabs"]');
+          if (scripts.length > 0) {
+            // Script exists, wait a bit for it to initialize
+            setTimeout(loadWidget, 500);
+          } else {
+            // Script not found, try again
+            setTimeout(checkForScript, 100);
+          }
+        };
+
+        checkForScript();
       }
+    } else {
+      // Reset widget loaded state when switching away from voice mode
+      setWidgetLoaded(false);
     }
-  }, [mode]);
+  }, [mode, widgetLoaded]);
 
   
 

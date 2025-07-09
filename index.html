@@ -10,24 +10,23 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
+    
     <!-- 🌟 Inline Only ElevenLabs Agent: No Auto-Float -->
     <div
       id="daffy-agent-wrapper"
       style="
-        /* display: flex;
+        display: flex;
         justify-content: flex-start;
         align-items: center;
         padding: 2rem;
-        min-height: 300px; */
+        min-height: 300px;
       "
-      
     >
       <div style="margin-left: 10%; width: 100%; max-width: 420px;">
         <!-- Note: We DON'T write <elevenlabs-convai> directly here -->
       </div>
     </div>
 
-    
     <!-- 🧠 Manual Script Injection So Only Inline Appears -->
     <script>
       window.onload = function () {
@@ -35,7 +34,7 @@
         if (wrapper && !wrapper.querySelector("elevenlabs-convai")) {
           const widget = document.createElement("elevenlabs-convai");
           widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
-          widget.style.width = "50%";
+          widget.style.width = "100%";
           widget.style.position = "static";
           wrapper.appendChild(widget);
         }

@@ -343,5 +343,4 @@ const AskDaffy = () => {
   );
 };
 
-export default AskDaffy
-  
+export default AskDaffy;

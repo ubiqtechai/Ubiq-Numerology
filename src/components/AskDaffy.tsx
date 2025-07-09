@@ -53,33 +53,42 @@ const AskDaffy = () => {
           // Clear any existing content
           container.innerHTML = '';
           
+          // Create a wrapper div for better styling control
+          const wrapper = document.createElement("div");
+          wrapper.style.width = "100%";
+          wrapper.style.maxWidth = "420px";
+          wrapper.style.margin = "0 auto";
+          wrapper.style.borderRadius = "12px";
+          wrapper.style.overflow = "hidden";
+          wrapper.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
+          
           // Create the widget element
           const widget = document.createElement("elevenlabs-convai");
           widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
           widget.style.width = "100%";
-          widget.style.maxWidth = "420px";
-          widget.style.margin = "0 auto";
+          widget.style.height = "400px";
           widget.style.position = "static";
-          widget.style.borderRadius = "12px";
-          widget.style.overflow = "hidden";
+          widget.style.border = "none";
           
-          container.appendChild(widget);
+          wrapper.appendChild(widget);
+          container.appendChild(wrapper);
           setWidgetLoaded(true);
         };
 
-        // Check if script is loaded, if not wait for it
-        const checkForScript = () => {
-          const scripts = document.querySelectorAll('script[src*="elevenlabs"]');
-          if (scripts.length > 0) {
-            // Script exists, wait a bit for it to initialize
-            setTimeout(loadWidget, 500);
+        // Wait for the ElevenLabs script to be available
+        const waitForElevenLabs = () => {
+          if (window.customElements && window.customElements.get('elevenlabs-convai')) {
+            loadWidget();
+          } else if (typeof window !== 'undefined' && document.querySelector('script[src*="elevenlabs"]')) {
+            // Script is loaded but custom element might not be registered yet
+            setTimeout(waitForElevenLabs, 200);
           } else {
-            // Script not found, try again
-            setTimeout(checkForScript, 100);
+            // Script not loaded yet, wait longer
+            setTimeout(waitForElevenLabs, 500);
           }
         };
 
-        checkForScript();
+        waitForElevenLabs();
       }
     } else {
       // Reset widget loaded state when switching away from voice mode
@@ -270,7 +279,7 @@ const AskDaffy = () => {
                 </div>
                 
                 {/* ElevenLabs Widget will be inserted here */}
-                <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto"></div>
+                <div id="daffy-elevenlabs-agent" className="w-full flex justify-center items-center min-h-[300px]"></div>
               </div>
             </div>
           </div>

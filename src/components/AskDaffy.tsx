@@ -6,13 +6,11 @@ const AskDaffy = () => {
   const [mode, setMode] = useState('chat');
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [isVoiceExpanded, setIsVoiceExpanded] = useState(false);
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
 
   const messagesEndRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -21,22 +19,62 @@ const AskDaffy = () => {
     }
   }, [messages, isTyping]);
 
-  // Handle voice mode expansion
-  useEffect(() => {
-    if (mode === 'voice') {
-      // Delay expansion to allow for smooth transition
-      const timer = setTimeout(() => {
-        setIsVoiceExpanded(true);
-      }, 300);
-      return () => clearTimeout(timer);
-    } else {
-      setIsVoiceExpanded(false);
-    }
-  }, [mode]);
+  // const toggleRecording = () => {
+  //   setIsRecording(!isRecording);
+  // };  
 
+  
   const toggleRecording = () => {
-    setIsRecording(!isRecording);
-  };
+  if (isRecording) {
+    setIsRecording(false);
+    mediaRecorderRef.current?.stop();
+  } else {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const mediaRecorder = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+      mediaRecorderRef.current = mediaRecorder;
+
+      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+
+        // ❗ Un-comment below only if STT is working
+        // const userText = await transcribeAudioWithElevenLabs(audioBlob);
+        // await processUserInput(userText);
+
+        console.log("STT disabled or skipped – audio recorded.");
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+    });
+  }
+};
+
+
+
+//   useEffect(() => {
+//   if (mode === 'voice') {
+//     const container = document.getElementById("daffy-elevenlabs-agent");
+
+//     if (container && !container.querySelector("elevenlabs-convai")) {
+//       const script = document.createElement("script");
+//       script.src = "https://unpkg.com/@elevenlabs/convai-widget-embed";
+//       script.async = true;
+//       script.onload = () => {
+//         const widget = document.createElement("elevenlabs-convai");
+//         widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
+//         widget.style.width = "100%";
+//         widget.style.maxWidth = "420px";
+//         widget.style.margin = "0 auto";
+//         widget.style.position = "static"; // removes it from floating bottom-right
+//         container.appendChild(widget);
+//       };
+
+//       document.body.appendChild(script);
+//     }
+//   }
+// }, [mode]);
 
   
 
@@ -140,7 +178,7 @@ const AskDaffy = () => {
         </div>
 
         {/* Chat Interface */}
-        <div className={`transition-all duration-500 ${mode === 'chat' ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform -translate-y-4 pointer-events-none absolute'}`}>
+        {mode === 'chat' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
               {/* Messages */}
@@ -203,96 +241,95 @@ const AskDaffy = () => {
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Voice Interface */}
-        <div className={`transition-all duration-500 ${mode === 'voice' ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4 pointer-events-none absolute'}`}>
-          {isVoiceExpanded && (
-            <div className="w-full">
-              {/* ElevenLabs Widget Container - Full Width */}
-              <div 
-                id="daffy-elevenlabs-agent" 
-                className="w-full min-h-[600px] bg-white rounded-xl shadow-lg border flex items-center justify-center animate-fade-in"
-                style={{
-                  animation: 'fadeIn 0.8s ease-in-out'
-                }}
-              >
-                {/* Fallback content while widget loads */}
-                <div className="text-center p-12">
-                  <div className="relative mb-8">
-                    {/* Outer Ring - Animated when recording */}
-                    <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 mx-auto ${
-                      isRecording 
-                        ? 'border-red-500 animate-pulse' 
-                        : 'border-gray-200'
-                    }`}></div>
-                    
-                    {/* Inner Circle with Mic */}
-                    <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
-                      isRecording 
-                        ? 'bg-red-500 shadow-lg' 
-                        : 'bg-saffron hover:bg-saffron/90'
-                    }`} onClick={toggleRecording}>
-                      <Mic className="w-12 h-12 text-white" />
-                    </div>
+        {mode === 'voice' && (
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white rounded-xl shadow-lg border">
+              {/* Voice Recording Area */}
+              <div className="h-80 p-8 flex flex-col items-center justify-center">
 
-                    {/* Recording Pulse Effect */}
-                    {isRecording && (
-                      <>
-                        <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
-                        <div className="absolute inset-2 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{animationDelay: '0.5s'}}></div>
-                      </>
-                    )}
+
+                <div id="daffy-elevenlabs-agent" className="my-8 text-center"></div>
+
+                
+                {/* Mic Visualization */}
+                <div className="relative mb-8">
+                  {/* Outer Ring - Animated when recording */}
+                  <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 ${
+                    isRecording 
+                      ? 'border-red-500 animate-pulse' 
+                      : 'border-gray-200'
+                  }`}></div>
+                  
+                  {/* Inner Circle with Mic */}
+                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
+                    isRecording 
+                      ? 'bg-red-500 shadow-lg' 
+                      : 'bg-saffron hover:bg-saffron/90'
+                  }`} onClick={toggleRecording}>
+                    <Mic className="w-12 h-12 text-white" />
                   </div>
 
-                  {/* Status Text */}
-                  <div className="text-center mb-6">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-4" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                      {isRecording ? 'Listening...' : 'Ready to Listen'}
-                    </h3>
-                    <p className="text-lg text-gray-600 font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                      {isRecording 
-                        ? 'Speak clearly about your numerology questions' 
-                        : 'Click the microphone to start speaking'
-                      }
-                    </p>
-                  </div>
-
-                  {/* Recording Indicator */}
+                  {/* Recording Pulse Effect */}
                   {isRecording && (
-                    <div className="flex items-center justify-center space-x-2 text-red-500 mb-6">
-                      <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                      <span className="text-lg font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>Recording in progress...</span>
-                    </div>
+                    <>
+                      <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
+                      <div className="absolute inset-2 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{animationDelay: '0.5s'}}></div>
+                    </>
                   )}
-
-                  {/* Voice Controls */}
-                  <button
-                    onClick={toggleRecording}
-                    className={`px-12 py-4 rounded-full font-medium transition-all text-lg ${
-                      isRecording 
-                        ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
-                        : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
-                    }`}
-                    style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-                  >
-                    {isRecording ? (
-                      <>
-                        <Square className="w-5 h-5 inline mr-3" />
-                        Stop Recording
-                      </>
-                    ) : (
-                      <>
-                        <Mic className="w-5 h-5 inline mr-3" />
-                        Start Speaking
-                      </>
-                    )}
-                  </button>
                 </div>
+
+                {/* Status Text */}
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                    {isRecording ? 'Listening...' : 'Ready to Listen'}
+                  </h3>
+                  <p className="text-sm text-gray-600 font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+                    {isRecording 
+                      ? 'Speak clearly about your numerology questions' 
+                      : 'Click the microphone to start speaking'
+                    }
+                  </p>
+                </div>
+
+                {/* Recording Indicator */}
+                {isRecording && (
+                  <div className="flex items-center space-x-2 text-red-500 mb-4">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>Recording in progress...</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Voice Controls */}
+              <div className="border-t p-4 text-center">
+                <button
+                  onClick={toggleRecording}
+                  className={`px-8 py-3 rounded-lg font-medium transition-all ${
+                    isRecording 
+                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
+                      : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
+                  }`}
+                  style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
+                >
+                  {isRecording ? (
+                    <>
+                      <Square className="w-4 h-4 inline mr-2" />
+                      Stop Recording
+                    </>
+                  ) : (
+                    <>
+                      <Mic className="w-4 h-4 inline mr-2" />
+                      Start Speaking
+                    </>
+                  )}
+                </button>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

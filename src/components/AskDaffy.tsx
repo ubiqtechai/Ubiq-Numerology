@@ -13,15 +13,15 @@ const AskDaffy = () => {
   const messagesEndRef = useRef(null);
 
   // Scroll to bottom when messages change
-  // useEffect(() => {
-  //   if (messagesEndRef.current) {
-  //     messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
-  //   }
-  // }, [messages, isTyping]);
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages, isTyping]);
 
-  // const toggleRecording = () => {
-  //   setIsRecording(!isRecording);
-  // };  
+  const toggleRecording = () => {
+    setIsRecording(!isRecording);
+  };  
 
   const toggleRecording = () => {
   if (isRecording) {
@@ -51,29 +51,6 @@ const AskDaffy = () => {
 };
 
 
-
-  useEffect(() => {
-  if (mode === 'voice') {
-    const container = document.getElementById("daffy-elevenlabs-agent");
-
-    if (container && !container.querySelector("elevenlabs-convai")) {
-      const script = document.createElement("script");
-      script.src = "https://unpkg.com/@elevenlabs/convai-widget-embed";
-      script.async = true;
-      script.onload = () => {
-        const widget = document.createElement("elevenlabs-convai");
-        widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
-        widget.style.width = "100%";
-        widget.style.maxWidth = "420px";
-        widget.style.margin = "0 auto";
-        widget.style.position = "static"; // removes it from floating bottom-right
-        container.appendChild(widget);
-      };
-
-      document.body.appendChild(script);
-    }
-  }
-}, [mode]);
 
   
 

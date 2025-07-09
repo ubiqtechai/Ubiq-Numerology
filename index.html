@@ -10,13 +10,28 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-        <!-- 🌟 Embed ElevenLabs Agent here -->
-        <elevenlabs-convai agent-id="agent_01jz4yvvsge4z9p8zn156k996n"></elevenlabs-convai>
-        <script
-          src="https://unpkg.com/@elevenlabs/convai-widget-embed"
-          async
-          type="text/javascript"
-        ></script>
-      </body>
-    </html>
-    
+    <!-- 🌟 Center-Aligned ElevenLabs Agent -->
+    <div
+      id="daffy-agent-wrapper"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        min-height: 300px;
+      "
+    >
+      <elevenlabs-convai
+        agent-id="agent_01jz4yvvsge4z9p8zn156k996n"
+        style="width: 100%; max-width: 420px; position: static"
+      ></elevenlabs-convai>
+    </div>
+
+    <!-- ElevenLabs widget script -->
+    <script
+      src="https://unpkg.com/@elevenlabs/convai-widget-embed"
+      async
+      type="text/javascript"
+    ></script>
+  </body>
+</html>

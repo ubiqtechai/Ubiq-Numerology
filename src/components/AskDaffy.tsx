@@ -68,16 +68,59 @@ const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
   }
 };
 
-// Fake AI (replace with OpenAI or another LLM)
+
 const getAIResponse = async (userText: string) => {
   if (userText.toLowerCase().includes("numerology")) {
-    return "In numerology, your life path number reveals your destiny. Calculate it by adding your birth date digits.";
-  } else if (userText.toLowerCase().includes("hello")) {
-    return "Namaste! I am Daffy, your spiritual guide. How may I help you today?";
-  } else {
-    return "I'm sorry, I didn't understand. Could you please rephrase your question?";
+    // Step 1: Call your backend to get numerology result
+    const res = await fetch("/api/numerology", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: "John Doe",   // 👈 replace with parsed values
+        dob: "12-08-1990",
+        calculatorType: "full-report"
+      }),
+    });
+
+    const data = await res.json();
+
+    // Step 2: Send the result to GPT to make it conversational
+    const gptRes = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer YOUR_OPENAI_API_KEY`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "system",
+            content: "You are Daffy, a warm and spiritual numerology guide. Explain results kindly and conversationally.",
+          },
+          {
+            role: "user",
+            content: `The user asked for numerology. Here's the result:
+Expression Number: ${data.expressionNumber.number} - ${data.expressionNumber.message}
+Soul Urge Number: ${data.soulUrgeNumber.number} - ${data.soulUrgeNumber.message}
+Name Numerology: ${data.nameNumerology.number} - ${data.nameNumerology.message}
+Psychic Number: ${data.psychicNumber.number} - ${data.psychicNumber.message}
+Birthday Number: ${data.birthdayNumber.number} - ${data.birthdayNumber.message}
+Please explain this like a spiritual conversation.`,
+          },
+        ],
+        temperature: 0.8,
+      }),
+    });
+
+    const gptJson = await gptRes.json();
+    return gptJson.choices[0].message.content;
   }
+
+  return "Please ask about your numerology.";
 };
+
+
 
 // Main Component
 const AskDaffy = () => {

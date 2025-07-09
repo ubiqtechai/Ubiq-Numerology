@@ -10,38 +10,7 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
 
-    
-    <!-- 🌟 Inline Only ElevenLabs Agent: No Auto-Float -->
-    <div
-      id="daffy-agent-wrapper"
-      style="
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        padding: 2rem;
-        min-height: 300px;
-      "
-    >
-      <div style="margin-left: 10%; width: 100%; max-width: 420px;">
-        <!-- Note: We DON'T write <elevenlabs-convai> directly here -->
-      </div>
-    </div>
-
-    <!-- 🧠 Manual Script Injection So Only Inline Appears -->
-    <script>
-      window.onload = function () {
-        const wrapper = document.getElementById("daffy-agent-wrapper").firstElementChild;
-        if (wrapper && !wrapper.querySelector("elevenlabs-convai")) {
-          const widget = document.createElement("elevenlabs-convai");
-          widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
-          widget.style.width = "100%";
-          widget.style.position = "static";
-          wrapper.appendChild(widget);
-        }
-      };
-    </script>
-
-    <!-- ✅ Keep script, but DO NOT use <elevenlabs-convai> tag directly -->
+    <!-- ElevenLabs script for dynamic widget creation -->
     <script
       src="https://unpkg.com/@elevenlabs/convai-widget-embed"
       async

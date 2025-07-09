@@ -12,6 +12,8 @@ const AskDaffy = () => {
 
   const messagesEndRef = useRef(null);
 
+  const mediaRecorderRef = useRef(null);
+
   // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -19,62 +21,64 @@ const AskDaffy = () => {
     }
   }, [messages, isTyping]);
 
-  // const toggleRecording = () => {
-  //   setIsRecording(!isRecording);
-  // };  
-
-  
   const toggleRecording = () => {
-  if (isRecording) {
-    setIsRecording(false);
-    mediaRecorderRef.current?.stop();
-  } else {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
-      const mediaRecorder = new MediaRecorder(stream);
-      const chunks: Blob[] = [];
-      mediaRecorderRef.current = mediaRecorder;
+    if (isRecording) {
+      setIsRecording(false);
+      mediaRecorderRef.current?.stop();
+    } else {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        const chunks: Blob[] = [];
+        mediaRecorderRef.current = mediaRecorder;
 
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          console.log("STT disabled or skipped – audio recorded.");
+        };
 
-        // ❗ Un-comment below only if STT is working
-        // const userText = await transcribeAudioWithElevenLabs(audioBlob);
-        // await processUserInput(userText);
+        mediaRecorder.start();
+        setIsRecording(true);
+      });
+    }
+  };
 
-        console.log("STT disabled or skipped – audio recorded.");
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-    });
-  }
-};
-
-
-
-//   useEffect(() => {
-//   if (mode === 'voice') {
-//     const container = document.getElementById("daffy-elevenlabs-agent");
-
-//     if (container && !container.querySelector("elevenlabs-convai")) {
-//       const script = document.createElement("script");
-//       script.src = "https://unpkg.com/@elevenlabs/convai-widget-embed";
-//       script.async = true;
-//       script.onload = () => {
-//         const widget = document.createElement("elevenlabs-convai");
-//         widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
-//         widget.style.width = "100%";
-//         widget.style.maxWidth = "420px";
-//         widget.style.margin = "0 auto";
-//         widget.style.position = "static"; // removes it from floating bottom-right
-//         container.appendChild(widget);
-//       };
-
-//       document.body.appendChild(script);
-//     }
-//   }
-// }, [mode]);
+  // Load ElevenLabs widget when voice mode is selected
+  useEffect(() => {
+    if (mode === 'voice') {
+      const container = document.getElementById("daffy-elevenlabs-agent");
+      
+      if (container && !container.querySelector("elevenlabs-convai")) {
+        // Check if the script is already loaded
+        if (typeof window !== 'undefined' && (window as any).ElevenLabsConvAI) {
+          const widget = document.createElement("elevenlabs-convai");
+          widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
+          widget.style.width = "100%";
+          widget.style.maxWidth = "420px";
+          widget.style.margin = "0 auto";
+          widget.style.position = "static";
+          container.appendChild(widget);
+        } else {
+          // Wait for script to load
+          const checkScript = setInterval(() => {
+            if ((window as any).ElevenLabsConvAI) {
+              clearInterval(checkScript);
+              const widget = document.createElement("elevenlabs-convai");
+              widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
+              widget.style.width = "100%";
+              widget.style.maxWidth = "420px";
+              widget.style.margin = "0 auto";
+              widget.style.position = "static";
+              container.appendChild(widget);
+            }
+          }, 100);
+          
+          // Clear interval after 10 seconds to prevent infinite checking
+          setTimeout(() => clearInterval(checkScript), 10000);
+        }
+      }
+    }
+  }, [mode]);
 
   
 
@@ -247,85 +251,19 @@ const AskDaffy = () => {
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              {/* Voice Recording Area */}
-              <div className="h-80 p-8 flex flex-col items-center justify-center">
-
-
-                <div id="daffy-elevenlabs-agent" className="my-8 text-center"></div>
-
-                
-                {/* Mic Visualization */}
-                <div className="relative mb-8">
-                  {/* Outer Ring - Animated when recording */}
-                  <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 ${
-                    isRecording 
-                      ? 'border-red-500 animate-pulse' 
-                      : 'border-gray-200'
-                  }`}></div>
-                  
-                  {/* Inner Circle with Mic */}
-                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
-                    isRecording 
-                      ? 'bg-red-500 shadow-lg' 
-                      : 'bg-saffron hover:bg-saffron/90'
-                  }`} onClick={toggleRecording}>
-                    <Mic className="w-12 h-12 text-white" />
-                  </div>
-
-                  {/* Recording Pulse Effect */}
-                  {isRecording && (
-                    <>
-                      <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
-                      <div className="absolute inset-2 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{animationDelay: '0.5s'}}></div>
-                    </>
-                  )}
-                </div>
-
-                {/* Status Text */}
+              {/* ElevenLabs Widget Container */}
+              <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                    {isRecording ? 'Listening...' : 'Ready to Listen'}
+                  <h3 className="text-2xl font-bold text-cosmic-indigo mb-2">
+                    Voice Chat with Daffy
                   </h3>
-                  <p className="text-sm text-gray-600 font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                    {isRecording 
-                      ? 'Speak clearly about your numerology questions' 
-                      : 'Click the microphone to start speaking'
-                    }
+                  <p className="text-cosmic-indigo/70">
+                    Speak naturally and get instant numerology insights
                   </p>
                 </div>
-
-                {/* Recording Indicator */}
-                {isRecording && (
-                  <div className="flex items-center space-x-2 text-red-500 mb-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>Recording in progress...</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Voice Controls */}
-              <div className="border-t p-4 text-center">
-                <button
-                  onClick={toggleRecording}
-                  className={`px-8 py-3 rounded-lg font-medium transition-all ${
-                    isRecording 
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
-                      : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
-                  }`}
-                  style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-                >
-                  {isRecording ? (
-                    <>
-                      <Square className="w-4 h-4 inline mr-2" />
-                      Stop Recording
-                    </>
-                  ) : (
-                    <>
-                      <Mic className="w-4 h-4 inline mr-2" />
-                      Start Speaking
-                    </>
-                  )}
-                </button>
+                
+                {/* ElevenLabs Widget will be inserted here */}
+                <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto"></div>
               </div>
             </div>
           </div>

@@ -48,53 +48,40 @@ const AskDaffy = () => {
     if (mode === 'voice') {
       const container = document.getElementById("daffy-elevenlabs-agent");
       
-      if (container && !widgetLoaded) {
+      if (container && !container.querySelector("elevenlabs-convai")) {
         const loadWidget = () => {
-          // Clear any existing content
-          container.innerHTML = '';
-          
-          // Create a wrapper div for better styling control
-          const wrapper = document.createElement("div");
-          wrapper.style.width = "100%";
-          wrapper.style.maxWidth = "420px";
-          wrapper.style.margin = "0 auto";
-          wrapper.style.borderRadius = "12px";
-          wrapper.style.overflow = "hidden";
-          wrapper.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
-          
           // Create the widget element
           const widget = document.createElement("elevenlabs-convai");
           widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
           widget.style.width = "100%";
-          widget.style.height = "400px";
+          widget.style.maxWidth = "420px";
+          widget.style.height = "350px";
           widget.style.position = "static";
-          widget.style.border = "none";
+          widget.style.margin = "0 auto";
+          widget.style.borderRadius = "12px";
+          widget.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
           
-          wrapper.appendChild(widget);
-          container.appendChild(wrapper);
+          container.appendChild(widget);
           setWidgetLoaded(true);
         };
 
         // Wait for the ElevenLabs script to be available
         const waitForElevenLabs = () => {
-          if (window.customElements && window.customElements.get('elevenlabs-convai')) {
+          if (typeof window !== 'undefined' && window.customElements && window.customElements.get('elevenlabs-convai')) {
             loadWidget();
-          } else if (typeof window !== 'undefined' && document.querySelector('script[src*="elevenlabs"]')) {
-            // Script is loaded but custom element might not be registered yet
-            setTimeout(waitForElevenLabs, 200);
+          } else if (document.querySelector('script[src*="elevenlabs"]')) {
+            // Script is loaded, wait for custom element registration
+            setTimeout(waitForElevenLabs, 100);
           } else {
-            // Script not loaded yet, wait longer
-            setTimeout(waitForElevenLabs, 500);
+            // Script not loaded yet
+            setTimeout(waitForElevenLabs, 200);
           }
         };
 
         waitForElevenLabs();
       }
-    } else {
-      // Reset widget loaded state when switching away from voice mode
-      setWidgetLoaded(false);
     }
-  }, [mode, widgetLoaded]);
+  }, [mode]);
 
   
 

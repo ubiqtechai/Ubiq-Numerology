@@ -29,18 +29,18 @@
 
     
     <!-- 🧠 Manual Script Injection So Only Inline Appears -->
-    <!-- <script>
+    <script>
       window.onload = function () {
         const wrapper = document.getElementById("daffy-agent-wrapper").firstElementChild;
         if (wrapper && !wrapper.querySelector("elevenlabs-convai")) {
           const widget = document.createElement("elevenlabs-convai");
           widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
-          widget.style.width = "100%";
+          widget.style.width = "50%";
           widget.style.position = "static";
           wrapper.appendChild(widget);
         }
       };
-    </script> -->
+    </script>
 
     <!-- ✅ Keep script, but DO NOT use <elevenlabs-convai> tag directly -->
     <script

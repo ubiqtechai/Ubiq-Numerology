@@ -1,10 +1,10 @@
+// ✅ Updated with user info extraction
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, MessageSquare, Send, Square } from 'lucide-react';
 
 const ELEVENLABS_API_KEY = "sk_159b13112039dee218fa2b58e6c520486d6269fda17577f5";
 const VOICE_ID = "SrBurvmnTnB3CW6txUgO";
 
-// TTS Function
 const speakWithElevenLabs = async (text: string) => {
   try {
     const response = await fetch(
@@ -18,128 +18,131 @@ const speakWithElevenLabs = async (text: string) => {
         body: JSON.stringify({
           text,
           model_id: "eleven_multilingual_v2",
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75
-          }
+          voice_settings: { stability: 0.5, similarity_boost: 0.75 },
         }),
       }
     );
 
-    if (!response.ok) {
-      throw new Error(`ElevenLabs TTS failed: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`ElevenLabs TTS failed: ${response.status}`);
     const audioBlob = await response.blob();
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audio = new Audio(audioUrl);
-    audio.play();
+    new Audio(URL.createObjectURL(audioBlob)).play();
   } catch (error) {
     console.error("🔊 TTS Error:", error);
-    throw error;
   }
 };
 
-// STT Function
 const transcribeAudioWithElevenLabs = async (audioBlob: Blob) => {
   const formData = new FormData();
-  const audioFile = new File([audioBlob], 'voice.wav', { type: 'audio/wav' });
-  formData.append('file', audioFile);
+  formData.append('file', new File([audioBlob], 'voice.wav', { type: 'audio/wav' }));
   formData.append('model_id', 'scribe_v1');
 
-  try {
-    const response = await fetch("https://api.elevenlabs.io/v1/speech-to-text", {
-      method: "POST",
-      headers: {
-        "xi-api-key": ELEVENLABS_API_KEY,
-      },
-      body: formData,
-    });
+  const response = await fetch("https://api.elevenlabs.io/v1/speech-to-text", {
+    method: "POST",
+    headers: { "xi-api-key": ELEVENLABS_API_KEY },
+    body: formData,
+  });
 
-    if (!response.ok) {
-      throw new Error(`STT failed: ${response.status}`);
-    }
-
-    const json = await response.json();
-    return json.text;
-  } catch (error) {
-    console.error("❌ STT Error:", error);
-    throw error;
-  }
+  if (!response.ok) throw new Error(`STT failed: ${response.status}`);
+  const json = await response.json();
+  return json.text;
 };
 
+const extractUserInfo = (text: string) => {
+  const nameMatch = text.match(/my name is (\w+\s?\w*)/i);
+  const dobMatch = text.match(/(?:\bdob\b|born on|date of birth is)\s*(\d{1,2}-\d{1,2}-\d{4})/i);
+  return {
+    fullName: nameMatch ? nameMatch[1] : null,
+    dob: dobMatch ? dobMatch[1] : null,
+  };
+};
 
-const getAIResponse = async (userText: string) => {
-  if (userText.toLowerCase().includes("numerology")) {
-    // Step 1: Call your backend to get numerology result
-    const res = await fetch("/api/numerology", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName: "John Doe",   // 👈 replace with parsed values
-        dob: "12-08-1990",
-        calculatorType: "full-report"
-      }),
-    });
+const getAIResponse = async (userText: string, userInfo: any) => {
+  if (!userInfo.fullName || !userInfo.dob) {
+    return "Please tell me your name and date of birth to proceed with numerology.";
+  }
 
-    const data = await res.json();
+  const res = await fetch("/api/numerology", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fullName: userInfo.fullName,
+      dob: userInfo.dob,
+      calculatorType: "full-report",
+    }),
+  });
+  const data = await res.json();
 
-    // Step 2: Send the result to GPT to make it conversational
-    const gptRes = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer YOUR_OPENAI_API_KEY`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are Daffy, a warm and spiritual numerology guide. Explain results kindly and conversationally.",
-          },
-          {
-            role: "user",
-            content: `The user asked for numerology. Here's the result:
+  const gptRes = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer YOUR_OPENAI_API_KEY`,
+    },
+    body: JSON.stringify({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: "You are Daffy, a warm and spiritual numerology guide." },
+        {
+          role: "user",
+          content: `User: ${userInfo.fullName}, DOB: ${userInfo.dob}. Result:
 Expression Number: ${data.expressionNumber.number} - ${data.expressionNumber.message}
 Soul Urge Number: ${data.soulUrgeNumber.number} - ${data.soulUrgeNumber.message}
 Name Numerology: ${data.nameNumerology.number} - ${data.nameNumerology.message}
 Psychic Number: ${data.psychicNumber.number} - ${data.psychicNumber.message}
 Birthday Number: ${data.birthdayNumber.number} - ${data.birthdayNumber.message}
-Please explain this like a spiritual conversation.`,
-          },
-        ],
-        temperature: 0.8,
-      }),
-    });
+Explain like a spiritual guide.`,
+        },
+      ],
+    }),
+  });
 
-    const gptJson = await gptRes.json();
-    return gptJson.choices[0].message.content;
-  }
-
-  return "Please ask about your numerology.";
+  const gptJson = await gptRes.json();
+  return gptJson.choices[0].message.content;
 };
 
-
-
-// Main Component
-const AskDaffy = () => {
+export default function AskDaffy() {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState<'chat' | 'voice'>('chat');
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      type: 'assistant',
-      content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?',
-    },
-  ]);
+  const [messages, setMessages] = useState([{ type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }]);
+  const [userInfo, setUserInfo] = useState({ fullName: '', dob: '' });
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollTo(0, messagesEndRef.current.scrollHeight);
   }, [messages, isTyping]);
+
+  const processUserInput = async (text: string) => {
+    setMessages(prev => [...prev, { type: 'user', content: text }]);
+    setIsTyping(true);
+
+    const extracted = extractUserInfo(text);
+    setUserInfo(prev => ({
+      fullName: extracted.fullName || prev.fullName,
+      dob: extracted.dob || prev.dob,
+    }));
+
+    try {
+      const aiResponse = await getAIResponse(text, {
+        fullName: extracted.fullName || userInfo.fullName,
+        dob: extracted.dob || userInfo.dob,
+      });
+      await speakWithElevenLabs(aiResponse);
+      setMessages(prev => [...prev, { type: 'assistant', content: aiResponse }]);
+    } catch {
+      setMessages(prev => [...prev, { type: 'assistant', content: 'Something went wrong. Please try again.' }]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    await processUserInput(input);
+    setInput('');
+  };
 
   const toggleRecording = async () => {
     if (isRecording) {
@@ -148,78 +151,21 @@ const AskDaffy = () => {
       return;
     }
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      const audioChunks: Blob[] = [];
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    const chunks: Blob[] = [];
+    mediaRecorderRef.current = mediaRecorder;
 
-      mediaRecorderRef.current = mediaRecorder;
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunks.push(event.data);
-      };
+    mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+      const userText = await transcribeAudioWithElevenLabs(audioBlob);
+      await processUserInput(userText);
+    };
 
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        setIsTyping(true);
-
-        try {
-          const userText = await transcribeAudioWithElevenLabs(audioBlob);
-          setMessages(prev => [...prev, { type: 'user', content: userText }]);
-
-          const aiResponse = await getAIResponse(userText);
-          await speakWithElevenLabs(aiResponse);
-
-          setMessages(prev => [...prev, { type: 'assistant', content: aiResponse }]);
-        } catch (error) {
-          console.error("Voice processing error:", error);
-          setMessages(prev => [...prev, {
-            type: 'assistant',
-            content: "Sorry, I encountered an error. Please try again."
-          }]);
-        } finally {
-          setIsTyping(false);
-        }
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error("Microphone access error:", error);
-      alert("Please allow microphone access to use voice features.");
-    }
+    mediaRecorder.start();
+    setIsRecording(true);
   };
-
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    const newUserMessage = { type: 'user', content: input };
-    setMessages(prev => [...prev, newUserMessage]);
-    setInput('');
-    setIsTyping(true);
-
-    try {
-      const aiResponse = await getAIResponse(input);
-      await speakWithElevenLabs(aiResponse);
-      setMessages(prev => [...prev, { type: 'assistant', content: aiResponse }]);
-    } catch (error) {
-      console.error("Chat error:", error);
-      setMessages(prev => [...prev, {
-        type: 'assistant',
-        content: "Something went wrong. Please try again."
-      }]);
-    } finally {
-      setIsTyping(false);
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
-  const formatMessage = (msg: string) => msg;
 
   return (
     <section id="ask-daffy" className="py-20 relative">
@@ -229,15 +175,10 @@ const AskDaffy = () => {
           <p className="text-lg text-cosmic-indigo/70">Your spiritual numerology guide is here to help</p>
         </div>
 
-        {/* Mode Toggle */}
         <div className="flex justify-center mb-8">
           <div className="bg-white rounded-full p-1 shadow-md">
-            <button onClick={() => setMode('chat')} className={`px-6 py-2 rounded-full transition-all ${mode === 'chat' ? 'bg-saffron text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}>
-              <MessageSquare className="w-4 h-4 inline mr-2" /> Chat
-            </button>
-            <button onClick={() => setMode('voice')} className={`px-6 py-2 rounded-full transition-all ${mode === 'voice' ? 'bg-saffron text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}>
-              <Mic className="w-4 h-4 inline mr-2" /> Voice
-            </button>
+            <button onClick={() => setMode('chat')} className={`px-6 py-2 rounded-full transition-all ${mode === 'chat' ? 'bg-saffron text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}><MessageSquare className="w-4 h-4 inline mr-2" /> Chat</button>
+            <button onClick={() => setMode('voice')} className={`px-6 py-2 rounded-full transition-all ${mode === 'voice' ? 'bg-saffron text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}><Mic className="w-4 h-4 inline mr-2" /> Voice</button>
           </div>
         </div>
 
@@ -246,10 +187,10 @@ const AskDaffy = () => {
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
               <div ref={messagesEndRef} className="h-80 overflow-y-auto p-4 space-y-3 scroll-smooth">
-                {messages.map((message, index) => (
-                  <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${message.type === 'user' ? 'bg-saffron text-white' : 'bg-gray-100 text-gray-800'}`}>
-                      <div className="text-sm leading-relaxed font-normal">{formatMessage(message.content)}</div>
+                {messages.map((m, i) => (
+                  <div key={i} className={`flex ${m.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${m.type === 'user' ? 'bg-saffron text-white' : 'bg-gray-100 text-gray-800'}`}>
+                      <div className="text-sm leading-relaxed font-normal">{m.content}</div>
                     </div>
                   </div>
                 ))}
@@ -268,15 +209,13 @@ const AskDaffy = () => {
                   </div>
                 )}
               </div>
-
-              {/* Chat Input */}
               <div className="border-t p-4">
                 <div className="flex space-x-2">
                   <input
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                     placeholder="Ask about your numbers..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron font-normal"
                     disabled={isTyping}
@@ -315,24 +254,10 @@ const AskDaffy = () => {
                   <h3 className="text-lg font-semibold text-gray-800 mb-2">{isRecording ? 'Listening...' : 'Ready to Listen'}</h3>
                   <p className="text-sm text-gray-600 font-normal">{isRecording ? 'Speak clearly about your numerology questions' : 'Click the microphone to start speaking'}</p>
                 </div>
-                {isRecording && (
-                  <div className="flex items-center space-x-2 text-red-500 mb-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-normal">Recording in progress...</span>
-                  </div>
-                )}
               </div>
               <div className="border-t p-4 text-center">
                 <button onClick={toggleRecording} className={`px-8 py-3 rounded-lg font-medium ${isRecording ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'}`}>
-                  {isRecording ? (
-                    <>
-                      <Square className="w-4 h-4 inline mr-2" /> Stop Recording
-                    </>
-                  ) : (
-                    <>
-                      <Mic className="w-4 h-4 inline mr-2" /> Start Speaking
-                    </>
-                  )}
+                  {isRecording ? <><Square className="w-4 h-4 inline mr-2" /> Stop Recording</> : <><Mic className="w-4 h-4 inline mr-2" /> Start Speaking</>}
                 </button>
               </div>
             </div>
@@ -341,6 +266,4 @@ const AskDaffy = () => {
       </div>
     </section>
   );
-};
-
-export default AskDaffy;
+}

@@ -245,7 +245,7 @@ const AskDaffy = () => {
 
               {/* Voice Controls */}
               <div className="border-t p-4 text-center">
-                <button
+                {/* <button
                   onClick={toggleRecording}
                   className={`px-8 py-3 rounded-lg font-medium transition-all ${
                     isRecording 
@@ -265,7 +265,15 @@ const AskDaffy = () => {
                       Start Speaking
                     </>
                   )}
+                </button> */}
+
+                <button onClick={startRecordingAndSendToElevenLabs} ...>
+                <Mic ... />
+
+                  Start Speaking
                 </button>
+
+ 
               </div>
             </div>
           </div>

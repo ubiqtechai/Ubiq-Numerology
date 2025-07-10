@@ -1,16 +1,18 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mic, MessageSquare, Send, Square } from 'lucide-react';
+import { Mic, MessageSquare, Send } from 'lucide-react';
 
 const AskDaffy = () => {
   const [input, setInput] = useState('');
   const [mode, setMode] = useState('chat');
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [widgetLoaded, setWidgetLoaded] = useState(false);
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
 
   const messagesEndRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -20,8 +22,60 @@ const AskDaffy = () => {
   }, [messages, isTyping]);
 
   const toggleRecording = () => {
-    setIsRecording(!isRecording);
+    if (isRecording) {
+      setIsRecording(false);
+      mediaRecorderRef.current?.stop();
+    } else {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        const chunks: Blob[] = [];
+        mediaRecorderRef.current = mediaRecorder;
+
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          console.log("STT disabled or skipped – audio recorded.");
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true);
+      });
+    }
   };
+
+  // Load ElevenLabs widget when voice mode is selected
+  useEffect(() => {
+    if (mode === 'voice') {
+      const container = document.getElementById("daffy-elevenlabs-agent");
+      if (container && !container.querySelector("elevenlabs-convai")) {
+        const loadWidget = () => {
+          const widget = document.createElement("elevenlabs-convai");
+          widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
+          widget.style.width = "100%";
+          widget.style.maxWidth = "420px";
+          widget.style.height = "350px";
+          widget.style.position = "static";
+          widget.style.margin = "0 auto";
+          widget.style.borderRadius = "12px";
+          widget.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
+          container.appendChild(widget);
+          setWidgetLoaded(true);
+        };
+
+        const waitForElevenLabs = () => {
+          if (typeof window !== 'undefined' && window.customElements && window.customElements.get('elevenlabs-convai')) {
+            loadWidget();
+          } else if (document.querySelector('script[src*="elevenlabs"]')) {
+            setTimeout(waitForElevenLabs, 100);
+          } else {
+            setTimeout(waitForElevenLabs, 200);
+          }
+        };
+
+        waitForElevenLabs();
+      }
+    }
+  }, [mode]);
 
   // Function to format text with bold for asterisks
   const formatMessage = (text) => {
@@ -46,20 +100,29 @@ const AskDaffy = () => {
     setInput('');
     setIsTyping(true);
 
+    let data = {};
     try {
-      const res = await fetch('https://adarsh0309.app.n8n.cloud/webhook/samplechat', {
+      const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
+        body: JSON.stringify({ message: input }),
       });
 
       const text = await res.text();
-      let data = {};
 
-      try {
+      if (text.trim()) {
         data = JSON.parse(text);
-      } catch (err) {
-        console.error('❌ Failed to parse JSON:', text);
+      } else {
+        console.warn("⚠️ Empty response from webhook");
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: 'assistant',
+            content: 'Something went wrong. Please try again later.',
+          },
+        ]);
+        setIsTyping(false);
+        return;
       }
 
       setTimeout(() => {
@@ -67,10 +130,10 @@ const AskDaffy = () => {
           type: 'assistant',
           content: data.output || '⚠️ Sorry, I could not understand that.'
         };
-
         setMessages((prev) => [...prev, botMessage]);
         setIsTyping(false);
       }, 1500);
+
     } catch (error) {
       console.error('Webhook error:', error);
       setTimeout(() => {
@@ -192,82 +255,22 @@ const AskDaffy = () => {
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              {/* Voice Recording Area */}
-              <div className="h-80 p-8 flex flex-col items-center justify-center">
-                {/* Mic Visualization */}
-                <div className="relative mb-8">
-                  {/* Outer Ring - Animated when recording */}
-                  <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 ${
-                    isRecording 
-                      ? 'border-red-500 animate-pulse' 
-                      : 'border-gray-200'
-                  }`}></div>
-                  
-                  {/* Inner Circle with Mic */}
-                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
-                    isRecording 
-                      ? 'bg-red-500 shadow-lg' 
-                      : 'bg-saffron hover:bg-saffron/90'
-                  }`} onClick={toggleRecording}>
-                    <Mic className="w-12 h-12 text-white" />
-                  </div>
-
-                  {/* Recording Pulse Effect */}
-                  {isRecording && (
-                    <>
-                      <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
-                      <div className="absolute inset-2 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{animationDelay: '0.5s'}}></div>
-                    </>
-                  )}
-                </div>
-
-                {/* Status Text */}
+              {/* ElevenLabs Widget Container */}
+              <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                    {isRecording ? 'Listening...' : 'Ready to Listen'}
+                  <h3 className="text-2xl font-bold text-cosmic-indigo mb-2">
+                    Voice Chat with Daffy
                   </h3>
-                  <p className="text-sm text-gray-600 font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
-                    {isRecording 
-                      ? 'Speak clearly about your numerology questions' 
-                      : 'Click the microphone to start speaking'
-                    }
+                  <p className="text-cosmic-indigo/70">
+                    Speak naturally and get instant numerology insights
                   </p>
                 </div>
 
-                {/* Recording Indicator */}
-                {isRecording && (
-                  <div className="flex items-center space-x-2 text-red-500 mb-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>Recording in progress...</span>
-                  </div>
-                )}
+                
+                {/* {/* ElevenLabs Widget will be inserted here */}
+                <div id="daffy-elevenlabs-agent" className="w-full flex justify-center items-center"></div> 
               </div>
-
-              {/* Voice Controls */}
-              <div className="border-t p-4 text-center">
-                <button
-                  onClick={toggleRecording}
-                  className={`px-8 py-3 rounded-lg font-medium transition-all ${
-                    isRecording 
-                      ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
-                      : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
-                  }`}
-                  style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
-                >
-                  {isRecording ? (
-                    <>
-                      <Square className="w-4 h-4 inline mr-2" />
-                      Stop Recording
-                    </>
-                  ) : (
-                    <>
-                      <Mic className="w-4 h-4 inline mr-2" />
-                      Start Speaking
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+            </div>  
           </div>
         )}
       </div>

@@ -350,8 +350,8 @@ const startRecordingAndSendToElevenLabs = async () => {
                   )}
                 </button> */}
 
-                <button onClick={startRecordingAndSendToElevenLabs} ...>
-                <Mic ... />
+                <button onClick={startRecordingAndSendToElevenLabs} >
+                <Mic />
 
                   Start Speaking
                 </button>

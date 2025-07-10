@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mic, MessageSquare, Send, Square } from 'lucide-react';
+import { Mic, MessageSquare, Send } from 'lucide-react';
 
 const AskDaffy = () => {
   const [input, setInput] = useState('');
@@ -47,10 +47,8 @@ const AskDaffy = () => {
   useEffect(() => {
     if (mode === 'voice') {
       const container = document.getElementById("daffy-elevenlabs-agent");
-      
       if (container && !container.querySelector("elevenlabs-convai")) {
         const loadWidget = () => {
-          // Create the widget element
           const widget = document.createElement("elevenlabs-convai");
           widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
           widget.style.width = "100%";
@@ -60,20 +58,16 @@ const AskDaffy = () => {
           widget.style.margin = "0 auto";
           widget.style.borderRadius = "12px";
           widget.style.boxShadow = "0 4px 20px rgba(0, 0, 0, 0.1)";
-          
           container.appendChild(widget);
           setWidgetLoaded(true);
         };
 
-        // Wait for the ElevenLabs script to be available
         const waitForElevenLabs = () => {
           if (typeof window !== 'undefined' && window.customElements && window.customElements.get('elevenlabs-convai')) {
             loadWidget();
           } else if (document.querySelector('script[src*="elevenlabs"]')) {
-            // Script is loaded, wait for custom element registration
             setTimeout(waitForElevenLabs, 100);
           } else {
-            // Script not loaded yet
             setTimeout(waitForElevenLabs, 200);
           }
         };
@@ -82,8 +76,6 @@ const AskDaffy = () => {
       }
     }
   }, [mode]);
-
-  
 
   // Function to format text with bold for asterisks
   const formatMessage = (text) => {
@@ -108,63 +100,40 @@ const AskDaffy = () => {
     setInput('');
     setIsTyping(true);
 
-    // try {
-    //   const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify({ message: input })
-    //   });
+    let data = {};
+    try {
+      const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input }),
+      });
 
-    //   const data = await res.json();
+      const text = await res.text();
 
+      if (text.trim()) {
+        data = JSON.parse(text);
+      } else {
+        console.warn("⚠️ Empty response from webhook");
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: 'assistant',
+            content: 'Something went wrong. Please try again later.',
+          },
+        ]);
+        setIsTyping(false);
+        return;
+      }
 
-try {
-  const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message: input }),
-  });
-
-  const text = await res.text();
-  let data = {};
-
-  // FIX 🛠️: Only parse if not empty
-  if (text.trim()) {
-    data = JSON.parse(text);
-  } else {
-    console.warn("⚠️ Empty response from webhook");
-    setMessages((prev) => [
-      ...prev,
-      {
-        sender: 'bot',
-        text: 'Something went wrong. Please try again later.',
-      },
-    ]);
-    return;
-  }
-
-  // Use data normally here
-} catch (err) {
-  console.error("❌ Webhook error:", err);
-  setMessages((prev) => [
-    ...prev,
-    {
-      sender: 'bot',
-      text: 'Something went wrong. Please try again later.',
-    },
-  ]);
-}
-
-    
       setTimeout(() => {
         const botMessage = {
           type: 'assistant',
           content: data.output || '⚠️ Sorry, I could not understand that.'
         };
-
         setMessages((prev) => [...prev, botMessage]);
         setIsTyping(false);
       }, 1500);
+
     } catch (error) {
       console.error('Webhook error:', error);
       setTimeout(() => {

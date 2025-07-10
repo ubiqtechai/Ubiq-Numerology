@@ -266,9 +266,9 @@ const AskDaffy = () => {
                   </p>
                 </div>
 
-                
+              
                 {/* ElevenLabs Widget will be inserted here */}
-                {/* <div id="daffy-elevenlabs-agent" className="w-full flex justify-center items-center min-h-[300px]"></div> */}
+                <div id="daffy-elevenlabs-agent" className="w-full flex justify-center items-center min-h-[300px]"></div>
               </div>
             </div>
           </div>

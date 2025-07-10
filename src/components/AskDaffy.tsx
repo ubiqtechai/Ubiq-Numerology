@@ -268,7 +268,7 @@ const AskDaffy = () => {
 
               
                 {/* ElevenLabs Widget will be inserted here */}
-                <div id="daffy-elevenlabs-agent" zzzzzclassName="w-full flex justify-center items-center"></div>
+                <div id="daffy-elevenlabs-agent" className="w-full flex justify-center items-center"></div>
               </div>
             </div>  
           </div>

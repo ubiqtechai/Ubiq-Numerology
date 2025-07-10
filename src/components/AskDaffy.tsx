@@ -9,21 +9,68 @@ const AskDaffy = () => {
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
-  
+
   const messagesEndRef = useRef(null);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  const toggleRecording = () => {
-    setIsRecording(!isRecording);
+  // 🎙️ ElevenLabs Voice-to-Voice Agent Function
+  const handleVoiceInteraction = async () => {
+    try {
+      setIsRecording(true);
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+
+      const audioChunks = [];
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+
+        const formData = new FormData();
+        formData.append('audio', audioBlob, 'input.webm');
+
+        try {
+          const response = await fetch("https://api.elevenlabs.io/v1/agents/YOUR_AGENT_ID/interact", {
+            method: "POST",
+            headers: {
+              "xi-api-key": "YOUR_API_KEY"
+            },
+            body: formData
+          });
+
+          const replyAudio = await response.blob();
+          const audioUrl = URL.createObjectURL(replyAudio);
+          const audio = new Audio(audioUrl);
+          audio.play();
+        } catch (err) {
+          console.error("ElevenLabs agent error:", err);
+        }
+
+        stream.getTracks().forEach((track) => track.stop());
+        setIsRecording(false);
+      };
+
+      mediaRecorder.start();
+      setTimeout(() => {
+        mediaRecorder.stop();
+      }, 5000);
+    } catch (err) {
+      console.error("Microphone error:", err);
+      setIsRecording(false);
+    }
   };
 
-  // Function to format text with bold for asterisks
+  // Text message formatting
   const formatMessage = (text) => {
     const parts = text.split(/(\*[^*]+\*)/g);
     return parts.map((part, index) => {
@@ -38,6 +85,7 @@ const AskDaffy = () => {
     });
   };
 
+  // Chat message send
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -90,89 +138,6 @@ const AskDaffy = () => {
     }
   };
 
-
-
-const startRecordingAndSendToElevenLabs = async () => {
-
-  try {
-
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
- 
-    const mediaRecorder = new MediaRecorder(stream, {
-
-      mimeType: 'audio/webm'
-
-    });
- 
-    const audioChunks = [];
- 
-    mediaRecorder.ondataavailable = (event) => {
-
-      if (event.data.size > 0) {
-
-        audioChunks.push(event.data);
-
-      }
-
-    };
- 
-    mediaRecorder.onstop = async () => {
-
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
- 
-      // 🧠 Send voice to ElevenLabs Agent
-
-      const formData = new FormData();
-
-      formData.append('audio', audioBlob, 'input.webm');
- 
-      const response = await fetch("https://api.elevenlabs.io/v1/agents/agent_01jz4yvvsge4z9p8zn156k996n/interact", {
-
-        method: "POST",
-
-        headers: {
-
-          "xi-api-key": "YOUR_ELEVENLABS_API_KEY"
-
-        },
-
-        body: formData
-
-      });
- 
-      const audioResponseBlob = await response.blob();
- 
-      // 🔊 Play the audio response
-
-      const audioUrl = URL.createObjectURL(audioResponseBlob);
-
-      const audio = new Audio(audioUrl);
-
-      audio.play();
-
-    };
- 
-    mediaRecorder.start();
- 
-    // Record for 5 seconds max — adjust if needed
-
-    setTimeout(() => {
-
-      mediaRecorder.stop();
-
-    }, 5000);
- 
-  } catch (err) {
-
-    console.error("🎤 Mic error:", err);
-
-  }
-
-};
-
- 
-
-  
   return (
     <section id="ask-daffy" className="py-20 relative">
       <div className="container mx-auto px-6">
@@ -209,7 +174,6 @@ const startRecordingAndSendToElevenLabs = async () => {
         {mode === 'chat' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              {/* Messages */}
               <div
                 ref={messagesEndRef}
                 className="h-80 overflow-y-auto p-4 space-y-3 scroll-smooth"
@@ -228,7 +192,6 @@ const startRecordingAndSendToElevenLabs = async () => {
                   </div>
                 ))}
 
-                {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 px-4 py-3 rounded-lg">
@@ -245,7 +208,6 @@ const startRecordingAndSendToElevenLabs = async () => {
                 )}
               </div>
 
-              {/* Input */}
               <div className="border-t p-4">
                 <div className="flex space-x-2">
                   <input
@@ -275,27 +237,22 @@ const startRecordingAndSendToElevenLabs = async () => {
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              {/* Voice Recording Area */}
               <div className="h-80 p-8 flex flex-col items-center justify-center">
-                {/* Mic Visualization */}
                 <div className="relative mb-8">
-                  {/* Outer Ring - Animated when recording */}
                   <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 ${
                     isRecording 
                       ? 'border-red-500 animate-pulse' 
                       : 'border-gray-200'
                   }`}></div>
                   
-                  {/* Inner Circle with Mic */}
                   <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
                     isRecording 
                       ? 'bg-red-500 shadow-lg' 
                       : 'bg-saffron hover:bg-saffron/90'
-                  }`} onClick={toggleRecording}>
+                  }`} onClick={handleVoiceInteraction}>
                     <Mic className="w-12 h-12 text-white" />
                   </div>
 
-                  {/* Recording Pulse Effect */}
                   {isRecording && (
                     <>
                       <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
@@ -304,7 +261,6 @@ const startRecordingAndSendToElevenLabs = async () => {
                   )}
                 </div>
 
-                {/* Status Text */}
                 <div className="text-center mb-6">
                   <h3 className="text-lg font-semibold text-gray-800 mb-2" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                     {isRecording ? 'Listening...' : 'Ready to Listen'}
@@ -317,7 +273,6 @@ const startRecordingAndSendToElevenLabs = async () => {
                   </p>
                 </div>
 
-                {/* Recording Indicator */}
                 {isRecording && (
                   <div className="flex items-center space-x-2 text-red-500 mb-4">
                     <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
@@ -326,21 +281,21 @@ const startRecordingAndSendToElevenLabs = async () => {
                 )}
               </div>
 
-              {/* Voice Controls */}
               <div className="border-t p-4 text-center">
-                {/* <button
-                  onClick={toggleRecording}
+                <button
+                  onClick={handleVoiceInteraction}
                   className={`px-8 py-3 rounded-lg font-medium transition-all ${
                     isRecording 
                       ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
                       : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
                   }`}
+                  disabled={isRecording}
                   style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                 >
                   {isRecording ? (
                     <>
                       <Square className="w-4 h-4 inline mr-2" />
-                      Stop Recording
+                      Recording...
                     </>
                   ) : (
                     <>
@@ -348,15 +303,7 @@ const startRecordingAndSendToElevenLabs = async () => {
                       Start Speaking
                     </>
                   )}
-                </button> */}
-
-                <button onClick={startRecordingAndSendToElevenLabs} >
-                <Mic />
-
-                  Start Speaking
                 </button>
-
- 
               </div>
             </div>
           </div>

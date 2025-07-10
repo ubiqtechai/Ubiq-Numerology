@@ -268,9 +268,12 @@ const AskDaffy = () => {
 
               
                 {/* ElevenLabs Widget will be inserted here */}
-                <div id="daffy-elevenlabs-agent" className="w-full flex justify-center items-center min-h-[300px]"></div>
+                <div id="daffy-elevenlabs-agent" 
+                  className="w-full flex justify-center items-center">
+                  style={{ minHeight: '300px', backgroundColor: 'transparent' }}
+                </div>
               </div>
-            </div>
+            </div>  
           </div>
         )}
       </div>

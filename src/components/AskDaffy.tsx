@@ -108,15 +108,54 @@ const AskDaffy = () => {
     setInput('');
     setIsTyping(true);
 
-    try {
-      const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
-      });
+    // try {
+    //   const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify({ message: input })
+    //   });
 
-      const data = await res.json();
+    //   const data = await res.json();
 
+
+try {
+  const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message: input }),
+  });
+
+  const text = await res.text();
+  let data = {};
+
+  // FIX 🛠️: Only parse if not empty
+  if (text.trim()) {
+    data = JSON.parse(text);
+  } else {
+    console.warn("⚠️ Empty response from webhook");
+    setMessages((prev) => [
+      ...prev,
+      {
+        sender: 'bot',
+        text: 'Something went wrong. Please try again later.',
+      },
+    ]);
+    return;
+  }
+
+  // Use data normally here
+} catch (err) {
+  console.error("❌ Webhook error:", err);
+  setMessages((prev) => [
+    ...prev,
+    {
+      sender: 'bot',
+      text: 'Something went wrong. Please try again later.',
+    },
+  ]);
+}
+
+    
       setTimeout(() => {
         const botMessage = {
           type: 'assistant',

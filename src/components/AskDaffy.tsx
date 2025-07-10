@@ -9,7 +9,7 @@ const AskDaffy = () => {
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
-
+  
   const messagesEndRef = useRef(null);
 
   // Scroll to bottom when messages change
@@ -90,6 +90,89 @@ const AskDaffy = () => {
     }
   };
 
+
+
+const startRecordingAndSendToElevenLabs = async () => {
+
+  try {
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+ 
+    const mediaRecorder = new MediaRecorder(stream, {
+
+      mimeType: 'audio/webm'
+
+    });
+ 
+    const audioChunks = [];
+ 
+    mediaRecorder.ondataavailable = (event) => {
+
+      if (event.data.size > 0) {
+
+        audioChunks.push(event.data);
+
+      }
+
+    };
+ 
+    mediaRecorder.onstop = async () => {
+
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+ 
+      // 🧠 Send voice to ElevenLabs Agent
+
+      const formData = new FormData();
+
+      formData.append('audio', audioBlob, 'input.webm');
+ 
+      const response = await fetch("https://api.elevenlabs.io/v1/agents/YOUR_AGENT_ID/interact", {
+
+        method: "POST",
+
+        headers: {
+
+          "xi-api-key": "YOUR_ELEVENLABS_API_KEY"
+
+        },
+
+        body: formData
+
+      });
+ 
+      const audioResponseBlob = await response.blob();
+ 
+      // 🔊 Play the audio response
+
+      const audioUrl = URL.createObjectURL(audioResponseBlob);
+
+      const audio = new Audio(audioUrl);
+
+      audio.play();
+
+    };
+ 
+    mediaRecorder.start();
+ 
+    // Record for 5 seconds max — adjust if needed
+
+    setTimeout(() => {
+
+      mediaRecorder.stop();
+
+    }, 5000);
+ 
+  } catch (err) {
+
+    console.error("🎤 Mic error:", err);
+
+  }
+
+};
+
+ 
+
+  
   return (
     <section id="ask-daffy" className="py-20 relative">
       <div className="container mx-auto px-6">

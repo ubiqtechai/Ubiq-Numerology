@@ -115,14 +115,7 @@ const AskDaffy = () => {
         body: JSON.stringify({ message: input })
       });
 
-      const text = await res.text();
-      let data = {};
-
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.error('❌ Failed to parse JSON:', text);
-      }
+      const data = await res.json();
 
       setTimeout(() => {
         const botMessage = {

@@ -40,10 +40,10 @@ const AskDaffy = () => {
         formData.append('audio', audioBlob, 'input.webm');
 
         try {
-          const response = await fetch("https://api.elevenlabs.io/v1/agents/YOUR_AGENT_ID/interact", {
+          const response = await fetch("https://api.elevenlabs.io/v1/agents/agent_01jz4yvvsge4z9p8zn156k996n/interact", {
             method: "POST",
             headers: {
-              "xi-api-key": "YOUR_API_KEY"
+              "xi-api-key": "sk_9e35c2d198fadaaa1b95930e173da84d2f4e96a703211015"
             },
             body: formData
           });

@@ -18,95 +18,26 @@ const AskDaffy = () => {
     }
   }, [messages, isTyping]);
 
-  // 🎙️ ElevenLabs Voice-to-Voice Agent Function
-  const handleVoiceInteraction = async () => {
-    try {
-      setIsRecording(true);
-
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-
-      const audioChunks = [];
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunks.push(event.data);
+  const formatMessage = (text) => {
+    const lines = text.split('\n');
+    return lines.map((line, index) => (
+      <p key={index} className="mb-2">
+        {
+          line.split(/(\*[^*]+\*)/g).map((part, i) => {
+            if (part.startsWith('*') && part.endsWith('*')) {
+              return (
+                <strong key={i} className="font-semibold text-saffron">
+                  {part.slice(1, -1)}
+                </strong>
+              );
+            }
+            return <React.Fragment key={i}>{part}</React.Fragment>;
+          })
         }
-      };
-
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-
-        const formData = new FormData();
-        formData.append('audio', audioBlob, 'input.webm');
-
-        try {
-          const response = await fetch("https://api.elevenlabs.io/v1/agents/agent_01jz4yvvsge4z9p8zn156k996n/interact", {
-            method: "POST",
-            headers: {
-              "xi-api-key": "sk_9e35c2d198fadaaa1b95930e173da84d2f4e96a703211015"
-            },
-            body: formData
-          });
-
-          const replyAudio = await response.blob();
-          const audioUrl = URL.createObjectURL(replyAudio);
-          const audio = new Audio(audioUrl);
-          audio.play();
-        } catch (err) {
-          console.error("ElevenLabs agent error:", err);
-        }
-
-        stream.getTracks().forEach((track) => track.stop());
-        setIsRecording(false);
-      };
-
-      mediaRecorder.start();
-      setTimeout(() => {
-        mediaRecorder.stop();
-      }, 5000);
-    } catch (err) {
-      console.error("Microphone error:", err);
-      setIsRecording(false);
-    }
+      </p>
+    ));
   };
 
-  // Text message formatting
-  // const formatMessage = (text) => {
-  //   const parts = text.split(/(\*[^*]+\*)/g);
-  //   return parts.map((part, index) => {
-  //     if (part.startsWith('*') && part.endsWith('*')) {
-  //       return (
-  //         <strong key={index} className="font-semibold text-saffron">
-  //           {part.slice(1, -1)}
-  //         </strong>
-  //       );
-  //     }
-  //     return part;
-  //   });
-  // };
-  const formatMessage = (text) => {
-  const lines = text.split('\n');
-  return lines.map((line, index) => (
-    <p key={index} className="mb-2">
-      {
-        line.split(/(\*[^*]+\*)/g).map((part, i) => {
-          if (part.startsWith('*') && part.endsWith('*')) {
-            return (
-              <strong key={i} className="font-semibold text-saffron">
-                {part.slice(1, -1)}
-              </strong>
-            );
-          }
-          return <React.Fragment key={i}>{part}</React.Fragment>;
-        })
-      }
-      
-    </p>
-  ));
-};
-
-
-  // Chat message send
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -115,11 +46,24 @@ const AskDaffy = () => {
     setInput('');
     setIsTyping(true);
 
+    const reply = await getChatGPTReply(input);
+    setMessages((prev) => [...prev, { type: 'assistant', content: reply }]);
+    setIsTyping(false);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const getChatGPTReply = async (message) => {
     try {
       const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
+        body: JSON.stringify({ message })
       });
 
       const text = await res.text();
@@ -131,32 +75,90 @@ const AskDaffy = () => {
         console.error('❌ Failed to parse JSON:', text);
       }
 
-      setTimeout(() => {
-        const botMessage = {
-          type: 'assistant',
-          content: data.output || '⚠️ Sorry, I could not understand that.'
-        };
-
-        setMessages((prev) => [...prev, botMessage]);
-        setIsTyping(false);
-      }, 1500);
+      return data.output || '⚠️ Sorry, I could not understand that.';
     } catch (error) {
-      console.error('Webhook error:', error);
-      setTimeout(() => {
-        setMessages((prev) => [...prev, {
-          type: 'assistant',
-          content: 'Something went wrong. Please try again later.'
-        }]);
-        setIsTyping(false);
-      }, 1000);
+      console.error('❌ Error contacting backend:', error);
+      return '⚠️ Sorry, something went wrong.';
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+  const speakText = async (text) => {
+    try {
+      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL', {
+        method: 'POST',
+        headers: {
+          'xi-api-key': 'sk_9e35c2d198fadaaa1b95930e173da84d2f4e96a703211015',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text,
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: {
+            stability: 0.5,
+            similarity_boost: 0.75,
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ ElevenLabs TTS failed:', errorText);
+        return;
+      }
+
+      const audioBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const audio = new Audio(audioUrl);
+      audio.play();
+    } catch (error) {
+      console.error('❌ Error in TTS:', error);
     }
+  };
+
+  const handleVoiceInteraction = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert('❌ SpeechRecognition not supported in this browser');
+      console.error('SpeechRecognition API not available.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    recognition.onstart = () => {
+      console.log('🎙️ Recording started...');
+      setIsRecording(true);
+    };
+
+    recognition.onresult = async (event) => {
+      const userText = event.results[0][0].transcript;
+      console.log('📝 You said:', userText);
+      setMessages((prev) => [...prev, { type: 'user', content: userText }]);
+      setIsRecording(false);
+      setIsTyping(true);
+
+      const reply = await getChatGPTReply(userText);
+      setMessages((prev) => [...prev, { type: 'assistant', content: reply }]);
+      setIsTyping(false);
+
+      await speakText(reply);
+    };
+
+    recognition.onerror = (event) => {
+      console.error('❌ Speech recognition error:', event.error);
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      console.log('⏹️ Recording stopped.');
+      setIsRecording(false);
+    };
+
+    recognition.start();
   };
 
   return (

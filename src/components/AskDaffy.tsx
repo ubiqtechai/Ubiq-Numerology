@@ -87,7 +87,7 @@ const AskDaffy = () => {
   const formatMessage = (text) => {
   const lines = text.split('\n');
   return lines.map((line, index) => (
-    <React.Fragment key={index}>
+    <p key={index} className="mb-2">
       {
         line.split(/(\*[^*]+\*)/g).map((part, i) => {
           if (part.startsWith('*') && part.endsWith('*')) {
@@ -100,8 +100,8 @@ const AskDaffy = () => {
           return <React.Fragment key={i}>{part}</React.Fragment>;
         })
       }
-      <br />
-    </React.Fragment>
+      
+    </p>
   ));
 };
 

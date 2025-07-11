@@ -71,19 +71,40 @@ const AskDaffy = () => {
   };
 
   // Text message formatting
+  // const formatMessage = (text) => {
+  //   const parts = text.split(/(\*[^*]+\*)/g);
+  //   return parts.map((part, index) => {
+  //     if (part.startsWith('*') && part.endsWith('*')) {
+  //       return (
+  //         <strong key={index} className="font-semibold text-saffron">
+  //           {part.slice(1, -1)}
+  //         </strong>
+  //       );
+  //     }
+  //     return part;
+  //   });
+  // };
   const formatMessage = (text) => {
-    const parts = text.split(/(\*[^*]+\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('*') && part.endsWith('*')) {
-        return (
-          <strong key={index} className="font-semibold text-saffron">
-            {part.slice(1, -1)}
-          </strong>
-        );
+  const lines = text.split('\n');
+  return lines.map((line, index) => (
+    <React.Fragment key={index}>
+      {
+        line.split(/(\*[^*]+\*)/g).map((part, i) => {
+          if (part.startsWith('*') && part.endsWith('*')) {
+            return (
+              <strong key={i} className="font-semibold text-saffron">
+                {part.slice(1, -1)}
+              </strong>
+            );
+          }
+          return <React.Fragment key={i}>{part}</React.Fragment>;
+        })
       }
-      return part;
-    });
-  };
+      <br />
+    </React.Fragment>
+  ));
+};
+
 
   // Chat message send
   const handleSend = async () => {

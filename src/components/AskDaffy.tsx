@@ -55,7 +55,7 @@ const AskDaffy = () => {
           
           // Create the widget element
           const widget = document.createElement("elevenlabs-convai");
-          widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
+          widget.setAttribute("agent-id", "agent_01k045tk0ee71by88pp55ar28v");
           widget.style.width = "100%";
           widget.style.maxWidth = "420px";
           widget.style.margin = "0 auto";

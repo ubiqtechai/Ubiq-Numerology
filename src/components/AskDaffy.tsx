@@ -60,7 +60,7 @@ const AskDaffy = () => {
 
   const getChatGPTReply = async (message) => {
     try {
-      const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/samplechat', {
+      const res = await fetch('https://adarsh1718.app.n8n.cloud/webhook/voicechat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message })

@@ -44,20 +44,18 @@ const AskDaffy = () => {
   const getChatGPTReply = async (message, source = 'chat') => {
     const url = source === 'voice' ? voiceWebhook : chatWebhook;
     try {
-      const res = await fetch(url, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message })
       });
 
-      const text = await res.text();
-      let data = {};
-      try {
-        data = JSON.parse(text);
-      } catch (err) {
-        console.error('❌ Failed to parse JSON:', text);
+      if (!response.ok) {
+        console.error('❌ HTTP Error:', response.status, response.statusText);
+        return '⚠️ Sorry, the server is not responding properly.';
       }
 
+      const data = await response.json();
       return data.output || '⚠️ Sorry, I could not understand that.';
     } catch (error) {
       console.error('❌ Error contacting backend:', error);

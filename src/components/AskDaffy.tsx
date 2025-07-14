@@ -273,7 +273,7 @@ const AskDaffy = () => {
               </div>
               
               {/* ElevenLabs Widget Container */}
-              <div className="p-8 flex items-center justify-center min-h-[600px] relative">
+              <div className="p-8 flex items-center justify-center min-h-[400px] relative">
                 {/* ElevenLabs Widget will be inserted here */}
                 <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto">
                   <div className="text-center text-gray-500">

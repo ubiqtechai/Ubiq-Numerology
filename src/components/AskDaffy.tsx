@@ -87,7 +87,7 @@ const AskDaffy = () => {
       const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL', {
         method: 'POST',
         headers: {
-          'xi-api-key': 'sk_9e35c2d198fadaaa1b95930e173da84d2f4e96a703211015',
+          'xi-api-key': 'sk_e5874ecf5496e74a09b1096aa0832156fb1dc14f30f8372c',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({

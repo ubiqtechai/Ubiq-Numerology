@@ -57,11 +57,11 @@ const AskDaffy = () => {
           container.innerHTML = '';
           
           // Create the widget using innerHTML instead of createElement
-          // This ensures proper custom element registration
+          // This ensures proper custom element registration and stays contained
           container.innerHTML = `
             <elevenlabs-convai 
               agent-id="agent_01k045tk0ee71by88pp55ar28v"
-              style="width: 100%; max-width: 420px; margin: 0 auto; display: block;">
+              style="width: 100%; max-width: 420px; margin: 0 auto; display: block; position: relative; z-index: 1;">
             </elevenlabs-convai>
           `;
           
@@ -273,9 +273,9 @@ const AskDaffy = () => {
               </div>
               
               {/* ElevenLabs Widget Container */}
-              <div className="p-8 flex items-center justify-center min-h-[400px]">
+              <div className="p-8 flex items-center justify-center min-h-[400px] relative overflow-hidden">
                 {/* ElevenLabs Widget will be inserted here */}
-                <div id="daffy-elevenlabs-agent" className="flex items-center justify-center w-full">
+                <div id="daffy-elevenlabs-agent" className="flex items-center justify-center w-full relative">
                   <div className="text-center text-gray-500">
                     <p className="mb-4">Loading voice interface...</p>
                     <p className="text-sm">Make sure ElevenLabs script is loaded in your HTML head:</p>

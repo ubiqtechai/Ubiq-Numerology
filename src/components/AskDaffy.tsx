@@ -254,12 +254,13 @@ const AskDaffy = () => {
           </div>
         )}
 
+        
         {/* Voice Interface */}
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
               {/* ElevenLabs Widget Container */}
-              <div className="p-8 flex flex-col items-center min-h-[600px]">
+              <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-cosmic-indigo mb-2">
                     Voice Chat with Daffy
@@ -270,7 +271,7 @@ const AskDaffy = () => {
                 </div>
                 
                 {/* ElevenLabs Widget will be inserted here */}
-                <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto overflow-hidden"></div>
+                <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto"></div>
               </div>
             </div>
           </div>

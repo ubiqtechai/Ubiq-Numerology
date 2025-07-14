@@ -263,7 +263,7 @@ const AskDaffy = () => {
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
               {/* Header */}
-              <div className="p-8 text-center border-b">
+              <div className="p-6 text-center border-b">
                 <h3 className="text-2xl font-bold text-indigo-900 mb-2">
                   Voice Chat with Daffy
                 </h3>
@@ -273,7 +273,7 @@ const AskDaffy = () => {
               </div>
               
               {/* ElevenLabs Widget Container */}
-              <div className="p-8 flex items-center justify-center min-h-[384px] relative">
+              <div className="p-6 flex items-center justify-center min-h-[300px] relative">
                 {/* ElevenLabs Widget will be inserted here */}
                 <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto">
                   <div className="text-center text-gray-500">

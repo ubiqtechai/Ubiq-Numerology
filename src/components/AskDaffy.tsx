@@ -19,7 +19,7 @@ const AskDaffy = () => {
   }, [messages, isTyping]);
 
   const chatWebhook = 'https://adarsh1718.app.n8n.cloud/webhook/samplechat';
-  const voiceWebhook = 'https://adarsh1718.app.n8n.cloud/webhook-test/voicechat';
+  const voiceWebhook = 'https://adarsh1718.app.n8n.cloud/webhook/voicechat';
 
   const formatMessage = (text) => {
     const lines = text.split('\n');

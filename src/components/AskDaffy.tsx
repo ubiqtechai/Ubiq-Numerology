@@ -259,7 +259,7 @@ const AskDaffy = () => {
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
               {/* ElevenLabs Widget Container */}
-              <div className="p-8 flex flex-col items-center min-h-[400px]">
+              <div className="p-8 flex flex-col items-center min-h-[600px]">
                 <div className="text-center mb-6">
                   <h3 className="text-2xl font-bold text-cosmic-indigo mb-2">
                     Voice Chat with Daffy

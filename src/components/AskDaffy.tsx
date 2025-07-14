@@ -6,61 +6,102 @@ const AskDaffy = () => {
   const [mode, setMode] = useState('chat');
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [widgetLoaded, setWidgetLoaded] = useState(false);
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
 
   const messagesEndRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
 
+  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
     }
   }, [messages, isTyping]);
 
-  const chatWebhook = 'https://adarsh1718.app.n8n.cloud/webhook/samplechat';
-  const voiceWebhook = 'https://adarsh1718.app.n8n.cloud/webhook/voicechat';
+  const toggleRecording = () => {
+    if (isRecording) {
+      setIsRecording(false);
+      mediaRecorderRef.current?.stop();
+    } else {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        const chunks: Blob[] = [];
+        mediaRecorderRef.current = mediaRecorder;
 
-  const formatMessage = (text) => {
-    const lines = text.split('\n');
-    return lines.map((line, index) => (
-      <p key={index} className="mb-2">
-        {
-          line.split(/(\*[^*]+\*)/g).map((part, i) => {
-            if (part.startsWith('*') && part.endsWith('*')) {
-              return (
-                <strong key={i} className="font-semibold text-saffron">
-                  {part.slice(1, -1)}
-                </strong>
-              );
-            }
-            return <React.Fragment key={i}>{part}</React.Fragment>;
-          })
-        }
-      </p>
-    ));
+        mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+        mediaRecorder.onstop = async () => {
+          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          console.log("STT disabled or skipped – audio recorded.");
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true);
+      });
+    }
   };
 
-  const getChatGPTReply = async (message, source = 'chat') => {
-    const url = source === 'voice' ? voiceWebhook : chatWebhook;
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
-      });
+  // Load ElevenLabs widget when voice mode is selected
+  useEffect(() => {
+    if (mode === 'voice') {
+      const container = document.getElementById("daffy-elevenlabs-agent");
+      
+      if (container && !widgetLoaded) {
+        const loadWidget = () => {
+          // Clear any existing content
+          container.innerHTML = '';
+          
+          // Create the widget element
+          const widget = document.createElement("elevenlabs-convai");
+          widget.setAttribute("agent-id", "agent_01jz4yvvsge4z9p8zn156k996n");
+          widget.style.width = "100%";
+          widget.style.maxWidth = "420px";
+          widget.style.margin = "0 auto";
+          widget.style.position = "static";
+          widget.style.borderRadius = "12px";
+          widget.style.overflow = "hidden";
+          
+          container.appendChild(widget);
+          setWidgetLoaded(true);
+        };
 
-      if (!response.ok) {
-        console.error('❌ HTTP Error:', response.status, response.statusText);
-        return '⚠️ Sorry, the server is not responding properly.';
+        // Check if script is loaded, if not wait for it
+        const checkForScript = () => {
+          const scripts = document.querySelectorAll('script[src*="elevenlabs"]');
+          if (scripts.length > 0) {
+            // Script exists, wait a bit for it to initialize
+            setTimeout(loadWidget, 500);
+          } else {
+            // Script not found, try again
+            setTimeout(checkForScript, 100);
+          }
+        };
+
+        checkForScript();
       }
-
-      const data = await response.json();
-      return data.output || '⚠️ Sorry, I could not understand that.';
-    } catch (error) {
-      console.error('❌ Error contacting backend:', error);
-      return '⚠️ Sorry, something went wrong.';
+    } else {
+      // Reset widget loaded state when switching away from voice mode
+      setWidgetLoaded(false);
     }
+  }, [mode, widgetLoaded]);
+
+  
+
+  // Function to format text with bold for asterisks
+  const formatMessage = (text) => {
+    const parts = text.split(/(\*[^*]+\*)/g);
+    return parts.map((part, index) => {
+      if (part.startsWith('*') && part.endsWith('*')) {
+        return (
+          <strong key={index} className="font-semibold text-saffron">
+            {part.slice(1, -1)}
+          </strong>
+        );
+      }
+      return part;
+    });
   };
 
   const handleSend = async () => {
@@ -71,9 +112,41 @@ const AskDaffy = () => {
     setInput('');
     setIsTyping(true);
 
-    const reply = await getChatGPTReply(input, 'chat');
-    setMessages((prev) => [...prev, { type: 'assistant', content: reply }]);
-    setIsTyping(false);
+    try {
+      const res = await fetch('https://adarsh0309.app.n8n.cloud/webhook/samplechat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: input })
+      });
+
+      const text = await res.text();
+      let data = {};
+
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        console.error('❌ Failed to parse JSON:', text);
+      }
+
+      setTimeout(() => {
+        const botMessage = {
+          type: 'assistant',
+          content: data.output || '⚠️ Sorry, I could not understand that.'
+        };
+
+        setMessages((prev) => [...prev, botMessage]);
+        setIsTyping(false);
+      }, 1500);
+    } catch (error) {
+      console.error('Webhook error:', error);
+      setTimeout(() => {
+        setMessages((prev) => [...prev, {
+          type: 'assistant',
+          content: 'Something went wrong. Please try again later.'
+        }]);
+        setIsTyping(false);
+      }, 1000);
+    }
   };
 
   const handleKeyPress = (e) => {
@@ -81,85 +154,6 @@ const AskDaffy = () => {
       e.preventDefault();
       handleSend();
     }
-  };
-
-  const speakText = async (text) => {
-    try {
-      const response = await fetch('https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL', {
-        method: 'POST',
-        headers: {
-          'xi-api-key': 'sk_e5874ecf5496e74a09b1096aa0832156fb1dc14f30f8372c',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ ElevenLabs TTS failed:', errorText);
-        return;
-      }
-
-      const audioBlob = await response.blob();
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
-      audio.play();
-    } catch (error) {
-      console.error('❌ Error in TTS:', error);
-    }
-  };
-
-  const handleVoiceInteraction = () => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert('❌ SpeechRecognition not supported in this browser');
-      console.error('SpeechRecognition API not available.');
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.continuous = false;
-
-    recognition.onstart = () => {
-      console.log('🎙️ Recording started...');
-      setIsRecording(true);
-    };
-
-    recognition.onresult = async (event) => {
-      const userText = event.results[0][0].transcript;
-      console.log('📝 You said:', userText);
-      setMessages((prev) => [...prev, { type: 'user', content: userText }]);
-      setIsRecording(false);
-      setIsTyping(true);
-
-      const reply = await getChatGPTReply(userText, 'voice');
-      setMessages((prev) => [...prev, { type: 'assistant', content: reply }]);
-      setIsTyping(false);
-
-      await speakText(reply);
-    };
-
-    recognition.onerror = (event) => {
-      console.error('❌ Speech recognition error:', event.error);
-      setIsRecording(false);
-    };
-
-    recognition.onend = () => {
-      console.log('⏹️ Recording stopped.');
-      setIsRecording(false);
-    };
-
-    recognition.start();
   };
 
   return (
@@ -174,6 +168,7 @@ const AskDaffy = () => {
           </p>
         </div>
 
+        {/* Mode Toggle */}
         <div className="flex justify-center mb-8">
           <div className="bg-white rounded-full p-1 shadow-md">
             <button
@@ -193,9 +188,11 @@ const AskDaffy = () => {
           </div>
         </div>
 
+        {/* Chat Interface */}
         {mode === 'chat' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
+              {/* Messages */}
               <div
                 ref={messagesEndRef}
                 className="h-80 overflow-y-auto p-4 space-y-3 scroll-smooth"
@@ -207,12 +204,14 @@ const AskDaffy = () => {
                         ? 'bg-saffron text-white' 
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      <div className="text-sm leading-relaxed font-normal">
+                      <div className="text-sm leading-relaxed font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
                         {formatMessage(message.content)}
                       </div>
                     </div>
                   </div>
                 ))}
+
+                {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 px-4 py-3 rounded-lg">
@@ -222,12 +221,14 @@ const AskDaffy = () => {
                           <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-100"></div>
                           <div className="w-2 h-2 bg-saffron rounded-full animate-bounce delay-200"></div>
                         </div>
-                        <span className="text-xs text-gray-500 ml-2 font-normal">typing...</span>
+                        <span className="text-xs text-gray-500 ml-2 font-normal" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>typing...</span>
                       </div>
                     </div>
                   </div>
                 )}
               </div>
+
+              {/* Input */}
               <div className="border-t p-4">
                 <div className="flex space-x-2">
                   <input
@@ -237,6 +238,7 @@ const AskDaffy = () => {
                     onKeyPress={handleKeyPress}
                     placeholder="Ask about your numbers..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-saffron font-normal"
+                    style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}
                     disabled={isTyping}
                   />
                   <button
@@ -252,61 +254,23 @@ const AskDaffy = () => {
           </div>
         )}
 
+        {/* Voice Interface */}
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              <div className="h-80 p-8 flex flex-col items-center justify-center">
-                <div className="relative mb-8">
-                  <div className={`w-32 h-32 rounded-full border-4 transition-all duration-300 ${
-                    isRecording ? 'border-red-500 animate-pulse' : 'border-gray-200'
-                  }`}></div>
-                  <div className={`absolute inset-4 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer ${
-                    isRecording ? 'bg-red-500 shadow-lg' : 'bg-saffron hover:bg-saffron/90'
-                  }`} onClick={handleVoiceInteraction}>
-                    <Mic className="w-12 h-12 text-white" />
-                  </div>
-                  {isRecording && (
-                    <>
-                      <div className="absolute inset-0 rounded-full border-4 border-red-500 animate-ping opacity-20"></div>
-                      <div className="absolute inset-2 rounded-full border-2 border-red-400 animate-ping opacity-30" style={{ animationDelay: '0.5s' }}></div>
-                    </>
-                  )}
-                </div>
+              {/* ElevenLabs Widget Container */}
+              <div className="p-8 flex flex-col items-center justify-center min-h-[400px]">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                    {isRecording ? 'Listening...' : 'Ready to Listen'}
+                  <h3 className="text-2xl font-bold text-cosmic-indigo mb-2">
+                    Voice Chat with Daffy
                   </h3>
-                  <p className="text-sm text-gray-600 font-normal">
-                    {isRecording ? 'Speak clearly about your numerology questions' : 'Click the microphone to start speaking'}
+                  <p className="text-cosmic-indigo/70">
+                    Speak naturally and get instant numerology insights
                   </p>
                 </div>
-                {isRecording && (
-                  <div className="flex items-center space-x-2 text-red-500 mb-4">
-                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm font-normal">Recording in progress...</span>
-                  </div>
-                )}
-              </div>
-              <div className="border-t p-4 text-center">
-                <button
-                  onClick={handleVoiceInteraction}
-                  className={`px-8 py-3 rounded-lg font-medium transition-all ${
-                    isRecording ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' : 'bg-saffron hover:bg-saffron/90 text-white shadow-md hover:shadow-lg'
-                  }`}
-                  disabled={isRecording}
-                >
-                  {isRecording ? (
-                    <>
-                      <Square className="w-4 h-4 inline mr-2" />
-                      Recording...
-                    </>
-                  ) : (
-                    <>
-                      <Mic className="w-4 h-4 inline mr-2" />
-                      Start Speaking
-                    </>
-                  )}
-                </button>
+                
+                {/* ElevenLabs Widget will be inserted here */}
+                <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto"></div>
               </div>
             </div>
           </div>

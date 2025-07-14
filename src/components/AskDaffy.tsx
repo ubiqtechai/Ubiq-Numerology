@@ -200,7 +200,7 @@ const AskDaffy = () => {
               {/* Messages */}
               <div
                 ref={messagesEndRef}
-                className="h-64 overflow-y-auto p-4 space-y-3 scroll-smooth"
+                className="h-90 overflow-y-auto p-4 space-y-3 scroll-smooth"
               >
                 {messages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>

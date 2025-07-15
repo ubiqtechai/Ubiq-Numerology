@@ -95,19 +95,39 @@ const AskDaffy = () => {
   }, [mode, widgetLoaded]);
 
   // Function to format text with bold for asterisks
+  // const formatMessage = (text) => {
+  //   const parts = text.split(/(\*[^*]+\*)/g);
+  //   return parts.map((part, index) => {
+  //     if (part.startsWith('*') && part.endsWith('*')) {
+  //       return (
+  //         <strong key={index} className="font-semibold text-orange-500">
+  //           {part.slice(1, -1)}
+  //         </strong>
+  //       );
+  //     }
+  //     return part;
+  //   });
+  // };
+
   const formatMessage = (text) => {
-    const parts = text.split(/(\*[^*]+\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('*') && part.endsWith('*')) {
-        return (
-          <strong key={index} className="font-semibold text-orange-500">
-            {part.slice(1, -1)}
-          </strong>
-        );
-      }
-      return part;
-    });
-  };
+  const lines = text.split('\n');
+  return lines.map((line, i) => (
+    <span key={i}>
+      {line.split(/(\*[^*]+\*)/g).map((part, index) => {
+        if (part.startsWith('*') && part.endsWith('*')) {
+          return (
+            <strong key={index} className="font-semibold text-orange-500">
+              {part.slice(1, -1)}
+            </strong>
+          );
+        }
+        return part;
+      })}
+      <br />
+    </span>
+  ));
+};
+
 
   const handleSend = async () => {
     if (!input.trim()) return;

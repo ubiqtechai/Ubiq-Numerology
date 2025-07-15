@@ -242,8 +242,9 @@ const AskDaffy = () => {
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
               <div className="p-6 flex flex-col items-center justify-center min-h-[300px] space-y-6 relative">
+                
                 {/* Mic Icon */}
-                {/* <button
+                <button
                   onClick={toggleRecording}
                   type="button"
                   className={`p-4 rounded-full transition-all ${
@@ -252,9 +253,8 @@ const AskDaffy = () => {
                   title={isRecording ? 'Stop Recording' : 'Start Recording'}
                 >
                   <Mic className="w-6 h-6" />
-                </button> */}
+                </button>
 
-                
                 {/* ElevenLabs Widget */}
                 <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto" />
               </div>

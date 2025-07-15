@@ -263,13 +263,13 @@ const AskDaffy = () => {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Ask Daffy about your numbers, destiny, or spiritual path..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 font-normal"
+                    className="flex-1 px-6 py-4 rounded-full bg-white/20 border-2 border-gold/40 text-cosmic-indigo placeholder-cosmic-indigo/60 focus:outline-none focus:border-gold focus:bg-white/30 shadow-inner transition-all"
                     disabled={isTyping}
                   />
                   <button
                     onClick={handleSend}
                     disabled={!input.trim() || isTyping}
-                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-gradient-to-r from-saffron to-gold text-white px-8 py-4 rounded-full hover:shadow-xl transition-all font-bold transform hover:scale-105 hover:from-gold hover:to-saffron"
                   >
                     <Send className="w-4 h-4" />
                   </button>

@@ -14,11 +14,32 @@ const AskDaffy = () => {
   const messagesEndRef = useRef(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
+  // useEffect(() => {
+  //   if (messagesEndRef.current) {
+  //     (messagesEndRef.current as HTMLDivElement).scrollTop = (messagesEndRef.current as HTMLDivElement).scrollHeight;
+  //   }
+  // }, [messages, isTyping]);
   useEffect(() => {
-    if (messagesEndRef.current) {
-      (messagesEndRef.current as HTMLDivElement).scrollTop = (messagesEndRef.current as HTMLDivElement).scrollHeight;
-    }
-  }, [messages, isTyping]);
+  if (mode === 'voice' && !widgetLoaded) {
+    const script = document.createElement('script');
+    script.src = 'https://elevenlabs.io/convai-widget/index.js';
+    script.async = true;
+    script.onload = () => {
+      // Optional: Initialize if needed manually
+      if (window.elevenlabs?.init) {
+        window.elevenlabs.init({
+          agentId: 'YOUR_AGENT_ID', // Replace this!
+          container: '#daffy-elevenlabs-agent'
+        });
+      }
+      setWidgetLoaded(true);
+    };
+    document.body.appendChild(script);
+  }
+}, [mode, widgetLoaded]);
+
+
+  
 
   const toggleRecording = () => {
     if (isRecording) {

@@ -287,8 +287,7 @@ const AskDaffy = () => {
 
                       </svg>
                     </div>
-                    <p className="mb-4">Loading voice interface...</p>
-                    <p className="text-sm">Make sure ElevenLabs script is loaded in your HTML head:</p>
+                    
                     <code className="bg-gray-100 px-2 py-1 rounded text-xs">
                       {`<script src="https://elevenlabs.io/convai-widget/index.js"></script>`}
                     </code>

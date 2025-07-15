@@ -229,7 +229,7 @@ const AskDaffy = () => {
                     <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-md ${
                       message.type === 'user' 
                         ? 'bg-orange-500 text-white' 
-                        : 'bg-gray-100 text-gray-800'
+                        : 'bg-gradient-to-r from-saffron to-gold text-gray-800'
                     
                     }`}>
                       <div className="text-sm leading-relaxed font-normal">

@@ -275,7 +275,19 @@ const AskDaffy = () => {
               </div> */}
               
               {/* ElevenLabs Widget Container */}
-              <div className="p-6 flex items-center justify-center min-h-[300px] relative">
+              <div className="p-6 flex items-center justify-center min-h-[300px] relative"
+
+                <button
+                  onClick={toggleRecording}
+                  type="button"
+                  className={`p-4 rounded-full transition-all ${
+                    isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-orange-500 text-white hover:bg-orange-600'
+                  }`}
+                  title={isRecording ? 'Stop Recording' : 'Start Recording'}
+                >
+                  <Mic className="w-6 h-6" />
+                </button>
+            
                 {/* ElevenLabs Widget will be inserted here */}
                 <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto">
                   <div className="text-center text-gray-500">

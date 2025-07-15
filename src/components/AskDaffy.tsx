@@ -298,7 +298,7 @@ const AskDaffy = () => {
                 title={isRecording ? '' : ''}
               >
                 
-                <Mic className="w-10 h-10" />
+                <Mic className="w-12 h-12" />
               </button>
 
               

@@ -271,12 +271,13 @@ const AskDaffy = () => {
               <button
                 onClick={toggleRecording}
                 type="button"
-                className={`p-4 rounded-full transition-all ${
+                disabled
+                className={`p-6 rounded-full transition-all ${
                   isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-orange-500 text-white hover:bg-orange-600'
                 }`}
                 title={isRecording ? 'Stop Recording' : 'Start Recording'}
               >
-                <Mic className="w-6 h-6" />
+                <Mic className="w-10 h-10" />
               </button>
 
               

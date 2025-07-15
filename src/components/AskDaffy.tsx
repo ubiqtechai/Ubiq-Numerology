@@ -178,7 +178,6 @@ const AskDaffy = () => {
           </div>
         </div>
 
-        {/* Chat Interface */}
         {mode === 'chat' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
@@ -216,7 +215,7 @@ const AskDaffy = () => {
                 )}
               </div>
 
-              {/* Input with Mic */}
+              {/* Input with Styled Mic */}
               <div className="border-t p-4">
                 <div className="flex space-x-2 items-center">
                   <input
@@ -228,12 +227,14 @@ const AskDaffy = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 font-normal"
                     disabled={isTyping}
                   />
-                  
+
                   <button
                     onClick={toggleRecording}
                     type="button"
-                    className={`p-2 rounded-lg border ${
-                      isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-white text-gray-600 hover:text-orange-500'
+                    className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all ${
+                      isRecording 
+                        ? 'bg-red-500 text-white animate-pulse' 
+                        : 'bg-gradient-to-br from-orange-400 to-orange-600 text-white hover:opacity-90'
                     }`}
                     title={isRecording ? 'Stop Recording' : 'Start Recording'}
                   >
@@ -253,7 +254,6 @@ const AskDaffy = () => {
           </div>
         )}
 
-        {/* Voice Interface */}
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">

@@ -275,22 +275,20 @@ const AskDaffy = () => {
               </div> */}
               
               {/* ElevenLabs Widget Container */}
-              <div className="p-6 flex items-center justify-center min-h-[300px] space-y-6 relative">
-                
+              <div className="p-6 flex items-center justify-center min-h-[300px] relative">
                 {/* ElevenLabs Widget will be inserted here */}
                 <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto">
                   <div className="text-center text-gray-500">
 
-                    
                     <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-                      
                       <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 016 0v6a3 3 0 01-3 3z"></path>
 
 
                       </svg>
                     </div>
-                    
+                    <p className="mb-4">Loading voice interface...</p>
+                    <p className="text-sm">Make sure ElevenLabs script is loaded in your HTML head:</p>
                     <code className="bg-gray-100 px-2 py-1 rounded text-xs">
                       {`<script src="https://elevenlabs.io/convai-widget/index.js"></script>`}
                     </code>

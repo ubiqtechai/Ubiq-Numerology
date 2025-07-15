@@ -52,21 +52,39 @@ const AskDaffy = () => {
       const container = document.getElementById("daffy-elevenlabs-agent");
       
       if (container && !widgetLoaded) {
+
         const loadWidget = () => {
-          // Clear any existing content
-          container.innerHTML = '';
-          
-          // Create the widget using innerHTML instead of createElement
-          // This ensures proper custom element registration and stays contained
+          const container = document.getElementById("daffy-elevenlabs-agent");
+          if (!container) return;
+
+          // Instead of using innerHTML twice, use .innerHTML once
           container.innerHTML = `
             <elevenlabs-convai 
               agent-id="agent_01k045tk0ee71by88pp55ar28v"
               style="width: 100%; height: 400px; max-width: 420px; margin: 0 auto; display: block; position: relative;">
             </elevenlabs-convai>
           `;
-          
+        
           setWidgetLoaded(true);
         };
+
+        // const loadWidget = () => {
+        //   // Clear any existing content
+        //   container.innerHTML = '';
+          
+        //   // Create the widget using innerHTML instead of createElement
+        //   // This ensures proper custom element registration and stays contained
+        //   container.innerHTML = `
+        //     <elevenlabs-convai 
+        //       agent-id="agent_01k045tk0ee71by88pp55ar28v"
+        //       style="width: 100%; height: 400px; max-width: 420px; margin: 0 auto; display: block; position: relative;">
+        //     </elevenlabs-convai>
+        //   `;
+          
+        //   setWidgetLoaded(true);
+        // };
+
+        
 
         // Check if custom element is defined
         const checkForCustomElement = () => {

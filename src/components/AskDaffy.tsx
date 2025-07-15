@@ -278,8 +278,9 @@ const AskDaffy = () => {
               <div className="p-6 flex items-center justify-center min-h-[300px] relative">
                 {/* ElevenLabs Widget will be inserted here */}
                 <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto">
-                  {/* <div className="text-center text-gray-500"> */}
+                  <div className="text-center text-gray-500">
 
+                    
                     <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
                       
                       <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

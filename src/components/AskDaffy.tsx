@@ -206,7 +206,7 @@ const AskDaffy = () => {
             </button>
             <button
               onClick={() => setMode('voice')}
-              className={`px-6 py-2 rounded-full transition-all ${mode === 'voice' ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+              className={`px-6 py-2 rounded-full transition-all ${mode === 'voice' ? 'bg-gradient-to-r from-saffron to-gold text-white shadow-lg' : 'text-cosmic-indigo hover:bg-white/20'}`}
             >
               <Mic className="w-4 h-4 inline mr-2" />
               Voice

@@ -287,10 +287,9 @@ const AskDaffy = () => {
 
                       </svg>
                     </div>
-         
-                    <code className="bg-gray-100 px-2 py-1 rounded text-xs">
+                         {/* <code className="bg-gray-100 px-2 py-1 rounded text-xs">
                       {`<script src="https://elevenlabs.io/convai-widget/index.js"></script>`}
-                    </code>
+                    </code> */}
                   </div>
                 </div>
               </div>

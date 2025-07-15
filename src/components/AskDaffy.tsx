@@ -264,6 +264,18 @@ const AskDaffy = () => {
             <div className="bg-white rounded-xl shadow-lg border">
               
               {/* Header */}
+              <div className="p-6 text-center border-b"
+                <h3 className="text-2xl font-bold text-indigo-900 mb-2">
+                  Voice Chat with Daffy
+                </h3>
+                <p className="text-indigo-700">
+                  Speak naturally and get instant numerology insights
+                </p>
+              </div>
+
+
+
+                
               {/* <div className="p-6 text-center border-b">
                 <h3 className="text-2xl font-bold text-indigo-900 mb-2">
                   Voice Chat with Daffy

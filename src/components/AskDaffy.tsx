@@ -3,14 +3,15 @@ import { Mic, MessageSquare, Send } from 'lucide-react';
 
 const AskDaffy = () => {
   const [input, setInput] = useState('');
-  const [mode, setMode] = useState('chat');
+  const [mode, setMode] = useState<'chat' | 'voice'>('chat');
   const [isRecording, setIsRecording] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [widgetLoaded, setWidgetLoaded] = useState(false);
   const [messages, setMessages] = useState([
     { type: 'assistant', content: 'Namaste! I am Daffy, your spiritual numerology guide. How may I illuminate your path today?' }
   ]);
 
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
 
   useEffect(() => {
@@ -19,24 +20,27 @@ const AskDaffy = () => {
     }
   }, [messages, isTyping]);
 
+  // Load ElevenLabs Widget
   useEffect(() => {
-    if (mode === 'voice') {
-      const container = document.getElementById('daffy-elevenlabs-agent');
-      if (container && !container.hasChildNodes()) {
-        const script = document.createElement('script');
-        script.src = 'https://elevenlabs.io/convai-widget/index.js';
-        script.async = true;
-        container.appendChild(script);
-
-        container.innerHTML += `
-          <elevenlabs-convai 
-            agent-id="agent_01k045tk0ee71by88pp55ar28v"
-            style="width: 100%; height: 100%; display: block;">
-          </elevenlabs-convai>
-        `;
-      }
+    if (mode === 'voice' && !widgetLoaded) {
+      const script = document.createElement('script');
+      script.src = 'https://elevenlabs.io/convai-widget/index.js';
+      script.async = true;
+      script.onload = () => {
+        const container = document.getElementById("daffy-elevenlabs-agent");
+        if (container) {
+          container.innerHTML = `
+            <elevenlabs-convai 
+              agent-id="agent_01k045tk0ee71by88pp55ar28v"
+              style="width: 100%; height: 400px; max-width: 420px; margin: 0 auto; display: block;">
+            </elevenlabs-convai>
+          `;
+          setWidgetLoaded(true);
+        }
+      };
+      document.body.appendChild(script);
     }
-  }, [mode]);
+  }, [mode, widgetLoaded]);
 
   const toggleRecording = () => {
     if (isRecording) {
@@ -158,6 +162,7 @@ const AskDaffy = () => {
           </div>
         </div>
 
+        {/* CHAT MODE */}
         {mode === 'chat' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
@@ -168,8 +173,8 @@ const AskDaffy = () => {
                 {messages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
-                      message.type === 'user' 
-                        ? 'bg-orange-500 text-white' 
+                      message.type === 'user'
+                        ? 'bg-orange-500 text-white'
                         : 'bg-gray-100 text-gray-800'
                     }`}>
                       <div className="text-sm leading-relaxed font-normal">
@@ -195,7 +200,7 @@ const AskDaffy = () => {
                 )}
               </div>
 
-              {/* Input field */}
+              {/* Input Field */}
               <div className="border-t p-4">
                 <div className="relative flex items-center">
                   <input
@@ -232,11 +237,11 @@ const AskDaffy = () => {
           </div>
         )}
 
-        {/* Voice mode */}
+        {/* VOICE MODE */}
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
-            <div className="bg-white rounded-xl shadow-lg border p-6">
-              <div className="flex flex-col items-center justify-center space-y-6 min-h-[400px]">
+            <div className="bg-white rounded-xl shadow-lg border">
+              <div className="p-6 flex flex-col items-center justify-center min-h-[300px] space-y-6 relative">
                 {/* Mic Icon */}
                 <button
                   onClick={toggleRecording}
@@ -249,11 +254,8 @@ const AskDaffy = () => {
                   <Mic className="w-6 h-6" />
                 </button>
 
-                {/* Widget Container */}
-                <div
-                  id="daffy-elevenlabs-agent"
-                  className="w-full h-[300px] max-w-md bg-white rounded-lg overflow-hidden border shadow-inner"
-                />
+                {/* ElevenLabs Widget */}
+                <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto" />
               </div>
             </div>
           </div>
@@ -264,3 +266,4 @@ const AskDaffy = () => {
 };
 
 export default AskDaffy;
+

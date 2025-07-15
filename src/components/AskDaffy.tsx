@@ -278,7 +278,8 @@ const AskDaffy = () => {
               >
                 <Mic className="w-6 h-6" />
               </button>
-      
+
+              
               {/* ElevenLabs Widget */}
               <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto" />
             </div>

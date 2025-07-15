@@ -291,18 +291,17 @@ const AskDaffy = () => {
             <div className="p-6 flex flex-col items-center justify-center min-h-[300px] space-y-6 relative">
               
               {/* Mic Icon Button */}
-              <button
-                onClick={toggleRecording}
-                type="button"
-                disabled
-                className={`p-8 rounded-full transition-all ${
-                  isRecording ? 'bg-gradient-to-r from-saffron to-gold' : 'bg-orange-500 text-white hover:bg-orange-600'
+              
+                
+                
+              className={`p-8 rounded-full transition-all ${
+              isRecording ? 'bg-gradient-to-r from-saffron to-gold' : 'bg-orange-500 text-white hover:bg-orange-600'
                 }`}
                 title={isRecording ? '' : ''}
               >
                 
                 <Mic className="w-12 h-12" />
-              </button>
+            
 
               
               {/* ElevenLabs Widget */}

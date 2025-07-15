@@ -275,7 +275,7 @@ const AskDaffy = () => {
               </div> */}
               
               {/* ElevenLabs Widget Container */}
-              <div className="p-6 flex items-center justify-center min-h-[300px] relative"
+              <div className="p-6 flex items-center justify-center min-h-[300px] relative"</div>
 
                 <button
                   onClick={toggleRecording}

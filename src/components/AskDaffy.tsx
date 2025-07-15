@@ -294,9 +294,8 @@ const AskDaffy = () => {
               <button
                 onClick={toggleRecording}
                 type="button"
-                
                 disabled
-                className={`p-8 rounded-full transition-all ${
+                className={`p-8 rounded-full transition-all gradient-to-r from-saffron to-gold ${
                   isRecording ? 'bg-gradient-to-r from-saffron to-gold' : 'bg-orange-500 text-white hover:bg-orange-600'
                 }`}
                 title={isRecording ? '' : ''}

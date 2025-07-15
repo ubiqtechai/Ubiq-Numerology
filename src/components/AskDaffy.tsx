@@ -14,7 +14,6 @@ const AskDaffy = () => {
   const messagesEndRef = useRef(null);
   const mediaRecorderRef = useRef(null);
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
@@ -28,7 +27,7 @@ const AskDaffy = () => {
     } else {
       navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
         const mediaRecorder = new MediaRecorder(stream);
-        const chunks = []; // Fixed: Removed TypeScript annotation
+        const chunks = [];
         mediaRecorderRef.current = mediaRecorder;
 
         mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
@@ -46,41 +45,30 @@ const AskDaffy = () => {
     }
   };
 
-  // Load ElevenLabs widget when voice mode is selected
   useEffect(() => {
     if (mode === 'voice') {
       const container = document.getElementById("daffy-elevenlabs-agent");
-      
+
       if (container && !widgetLoaded) {
         const loadWidget = () => {
-          // Clear any existing content
           container.innerHTML = '';
-          
-          // Create the widget using innerHTML instead of createElement
-          // This ensures proper custom element registration and stays contained
           container.innerHTML = `
             <elevenlabs-convai 
               agent-id="agent_01k045tk0ee71by88pp55ar28v"
               style="width: 100%; height: 400px; max-width: 420px; margin: 0 auto; display: block; position: relative;">
             </elevenlabs-convai>
           `;
-          
           setWidgetLoaded(true);
         };
 
-        // Check if custom element is defined
         const checkForCustomElement = () => {
           if (window.customElements && window.customElements.get('elevenlabs-convai')) {
-            // Custom element is registered, load the widget
             loadWidget();
           } else {
-            // Check if script is loaded and wait for custom element registration
             const scripts = document.querySelectorAll('script[src*="elevenlabs"]');
             if (scripts.length > 0) {
-              // Script exists, wait for custom element to be defined
               setTimeout(checkForCustomElement, 200);
             } else {
-              // Script not found, try again
               setTimeout(checkForCustomElement, 100);
             }
           }
@@ -89,12 +77,10 @@ const AskDaffy = () => {
         checkForCustomElement();
       }
     } else {
-      // Reset widget loaded state when switching away from voice mode
       setWidgetLoaded(false);
     }
   }, [mode, widgetLoaded]);
 
-  // Function to format text with bold for asterisks
   const formatMessage = (text) => {
     const parts = text.split(/(\*[^*]+\*)/g);
     return parts.map((part, index) => {
@@ -173,7 +159,6 @@ const AskDaffy = () => {
           </p>
         </div>
 
-        {/* Mode Toggle */}
         <div className="flex justify-center mb-8">
           <div className="bg-white rounded-full p-1 shadow-md">
             <button
@@ -197,7 +182,6 @@ const AskDaffy = () => {
         {mode === 'chat' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              {/* Messages */}
               <div
                 ref={messagesEndRef}
                 className="h-96 overflow-y-auto p-4 space-y-3 scroll-smooth"
@@ -216,7 +200,6 @@ const AskDaffy = () => {
                   </div>
                 ))}
 
-                {/* Typing Indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
                     <div className="bg-gray-100 px-4 py-3 rounded-lg">
@@ -233,9 +216,9 @@ const AskDaffy = () => {
                 )}
               </div>
 
-              {/* Input */}
+              {/* Input with Mic */}
               <div className="border-t p-4">
-                <div className="flex space-x-2">
+                <div className="flex space-x-2 items-center">
                   <input
                     type="text"
                     value={input}
@@ -245,6 +228,18 @@ const AskDaffy = () => {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 font-normal"
                     disabled={isTyping}
                   />
+                  
+                  <button
+                    onClick={toggleRecording}
+                    type="button"
+                    className={`p-2 rounded-lg border ${
+                      isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-white text-gray-600 hover:text-orange-500'
+                    }`}
+                    title={isRecording ? 'Stop Recording' : 'Start Recording'}
+                  >
+                    <Mic className="w-5 h-5" />
+                  </button>
+
                   <button
                     onClick={handleSend}
                     disabled={!input.trim() || isTyping}
@@ -258,33 +253,26 @@ const AskDaffy = () => {
           </div>
         )}
 
-        
         {/* Voice Interface */}
         {mode === 'voice' && (
           <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
-              
-              {/* Header */}
-              {/* <div className="p-6 text-center border-b">
-                <h3 className="text-2xl font-bold text-indigo-900 mb-2">
-                  Voice Chat with Daffy
-                </h3>
-                <p className="text-indigo-700">
-                  Speak naturally and get instant numerology insights
-                </p>
-              </div> */}
-              
-              {/* ElevenLabs Widget Container */}
               <div className="p-6 flex items-center justify-center min-h-[300px] relative">
-                {/* ElevenLabs Widget will be inserted here */}
                 <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto">
                   <div className="text-center text-gray-500">
-
-                    <div class="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
-                      <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 016 0v6a3 3 0 01-3 3z"></path>
-
-
+                    <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-orange-600 rounded-full mx-auto mb-4 flex items-center justify-center shadow-lg">
+                      <svg 
+                        className="w-8 h-8 text-white" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path 
+                          strokeLinecap="round" 
+                          strokeLinejoin="round" 
+                          strokeWidth={2} 
+                          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 016 0v6a3 3 0 01-3 3z" 
+                        />
                       </svg>
                     </div>
                     <p className="mb-4">Loading voice interface...</p>

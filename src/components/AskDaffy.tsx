@@ -296,7 +296,7 @@ const AskDaffy = () => {
                 type="button"
                 disabled
                 className={`p-8 rounded-full transition-all ${
-                  isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-orange-500 text-white hover:bg-orange-600'
+                  isRecording ? 'bg-gradient-to-r from-saffron to-gold' : 'bg-orange-500 text-white hover:bg-orange-600'
                 }`}
                 title={isRecording ? '' : ''}
               >

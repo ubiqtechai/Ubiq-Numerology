@@ -61,7 +61,7 @@ const AskDaffy = () => {
           container.innerHTML = `
             <elevenlabs-convai 
               agent-id="agent_01k045tk0ee71by88pp55ar28v"
-              style="width: 100%; height: 200px; max-width: 420px; margin: 0 auto; display: block; position: relative;">
+              style="width: 100%; height: 400px; max-width: 420px; margin: 0 auto; display: block; position: relative;">
             </elevenlabs-convai>
           `;
           

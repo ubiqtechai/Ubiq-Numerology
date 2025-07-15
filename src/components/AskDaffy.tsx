@@ -291,7 +291,12 @@ const AskDaffy = () => {
             <div className="p-6 flex flex-col items-center justify-center min-h-[300px] space-y-6 relative">
               
               {/* Mic Icon Button */}
-              <button
+
+              <div className="p-8 rounded-full bg-gradient-to-r from-saffron to-gold w-fit mx-auto">
+                <Mic className="w-12 h-12 text-white" />
+              </div>
+
+              {/* <button
                 onClick={toggleRecording}
                 type="button"
                 className={`p-8 rounded-full transition-all gradient-to-r from-saffron to-gold ${
@@ -301,7 +306,7 @@ const AskDaffy = () => {
               >
                 
                 <Mic className="w-12 h-12" />
-              </button>
+              </button> */}
 
               
               {/* ElevenLabs Widget */}

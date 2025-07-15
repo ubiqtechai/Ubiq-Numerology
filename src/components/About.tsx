@@ -1,5 +1,6 @@
 import React from 'react';
 import { Sparkles, Heart, Globe, Star } from 'lucide-react';
+import AnimatedNumber from './AnimatedNumber';
 
 const About = () => {
   return (
@@ -73,15 +74,37 @@ const About = () => {
               {/* Stats */}
               <div className="grid grid-cols-3 gap-8 mb-8">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-saffron mb-1">50K+</div>
+                  <div className="text-3xl font-bold text-saffron mb-1">
+                    <AnimatedNumber 
+                      end={50000} 
+                      suffix="+" 
+                      duration={2500}
+                      className="enhanced-number"
+                    />
+                  </div>
                   <div className="text-sm text-cosmic-indigo/70">Readings Given</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-gold mb-1">12</div>
+                  <div className="text-3xl font-bold text-gold mb-1">
+                    <AnimatedNumber 
+                      end={12} 
+                      duration={1800}
+                      delay={300}
+                      className="enhanced-number"
+                    />
+                  </div>
                   <div className="text-sm text-cosmic-indigo/70">Languages</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-lotus-pink mb-1">24/7</div>
+                  <div className="text-3xl font-bold text-lotus-pink mb-1">
+                    <AnimatedNumber 
+                      end={24} 
+                      suffix="/7" 
+                      duration={2000}
+                      delay={600}
+                      className="enhanced-number"
+                    />
+                  </div>
                   <div className="text-sm text-cosmic-indigo/70">Available</div>
                 </div>
               </div>

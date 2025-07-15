@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Users, Video, Filter } from 'lucide-react';
+import AnimatedNumber from './AnimatedNumber';
 
 const Workshops = () => {
   const [filter, setFilter] = useState('all');
@@ -183,7 +184,7 @@ const Workshops = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="w-3 h-3" />
-                    {workshop.spots} spots left
+                    <AnimatedNumber end={workshop.spots} duration={1500} /> spots left
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -204,19 +205,27 @@ const Workshops = () => {
                     <p className="text-xs text-cosmic-indigo/70 mb-2">Starts in:</p>
                     <div className="flex justify-between text-center">
                       <div>
-                        <div className="text-lg font-bold text-saffron">{timeLeft[workshop.id].days}</div>
+                        <div className="text-lg font-bold text-saffron">
+                          <AnimatedNumber end={timeLeft[workshop.id].days} duration={1000} />
+                        </div>
                         <div className="text-xs text-cosmic-indigo/60">Days</div>
                       </div>
                       <div>
-                        <div className="text-lg font-bold text-saffron">{timeLeft[workshop.id].hours}</div>
+                        <div className="text-lg font-bold text-saffron">
+                          <AnimatedNumber end={timeLeft[workshop.id].hours} duration={1000} />
+                        </div>
                         <div className="text-xs text-cosmic-indigo/60">Hours</div>
                       </div>
                       <div>
-                        <div className="text-lg font-bold text-saffron">{timeLeft[workshop.id].minutes}</div>
+                        <div className="text-lg font-bold text-saffron">
+                          <AnimatedNumber end={timeLeft[workshop.id].minutes} duration={1000} />
+                        </div>
                         <div className="text-xs text-cosmic-indigo/60">Minutes</div>
                       </div>
                       <div>
-                        <div className="text-lg font-bold text-saffron">{timeLeft[workshop.id].seconds}</div>
+                        <div className="text-lg font-bold text-saffron">
+                          <AnimatedNumber end={timeLeft[workshop.id].seconds} duration={1000} />
+                        </div>
                         <div className="text-xs text-cosmic-indigo/60">Seconds</div>
                       </div>
                     </div>
@@ -225,7 +234,9 @@ const Workshops = () => {
 
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xl font-bold text-saffron">{workshop.price}</span>
-                  <span className="text-xs text-cosmic-indigo/60">with {workshop.instructor}</span>
+                  <span className="text-xs text-cosmic-indigo/60">
+                    with {workshop.instructor}
+                  </span>
                 </div>
 
                 <button className="w-full bg-gradient-to-r from-saffron to-gold text-white py-2 rounded-full font-semibold hover:shadow-xl transition-all text-sm">

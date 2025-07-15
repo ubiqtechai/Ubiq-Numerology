@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
+import AnimatedNumber from './AnimatedNumber';
 
 const Testimonials = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -121,7 +122,7 @@ const Testimonials = () => {
 
               {/* Rating Stars */}
               <div className="flex justify-center gap-2 mb-8">
-                {[...Array(currentTestimonial.rating)].map((_, i) => (
+                {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-8 h-8 text-gold fill-current" />
                 ))}
               </div>
@@ -195,7 +196,7 @@ const Testimonials = () => {
               ></div>
             </div>
             <p className="text-center text-cosmic-indigo/60 text-sm mt-2">
-              {currentSlide + 1} of {testimonials.length}
+              <AnimatedNumber end={currentSlide + 1} duration={300} /> of <AnimatedNumber end={testimonials.length} duration={300} />
             </p>
           </div>
         </div>

@@ -216,8 +216,9 @@ const AskDaffy = () => {
 
         {/* Chat Interface */}
         {mode === 'chat' && (
-          <div className="glassmorphic rounded-3xl p-4 mb-8 border-2 border-gold/30 shadow-2xl bg-white/15 backdrop-blur-md">
+          <div className="max-w-3xl mx-auto">
             <div className="bg-white rounded-xl shadow-lg border">
+              
               {/* Messages */}
               <div
                 ref={messagesEndRef}

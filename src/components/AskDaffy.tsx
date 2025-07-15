@@ -276,7 +276,7 @@ const AskDaffy = () => {
                   isRecording ? 'bg-red-500 text-white animate-pulse' : 'bg-orange-500 text-white hover:bg-orange-600'
                 }`}
                 {/* title={isRecording ? 'Stop Recording' : 'Start Recording'} */}
-              >
+              
               
                 <Mic className="w-10 h-10" />
               </button>

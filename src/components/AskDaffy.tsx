@@ -186,7 +186,8 @@ const AskDaffy = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-indigo-900 mb-4">
-            Ask Daffy
+            Speak to Daffy – Your Numerology Guide Awaits
+
           </h2>
           <p className="text-lg text-indigo-700">
             Your spiritual numerology guide is here to help

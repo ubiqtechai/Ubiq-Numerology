@@ -199,7 +199,7 @@ const AskDaffy = () => {
           <div className="bg-white rounded-full p-1 shadow-md">
             <button
               onClick={() => setMode('chat')}
-              className={`px-6 py-2 rounded-full transition-all ${mode === 'chat' ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
+              className={`px-6 py-2 rounded-full transition-all ${mode === 'chat' ? 'bg-gradient-to-r from-saffron to-gold text-white shadow-lg' : 'text-cosmic-indigo hover:bg-white/20'}`}
             >
               <MessageSquare className="w-4 h-4 inline mr-2" />
               Chat

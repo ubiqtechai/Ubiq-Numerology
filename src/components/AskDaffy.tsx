@@ -223,11 +223,10 @@ const AskDaffy = () => {
               <div
                 ref={messagesEndRef}
                 className="h-96 overflow-y-auto p-4 space-y-3 scroll-smooth"
-                
               >
                 {messages.map((message, index) => (
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
+                    <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2x1 shadow-md ${
                       message.type === 'user' 
                         ? 'bg-orange-500 text-white' 
                         : 'bg-gray-100 text-gray-800'

@@ -1,6 +1,5 @@
 import React from 'react';
 import { BookOpen, Clock, Star, Award, Play } from 'lucide-react';
-import AnimatedNumber from './AnimatedNumber';
 
 const Courses = () => {
   const courses = [
@@ -103,18 +102,18 @@ const Courses = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <BookOpen className="w-3 h-3" />
-                    <AnimatedNumber end={course.lessons} duration={1500} /> lessons
+                    {course.lessons} lessons
                   </div>
                   <div className="flex items-center gap-1">
                     <Star className="w-3 h-3 text-gold fill-current" />
-                    <AnimatedNumber end={course.rating} decimals={1} duration={1800} />
+                    {course.rating}
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-xl font-bold text-saffron">{course.price}</span>
                   <span className="text-xs text-cosmic-indigo/60">
-                    <AnimatedNumber end={course.students} duration={2000} /> students
+                    {course.students} students
                   </span>
                 </div>
 

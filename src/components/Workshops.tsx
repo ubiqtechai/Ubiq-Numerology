@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, MapPin, Users, Video, Filter } from 'lucide-react';
-import AnimatedNumber from './AnimatedNumber';
 
 const Workshops = () => {
   const [filter, setFilter] = useState('all');
@@ -184,7 +183,7 @@ const Workshops = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <Users className="w-3 h-3" />
-                    <AnimatedNumber end={workshop.spots} duration={1500} /> spots left
+                    {workshop.spots} spots left
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -206,25 +205,25 @@ const Workshops = () => {
                     <div className="flex justify-between text-center">
                       <div>
                         <div className="text-lg font-bold text-saffron">
-                          <AnimatedNumber end={timeLeft[workshop.id].days} duration={1000} />
+                          {timeLeft[workshop.id].days}
                         </div>
                         <div className="text-xs text-cosmic-indigo/60">Days</div>
                       </div>
                       <div>
                         <div className="text-lg font-bold text-saffron">
-                          <AnimatedNumber end={timeLeft[workshop.id].hours} duration={1000} />
+                          {timeLeft[workshop.id].hours}
                         </div>
                         <div className="text-xs text-cosmic-indigo/60">Hours</div>
                       </div>
                       <div>
                         <div className="text-lg font-bold text-saffron">
-                          <AnimatedNumber end={timeLeft[workshop.id].minutes} duration={1000} />
+                          {timeLeft[workshop.id].minutes}
                         </div>
                         <div className="text-xs text-cosmic-indigo/60">Minutes</div>
                       </div>
                       <div>
                         <div className="text-lg font-bold text-saffron">
-                          <AnimatedNumber end={timeLeft[workshop.id].seconds} duration={1000} />
+                          {timeLeft[workshop.id].seconds}
                         </div>
                         <div className="text-xs text-cosmic-indigo/60">Seconds</div>
                       </div>

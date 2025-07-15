@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Star, Quote, ChevronLeft, ChevronRight } from 'lucide-react';
-import AnimatedNumber from './AnimatedNumber';
 
 const Testimonials = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -196,7 +195,7 @@ const Testimonials = () => {
               ></div>
             </div>
             <p className="text-center text-cosmic-indigo/60 text-sm mt-2">
-              <AnimatedNumber end={currentSlide + 1} duration={300} /> of <AnimatedNumber end={testimonials.length} duration={300} />
+              {currentSlide + 1} of {testimonials.length}
             </p>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import CircularNumbers from './CircularNumbers';
+import MovingNumbers from './MovingNumbers';
 import { Globe } from 'lucide-react';
 
 const BackgroundEffects = () => {
@@ -7,6 +8,9 @@ const BackgroundEffects = () => {
 
   return (
     <>
+      {/* Moving Numbers Animation */}
+      <MovingNumbers />
+      
       {/* Animated Yantras and Sacred Geometry */}
       <div className="absolute top-20 left-10 w-32 h-32 opacity-15">
         <div className="w-full h-full border-2 border-saffron rounded-full animate-spin-slow"></div>

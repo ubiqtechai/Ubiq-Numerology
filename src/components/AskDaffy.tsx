@@ -76,10 +76,173 @@ const AskDaffy = () => {
 
         checkForCustomElement();
       }
+
+      // Apply custom styles for voice overlay
+      const applyVoiceStyles = () => {
+        const checkWidget = setInterval(() => {
+          const widget = document.getElementById('daffy-elevenlabs-agent');
+          if (widget) {
+            const style = document.createElement('style');
+            style.id = 'daffy-voice-overlay-styles';
+            style.textContent = `
+              #daffy-elevenlabs-agent {
+                position: relative !important;
+                z-index: 1 !important;
+              }
+              
+              .daffy-voice-overlay {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                z-index: 999 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                backdrop-filter: blur(5px) !important;
+                border-radius: 12px !important;
+              }
+              
+              .daffy-voice-content {
+                text-align: center !important;
+                padding: 20px !important;
+                border-radius: 12px !important;
+                background: white !important;
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+                border: 1px solid #e5e7eb !important;
+                max-width: 350px !important;
+                width: 90% !important;
+                position: relative !important;
+              }
+              
+              .daffy-voice-avatar {
+                width: 80px !important;
+                height: 80px !important;
+                background: linear-gradient(135deg, #f59e0b, #d97706) !important;
+                border-radius: 50% !important;
+                margin: 0 auto 16px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3) !important;
+              }
+              
+              .daffy-voice-title {
+                font-size: 18px !important;
+                font-weight: 500 !important;
+                color: #6b7280 !important;
+                margin-bottom: 16px !important;
+              }
+              
+              .daffy-voice-subtitle {
+                color: #6b7280 !important;
+                margin-bottom: 12px !important;
+                font-size: 14px !important;
+              }
+              
+              .daffy-voice-code {
+                background: #f3f4f6 !important;
+                padding: 8px 12px !important;
+                border-radius: 6px !important;
+                font-family: monospace !important;
+                font-size: 11px !important;
+                color: #374151 !important;
+                border: 1px solid #e5e7eb !important;
+              }
+              
+              .daffy-close-overlay {
+                position: absolute !important;
+                top: 10px !important;
+                right: 10px !important;
+                background: #f3f4f6 !important;
+                border: none !important;
+                border-radius: 50% !important;
+                width: 28px !important;
+                height: 28px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                color: #6b7280 !important;
+                transition: all 0.2s !important;
+                font-size: 16px !important;
+                font-weight: bold !important;
+              }
+              
+              .daffy-close-overlay:hover {
+                background: #e5e7eb !important;
+                color: #374151 !important;
+              }
+            `;
+            
+            // Remove existing styles first
+            const existingStyles = document.getElementById('daffy-voice-overlay-styles');
+            if (existingStyles) {
+              existingStyles.remove();
+            }
+            
+            document.head.appendChild(style);
+            clearInterval(checkWidget);
+          }
+        }, 100);
+      };
+
+      applyVoiceStyles();
     } else {
       setWidgetLoaded(false);
+      // Remove styles when switching away from voice mode
+      const existingStyles = document.getElementById('daffy-voice-overlay-styles');
+      if (existingStyles) {
+        existingStyles.remove();
+      }
     }
   }, [mode, widgetLoaded]);
+
+  const createVoiceOverlay = () => {
+    const widget = document.getElementById('daffy-elevenlabs-agent');
+    if (widget) {
+      // Remove existing overlay if any
+      const existingOverlay = widget.querySelector('.daffy-voice-overlay');
+      if (existingOverlay) {
+        existingOverlay.remove();
+      }
+
+      const overlay = document.createElement('div');
+      overlay.className = 'daffy-voice-overlay';
+      overlay.innerHTML = `
+        <div class="daffy-voice-content">
+          <button class="daffy-close-overlay">×</button>
+          <div class="daffy-voice-avatar">
+            <svg width="40" height="40" fill="white" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 616 0v6a3 3 0 01-3 3z"/>
+            </svg>
+          </div>
+          <div class="daffy-voice-title">Loading voice interface...</div>
+          <div class="daffy-voice-subtitle">Make sure ElevenLabs script is loaded in your HTML head:</div>
+          <div class="daffy-voice-code">
+            <code>&lt;script src="https://elevenlabs.io/convai-widget/index.js"&gt;&lt;/script&gt;</code>
+          </div>
+        </div>
+      `;
+      
+      // Add click handler to close button
+      overlay.querySelector('.daffy-close-overlay').addEventListener('click', () => {
+        overlay.remove();
+      });
+      
+      widget.appendChild(overlay);
+    }
+  };
+
+  const handleVoiceModeClick = () => {
+    setMode('voice');
+    // Show overlay after a brief delay to ensure widget container is ready
+    setTimeout(() => {
+      createVoiceOverlay();
+    }, 500);
+  };
 
   const formatMessage = (text) => {
     const parts = text.split(/(\*[^*]+\*)/g);
@@ -169,7 +332,7 @@ const AskDaffy = () => {
               Chat
             </button>
             <button
-              onClick={() => setMode('voice')}
+              onClick={handleVoiceModeClick}
               className={`px-6 py-2 rounded-full transition-all ${mode === 'voice' ? 'bg-orange-500 text-white shadow-sm' : 'text-gray-600 hover:text-gray-800'}`}
             >
               <Mic className="w-4 h-4 inline mr-2" />
@@ -271,7 +434,7 @@ const AskDaffy = () => {
                           strokeLinecap="round" 
                           strokeLinejoin="round" 
                           strokeWidth={2} 
-                          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 016 0v6a3 3 0 01-3 3z" 
+                          d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 616 0v6a3 3 0 01-3 3z" 
                         />
                       </svg>
                     </div>

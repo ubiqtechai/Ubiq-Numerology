@@ -262,7 +262,7 @@ const AskDaffy = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Ask about your numbers..."
+                    placeholder="Ask Daffy about your numbers, destiny, or spiritual path..."
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500 font-normal"
                     disabled={isTyping}
                   />

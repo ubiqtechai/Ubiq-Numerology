@@ -279,7 +279,7 @@ const AskDaffy = () => {
                 {/* ElevenLabs Widget will be inserted here */}
                 <div id="daffy-elevenlabs-agent" className="w-full max-w-md mx-auto">
                   <div className="text-center text-gray-500">
-                    
+      
                     <p className="mb-4">Loading voice interface...</p>
                     <p className="text-sm">Make sure ElevenLabs script is loaded in your HTML head:</p>
                     <code className="bg-gray-100 px-2 py-1 rounded text-xs">

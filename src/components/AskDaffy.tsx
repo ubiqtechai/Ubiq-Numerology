@@ -228,8 +228,8 @@ const AskDaffy = () => {
                   <div key={index} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
                       message.type === 'user' 
-                        ? 'bg-orange-500 text-white' 
-                        : 'bg-gray-100 text-gray-800'
+                        ? 'bg-gradient-to-r from-saffron to-gold text-white' 
+                        : 'bg-white/25 text-cosmic-indigo border border-white/20'
                     }`}>
                       <div className="text-sm leading-relaxed font-normal">
                         {formatMessage(message.content)}

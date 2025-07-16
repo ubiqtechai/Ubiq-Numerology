@@ -76,7 +76,6 @@ const Footer = () => {
               <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center">
                 {/* <span className="text-white font-bold text-xl">U</span> */}
                 <span className="text-white font-bold text-lg">
-                  
                   <img
                     src="https://ubiqtech.ai/ubiq-logo.svg"
                     alt="U"
@@ -136,7 +135,7 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-saffron" />
-                <span className="text-white/70">hello@ubiq-numerology.com</span>
+                <span className="text-white/70">hello@ubiqtech.ai</span>
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-saffron" />
@@ -144,7 +143,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5 text-saffron" />
-                <span className="text-white/70">Mumbai, India</span>
+                <span className="text-white/70">Noida, India</span>
               </div>
             </div>
 

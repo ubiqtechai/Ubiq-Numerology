@@ -19,7 +19,8 @@ const Header = () => {
   return (
     <header className="fixed top-0 w-full z-50 glassmorphic border-b border-gold/20">
       <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-0 cursor-pointer" onClick={() => scrollToSection('hero')}>
+        <div className="flex items-center gap-6 cursor-pointer" onClick={() => scrollToSection('hero')}>
+          
           <div className="w-10 h-10 round-full overflow-hidden">
             <span className="text-white font-bold text-lg">
               <img

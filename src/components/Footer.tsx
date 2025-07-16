@@ -79,7 +79,8 @@ const Footer = () => {
                   <img
                     src="https://ubiqtech.ai/ubiq-logo.svg"
                     alt="U"
-                    className="w-8 h-8 object-contain"
+                    className="w-full h-full object-contain
+                    
                   />
                 </span>
               </div>

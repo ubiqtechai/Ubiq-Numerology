@@ -29,7 +29,7 @@ const Header = () => {
               />
             </span>
           </div>
-          <span className="text-xl font-bold text-cosmic-indigo">UBIQ Numerology</span>
+          <span className="text-xl font-bold text-cosmic-indigo">U-BiQra </span>
         </div>
 
         {/* Desktop Navigation - Centered */}

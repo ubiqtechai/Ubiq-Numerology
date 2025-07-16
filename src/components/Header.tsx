@@ -20,7 +20,8 @@ const Header = () => {
     <header className="fixed top-0 w-full z-50 glassmorphic border-b border-gold/20">
       <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-2 cursor-pointer" onClick={() => scrollToSection('hero')}>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center">
+          {/* <div className="w-10 h-10 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center"> */}
+          
             <span className="text-white font-bold text-lg">
               <img
                 src="blob:https://ubiqtech-my.sharepoint.com/e19969a7-a19d-4319-b2c4-cc117c7033de"

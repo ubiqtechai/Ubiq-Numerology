@@ -74,7 +74,14 @@ const Footer = () => {
           <div className="md:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center">
-                <span className="text-white font-bold text-xl">U</span>
+                {/* <span className="text-white font-bold text-xl">U</span> */}
+                <span className="text-white font-bold text-lg">
+                  <img
+                    src="https://ubiqtech.ai/ubiq-logo.svg"
+                    alt="U"
+                    className="w-full h-full object-contain"
+                  />
+                </span>
               </div>
               <span className="text-xl font-bold">UBIQ Numerology</span>
             </div>

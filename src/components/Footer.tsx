@@ -8,22 +8,22 @@ const Footer = () => {
     {
       id: 1,
       question: "How accurate is AI numerology compared to human numerologists?",
-      answer: "Daffy combines ancient Vedic numerology wisdom with advanced AI processing, offering consistent, precise calculations without human error. While human numerologists bring intuition, Daffy provides 24/7 access to authentic numerological insights trained on thousands of traditional texts."
+      answer: "Daffy combines ancient Vedic numerology wisdom with advanced AI, ensuring consistent, precise calculations every time. While human experts bring intuition and nuance, Daffy offers 24/7 access to authentic numerological insights derived from thousands of traditional texts."
     },
     {
       id: 2,
       question: "Can I get readings in my native language?",
-      answer: "Yes! Daffy natively supports Hindi, Tamil, Arabic, and English. The AI understands cultural nuances and provides culturally appropriate interpretations in each language."
+      answer: "Absolutely! Daffy supports both English and Hindi fluently—understanding cultural nuances to deliver interpretations that resonate deeply in each language."
     },
     {
       id: 3,
       question: "What's the difference between various number calculations?",
-      answer: "Each number reveals different aspects: Life Path shows your soul's journey, Expression reveals talents, Soul Urge uncovers desires, and Birthday Number indicates natural gifts. Our courses explain these differences in detail."
+      answer: "Each number reveals a unique aspect of your life: Expression shows your talents, Soul Urge uncovers inner desires, Psychic/Birthday indicates natural gifts, and Name Numerology highlights your energy vibration. Our Courses section delves deeper into how they all work together."
     },
     {
       id: 4,
       question: "Are the remedies and mantras authentic?",
-      answer: "All remedies, mantras, and gemstone recommendations come from authentic Vedic traditions. Our database includes verified Sanskrit mantras, traditional color therapy, and time-tested spiritual practices."
+      answer: "Yes—they’re all drawn from authentic Vedic traditions. We use verified Sanskrit mantras, gemstone recommendations, color therapy, and other time-tested spiritual practices to support your path."
     }
   ];
 

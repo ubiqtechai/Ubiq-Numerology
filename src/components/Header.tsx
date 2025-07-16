@@ -20,7 +20,7 @@ const Header = () => {
     <header className="fixed top-0 w-full z-50 glassmorphic border-b border-gold/20">
       <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4 cursor-pointer" onClick={() => scrollToSection('hero')}>
-          <div className="w-12 h-12 ">
+          <div className="w-10 h-10 ">
             <span className="text-white font-bold text-lg">
               <img
                 src="https://ubiqtech.ai/ubiq-logo.svg"

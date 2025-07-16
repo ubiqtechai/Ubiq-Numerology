@@ -23,41 +23,10 @@ const Header = () => {
           <div className="w-10 h-10 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center">
             <span className="text-white font-bold text-lg">
               <img
-                src="import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react';
-
-const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMenuOpen(false); // Close mobile menu after clicking
-  };
-
-  return (
-    <header className="fixed top-0 w-full z-50 glassmorphic border-b border-gold/20">
-      <nav className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => scrollToSection('hero')}>
-          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-saffron to-gold flex items-center justify-center">
-            <span className="text-white font-bold text-lg">
-              <img
                 src="blob:https://ubiqtech-my.sharepoint.com/e19969a7-a19d-4319-b2c4-cc117c7033de"
                 alt="U"
                 className="w-6 h-6 rounded-full object-cover"
-              />
-            </span>
-          </div>
-          <span className="text-xl font-bold text-cosmic-indigo">UBIQ Numerology</span>
-"
-                alt="U"
-                className="w-6 h-6 rounded-full object-cover"
+                
               />
             </span>
           </div>

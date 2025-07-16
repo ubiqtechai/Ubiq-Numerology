@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Mic, MessageSquare, Send, Square } from 'lucide-react';
+import { Mic, MessageSquare, Send, Square, Info } from 'lucide-react';
 
 const AskDaffy = () => {
   const [input, setInput] = useState('');
@@ -181,6 +181,12 @@ const AskDaffy = () => {
     }
   };
 
+  const scrollToSuggestedQuestions = () => {
+    const suggestedSection = document.getElementById('suggested-questions');
+    if (suggestedSection) {
+      suggestedSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   return (
     <section id="ask-daffy" className="py-20 relative">
       <div className="container mx-auto px-6">
@@ -259,6 +265,13 @@ const AskDaffy = () => {
               {/* Input */}
               <div className="border-t p-4">
                 <div className="flex space-x-2">
+                  <button
+                    onClick={scrollToSuggestedQuestions}
+                    className="bg-white/20 border-2 border-gold/40 text-cosmic-indigo px-4 py-4 rounded-full hover:bg-white/30 hover:border-gold transition-all font-bold transform hover:scale-105 flex items-center justify-center"
+                    title="Need inspiration? View suggested questions"
+                  >
+                    <Info className="w-4 h-4" />
+                  </button>
                   <input
                     type="text"
                     value={input}
